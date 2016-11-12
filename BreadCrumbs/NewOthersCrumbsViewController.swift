@@ -32,7 +32,7 @@ class NewOthersCrumbsViewController: UIViewController, UITextViewDelegate, MKMap
     var hasVotedInScreen = false
     var theVoteValueToBeStored: Int = 0
     var timer = NSTimer()
-
+    weak var delegate: NewOthersCrumbsViewControllerDelegate?
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -55,20 +55,12 @@ class NewOthersCrumbsViewController: UIViewController, UITextViewDelegate, MKMap
         OtherUserLabel.text = viewbreadcrumb?.senderName
         TimeLabel.text = "\(viewbreadcrumb!.dateOrganizer())"
         UpVoteValueLabel.text = "\(String(viewbreadcrumb!.votes!))"
-        if viewbreadcrumb?.addressStr != nil {
+        
+        /*if viewbreadcrumb?.addressStr != nil {
             LocationLabel.text = viewbreadcrumb?.addressStr
         }else{
              LocationLabel.text = "Address error"
-        }
-        if viewbreadcrumb!.calculate() > 0 {
-            let countdownHolder = viewbreadcrumb!.countdownTimerSpecific()
-            
-            converterUpdater(countdownHolder)
-            
-            timer = NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: #selector(ViewCrumbViewController().countingDown), userInfo: nil, repeats: true)
-        } else {
-            countdownLabel.text = "Time's up!"
-        }
+        }*/
         
         //fix font size
         OtherMsgTextView.font = UIFont.systemFontOfSize(17)
@@ -98,28 +90,36 @@ class NewOthersCrumbsViewController: UIViewController, UITextViewDelegate, MKMap
             downdootColor.setTitleColor(UIColor.redColor(), forState: UIControlState.Normal)
         }
     }
-    
+    override func viewWillDisappear(animated: Bool) {
+        //send crumbvote here somehow
+        if counter != 0 && hasVotedInScreen == true{
+            print(theVoteValueToBeStored)
+            crumbVote(theVoteValueToBeStored, counter: counter)
+            if let del = self.delegate {
+                del.updateVoteSpecific(theVoteValueToBeStored, crumbUUID: (viewbreadcrumb?.uRecordID)!, hasVotedValue: counter)
+            }
+        }
+    }
     
     func crumbVote(vote: Int, counter: Int) {//what happens when a vote conflicts between cd and ck?, this just does ck atm
         let specificID = CKRecordID(recordName: (viewbreadcrumb?.uRecordID)!)
-        voteCKVote(specificID, voteValue: vote)
-        voteCoreDataVote((viewbreadcrumb?.uRecordID)!, voteValue: vote, counter: counter)
+        voteCKVote(specificID)
+        voteCoreDataVote((viewbreadcrumb?.uRecordID)!,counter: counter)
         
         dispatch_async(dispatch_get_main_queue()) {
-            self.UpVoteValueLabel.text = "\(String(self.viewbreadcrumb!.votes! + 1 ))"
+            self.UpVoteValueLabel.text = "\(String(self.viewbreadcrumb!.votes!))"
         }
     }
     
     //redo these to only update a value not add
-    func voteCKVote(recorduuid: CKRecordID, voteValue: Int){
+    func voteCKVote(recorduuid: CKRecordID){
         
         let container = CKContainer.defaultContainer()
         let publicData = container.publicCloudDatabase
         
         publicData.fetchRecordWithID(recorduuid, completionHandler: {record, error in
             if error == nil{
-                let oldvalue = record!.objectForKey("votes") as! Int
-                let newvalue = voteValue + oldvalue
+                let newvalue = self.theVoteValueToBeStored
                 
                 record!.setObject(newvalue, forKey: "votes")
                 
@@ -135,7 +135,9 @@ class NewOthersCrumbsViewController: UIViewController, UITextViewDelegate, MKMap
             }
         })
     }
-    func voteCoreDataVote(cdrecorduuid: String, voteValue: Int, counter: Int){
+    
+    //updates coredata with the new value
+    func voteCoreDataVote(cdrecorduuid: String, counter: Int){
         
         let predicate = NSPredicate(format: "recorduuid == %@", cdrecorduuid)
          
@@ -145,7 +147,7 @@ class NewOthersCrumbsViewController: UIViewController, UITextViewDelegate, MKMap
         do {// change it, it not work y?
             let fetchedMsgs = try helperFunctions.moc.executeFetchRequest(fetchRequest) as! [Message]
             
-            fetchedMsgs.first?.setValue(voteValue, forKey: "votevalue")
+            fetchedMsgs.first?.setValue(theVoteValueToBeStored, forKey: "votevalue")
             fetchedMsgs.first?.setValue(counter, forKey: "hasVoted")
             do {// save it!
                 try helperFunctions.moc.save()
@@ -157,90 +159,9 @@ class NewOthersCrumbsViewController: UIViewController, UITextViewDelegate, MKMap
         }
         
     }
-
-    @IBAction func upVote(sender: UIButton) {
-        // need to add has voted, has voted will store 3 values 0,1,-1 0 is not voted, 1 vote pos, -1 vote neg
-        if counter == 0 {
-            hasVotedInScreen = true
-            let newvalue = (viewbreadcrumb?.votes)! + 1
-            
-            theVoteValueToBeStored = newvalue
-            
-            updootColor.setTitleColor(UIColor.redColor(), forState: UIControlState.Normal)
-            
-            counter = 1
-        }else if counter == -1{
-            hasVotedInScreen = true
-            //add by two
-            let newvalue = (viewbreadcrumb?.votes)! + 2
-            
-            theVoteValueToBeStored = newvalue
-            updootColor.setTitleColor(UIColor.redColor(), forState: UIControlState.Normal)
-            downdootColor.setTitleColor(UIColor.lightGrayColor(), forState: UIControlState.Normal)
-            counter = 1
-        }
-    }
+    //MARK: Comments
     
-    @IBAction func Downvote(sender: UIButton) {
-        
-        if counter == 0{
-            hasVotedInScreen = true
-            let newvalue = (viewbreadcrumb?.votes)! - 1
-            
-            theVoteValueToBeStored = newvalue
-            
-            downdootColor.setTitleColor(UIColor.redColor(), forState: UIControlState.Normal)
-            
-            counter = -1
-        }else if counter == 1{
-            hasVotedInScreen = true
-            //subtract by two
-            let newvalue = (viewbreadcrumb?.votes)! - 2
-            
-            theVoteValueToBeStored = newvalue
-            downdootColor.setTitleColor(UIColor.redColor(), forState: UIControlState.Normal)
-            updootColor.setTitleColor(UIColor.lightGrayColor(), forState: UIControlState.Normal)
-            counter = -1
-        }
-    }
-    
-    override func viewWillDisappear(animated: Bool) {
-        //send crumbvote here somehow
-        if counter != 0 && hasVotedInScreen == true{
-            print(theVoteValueToBeStored)
-            crumbVote(theVoteValueToBeStored, counter: counter)
-        }
-     //reload [crumbs] desu
-        
-    }
-    func countingDown(){
-        if viewbreadcrumb!.calculate() > 0 {
-            var countdownHolder = viewbreadcrumb!.countdownTimerSpecific()
-            countdownHolder = countdownHolder - 1
-            
-            converterUpdater(countdownHolder)
-        } else {
-            timer.invalidate()
-            countdownLabel.text = "Time's up!"
-        }
-    }
-    func converterUpdater(countdownHolder: Int){
-        //var days = String(round(countdownHolder / 86400))
-        var hours = String(countdownHolder / 3600)
-        var minutes = String((countdownHolder % 3600) / 60)
-        var seconds = String(countdownHolder % 60)
-        
-        
-        if Int(hours) < 10{
-            hours = "0\(hours)"
-        }
-        if Int(minutes) < 10{
-            minutes = "0\(minutes)"
-        }
-        if Int(seconds) < 10{
-            seconds = "0\(seconds)"
-        }
-        
-        countdownLabel.text = "\(hours):\(minutes):\(seconds) left"
-    }
+}
+protocol NewOthersCrumbsViewControllerDelegate: class {
+    func updateVoteSpecific(NewVoteValue: Int, crumbUUID: String, hasVotedValue: Int)
 }

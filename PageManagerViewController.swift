@@ -13,7 +13,7 @@ class PageManagerViewController: UIPageViewController, UIPageViewControllerDataS
     
     //MARK: Variables
     var indexcounter = 0
-    var identifiers: NSArray = ["UserView", "YourCurrentBreadCrumbs", "OthersCurrentBreadCrumbs"]
+    var identifiers: NSArray = ["IntroShill", "Intro-2", "Intro-3", "SignIn"]
     
     
     //MARK: view loading
@@ -43,24 +43,27 @@ class PageManagerViewController: UIPageViewController, UIPageViewControllerDataS
     //it doubles the second viewcontroller:::FIXED <3
     //also if one swipes right then left, the 3 view is never instantiated:::FIXED <3
 
-    func viewControllerAtIndex(index: Int) -> UINavigationController! {
+    func viewControllerAtIndex(index: Int) -> UIViewController! {
         //This method creates a new instance of the specified view controller each time you call it.
               
         //UserView
         if index == 0 {
-            return self.storyboard!.instantiateViewControllerWithIdentifier("UserView") as! UINavigationController
+            return self.storyboard!.instantiateViewControllerWithIdentifier("IntroShill") 
         }
         
         //Your bread crumb table view controller view
         if index == 1 {
-            return self.storyboard!.instantiateViewControllerWithIdentifier("YourCurrentBreadCrumbs") as! UINavigationController
+            return self.storyboard!.instantiateViewControllerWithIdentifier("Intro-2")
 
         }
         
         //Other users bread crumb table view controller view
         if index == 2 {
-            return self.storyboard!.instantiateViewControllerWithIdentifier("OthersCurrentBreadCrumbs") as! UINavigationController
+            return self.storyboard!.instantiateViewControllerWithIdentifier("Intro-3")
 
+        }
+        if index == 3{
+            return self.storyboard!.instantiateViewControllerWithIdentifier("SignIn") 
         }
         
         return nil
@@ -78,7 +81,7 @@ class PageManagerViewController: UIPageViewController, UIPageViewControllerDataS
 
         //print(restorationID)
         //limits pages
-        if index == 2 {
+        if index == 3 {
             return nil
         }
         

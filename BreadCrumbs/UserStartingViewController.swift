@@ -9,45 +9,41 @@
 import UIKit
 import CloudKit
 
-class UserStartingViewController: UIViewController {
+class UserStartingViewController: UIViewController, SettingsViewControllerDelegate {
 
-    let NSUserData = NSUserDefaults.standardUserDefaults()
+    let NSUserData = AppDelegate().NSUserData
     var counter = 0
     let locationManager: CLLocationManager = AppDelegate().locationManager
+    var username: String { get {return NSUserData.stringForKey("userName")!}}
     
     
     @IBOutlet weak var usernameUILabel: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        //setName()
+        self.usernameUILabel.text = username
         
-        usernameUILabel.text = NSUserData.stringForKey("userName")
-    }
-
-    override func viewDidAppear(animated: Bool) {
-        
-        let currentUserLoc = locationManager.location // if location changes bad things happen D:
-        
-        if currentUserLoc == nil && NSUserData.integerForKey("counterLoc") == 0{
-
-            self.NSUserData.setValue(1, forKey: "counterLoc")
-            let alertController = UIAlertController(title: "BreadCrumbs", message:
-                "Your location services are down, posting and receiving functionallity is disabled.", preferredStyle: UIAlertControllerStyle.Alert)
-            alertController.addAction(UIAlertAction(title: "Continue?", style: UIAlertActionStyle.Default,handler: nil))
-            
-            presentViewController(alertController, animated: true, completion: nil)
-        }
-        
+        locationManager.requestAlwaysAuthorization()
     }
     
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {//navigate to settings controller
         if segue.identifier == "settingId" {
             if segue.destinationViewController is SettingsViewController {
-                performSegueWithIdentifier("settingId", sender: sender)
+                let destVC = segue.destinationViewController as! SettingsViewController
+                destVC.delegate = self
+                //print(destVC.delegate.debugDescription)
             }
         }
     }
+
+    @IBAction func settingsButton(sender: AnyObject) {
+    }
     
-    
+    func changedUsername(str: String){//updates username from settingscontroller with a delegate :D
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            self.usernameUILabel.text = str
+        })
+    }
 }

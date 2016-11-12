@@ -18,18 +18,19 @@ class CrumbMessage{
     var text: String
     var senderName: String
     var location: CLLocation
-    var timeDropped: NSDate//store as an array of ints?// no
+    var timeDropped: NSDate
     var timeLimit: Int
     var uRecordID: String?
-    //var viewedOther: Int?
+    var viewedOther: Int?
     var hasVoted: Int?
-    var addressStr: String? //loc address may wish to store it in cd// i did
-    //do i add viewedother and hasvoted?// i did
+    //var addressStr: String?
+    var commentsArr: [Comment]//array of comments
+    
+    
     
     //MARK: Initialization
     init?(text: String, senderName: String, location: CLLocation, timeDropped: NSDate
         , timeLimit: Int, senderuuid: String, votes: Int?){
-        //Initialize the variables
         self.text = text
         self.senderName = senderName
         self.location = location
@@ -37,15 +38,15 @@ class CrumbMessage{
         self.timeLimit = timeLimit
         self.senderuuid = senderuuid
         self.votes = votes
+        self.commentsArr = []
         //test if empty; see if the message is only whitespace cause that would be annoying
         if text.isEmpty || senderName.isEmpty {
             return nil
         }
     }
     
-    func convertCoordinatesToAddress(locationCoor: CLLocation, completion: (answer: String?) -> Void) {// used in load others crumbs and 
-        //in write crumbs aka this value is completely local for both types of crumbs, only stored in cd and is never sent or recieved 
-        //from cloud
+   /* func convertCoordinatesToAddress(locationCoor: CLLocation, completion: (answer: String?) -> Void) {// used in load others crumbs and
+        //in write crumbs aka this value is completely local for both types of crumbs, only stored in cd and is never sent or recieved from cloud
         let geoCoder = CLGeocoder()
         
         geoCoder.reverseGeocodeLocation(locationCoor, completionHandler: {(placemarks, error) -> Void in
@@ -60,9 +61,9 @@ class CrumbMessage{
                 completion(answer: nil)
             }
         })
-    }
+    }*/
     
-    func displayLocationInfo(placemark: CLPlacemark?) -> String?{
+    func displayLocationInfo(placemark: CLPlacemark?) -> String?{//used in convertCoordinatesToAddress for reasons
         if let containsPlacemark = placemark
         {
             let locality = (containsPlacemark.locality != nil) ? containsPlacemark.locality : ""
@@ -76,7 +77,7 @@ class CrumbMessage{
         
     }
     
-    func calculate() -> Double{
+    func calculate() -> Double{//calculates the time remaining in hours for a shortend use in cells
         //in essence: timedropped + timelimit = timeDeadline; timeCurrent - timeDeadline = timeLeft
         //convert timeleft to days hours 
         
@@ -93,7 +94,7 @@ class CrumbMessage{
     
     //MARK: countdown timer test
     
-    func countdownTimerSpecific()-> Int{
+    func countdownTimerSpecific()-> Int{//time remaining in seconds; name is pretty shit; they were ment to be test names
         
         //convert timeleft to days hours
         
@@ -107,7 +108,7 @@ class CrumbMessage{
     }
     
     
-    func dateOrganizer() -> String{
+    func dateOrganizer() -> String{//short style dates for timeposted
         let dateformatter = NSDateFormatter()
         
         dateformatter.dateStyle = NSDateFormatterStyle.ShortStyle
@@ -161,7 +162,7 @@ class CrumbMessage{
         return StringDate
     }
 
-    func timeRelative() -> String{
+    func timeRelative() -> String{//a function that returns various forms of time from seconds to months
         var newdate: String = ""
         
         let test = -timeDropped.timeIntervalSinceNow
@@ -185,7 +186,6 @@ class CrumbMessage{
             newdate = "some time ago"
         }
         return newdate
-        
     }
     
     

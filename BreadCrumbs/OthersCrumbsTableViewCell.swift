@@ -16,13 +16,22 @@ class OthersCrumbsTableViewCell: UITableViewCell {
     @IBOutlet weak var OthersVotesLabe: UILabel!
     @IBOutlet weak var OthersAddress: UILabel!
     @IBOutlet weak var TimeCountdown: UILabel!
+    @IBOutlet weak var IsViewedLabel: UILabel!
+
     
+    @IBOutlet weak var UpvoteOutlet: UIButton!
+    
+    @IBOutlet weak var DownvoteOutlet: UIButton!
     override func awakeFromNib() {
         super.awakeFromNib()
     }
 
     override func setSelected(selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
+    }
+    @IBAction func UpvoteAction(sender: AnyObject) {
+    }
+    @IBAction func DownvoteAction(sender: AnyObject) {
     }
     
 

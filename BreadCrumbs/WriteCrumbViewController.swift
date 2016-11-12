@@ -22,70 +22,172 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
     var msgCharCount:Int = 0
     var timeDroppedvar: String?
     var pickerTimeLimit = ["4","8","12","24"]
-    let NSUserData = NSUserDefaults.standardUserDefaults()
+    let NSUserData = AppDelegate().NSUserData
     let locationManager: CLLocationManager = AppDelegate().locationManager
     let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext //yay
     let helperfunctions = Helper()
-
-    
-    /*
-     This value is either passed by `yourcrumbTableViewController` in `prepareForSegue(_:sender:)`
-     or constructed as part of adding a new CrumbMessage.
-     */
     var crumbmessage: CrumbMessage?
     
+    weak var timer = NSTimer()
     
     //MARK: Properties
-    
+    @IBOutlet weak var pickeroutlet: UIButton!
     @IBOutlet weak var msgTimePickerField: UIPickerView!
     
-    @IBOutlet weak var barCrumbCounterNumber: UIBarButtonItem!
+    //@IBOutlet weak var barCrumbCounterNumber: UIBarButtonItem!
     @IBOutlet weak var crumbMessageTextView: UITextView!
     @IBOutlet weak var charLabelCount: UILabel!
-    @IBOutlet weak var postButtonOutlet: UIBarButtonItem!
+    
+    @IBOutlet weak var postButtonOutlet: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
         postButtonOutlet.enabled = false
         
         // Handle the text field’s user input through delegate callbacks.
+        self.crumbMessageTextView.delegate = self
+        textViewDidChange(crumbMessageTextView)
+        //msgView(textView) placeholder text
+        crumbMessageTextView.text = "What do you think?"
+        crumbMessageTextView.textColor = UIColor.lightGrayColor()
+        
+        //init pickerview
         self.msgTimePickerField.dataSource = self
         self.msgTimePickerField.delegate = self
-        self.crumbMessageTextView.delegate = self
-        
-        textViewDidChange(crumbMessageTextView)
-        
-        //TextView border
-        crumbMessageTextView.layer.borderColor = UIColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 1.0).CGColor
-        self.crumbMessageTextView.layer.borderWidth = 1.0;
-        self.crumbMessageTextView.layer.cornerRadius = 5.0;
-        self.automaticallyAdjustsScrollViewInsets = false//fuck yeah fixed it
+        msgTimePickerField.hidden = true
 
-        
         //populate crumb counter number
-        barCrumbCounterNumber.title = "\(NSUserData.stringForKey("crumbCount")!)/5"
+        //barCrumbCounterNumber.title = "\(NSUserData.stringForKey("crumbCount")!)/5"
         
-        //msgView(textView) placeholder text
-        crumbMessageTextView.text = "Write your message here."
-        crumbMessageTextView.textColor = UIColor.lightGrayColor()
         
         //fuck if I know, post button off unless pass tests
         postButtonEnabledIfTestsTrue()
         
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         self.hideKeyboardWhenTappedAround()
         
-        
-        let check = checkLocation()//i dont remember writing this
-        if check {
-            helperfunctions.testStoredMsgsInArea(locationManager.location!)
+        if !(AppDelegate().timer1 == nil) && !(checkLocation()) {
+            print("running in write")
+            NSTimer.scheduledTimerWithTimeInterval(60.0, target: AppDelegate(), selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 30 sec for a msg
         }
         
-        if AppDelegate().NSUserData.integerForKey("limitArea") == 1{
-            print("too many crumbs in area, please walk to another location and try again")//have and indicator
+        if checkLocation(){//
+            helperfunctions.testStoredMsgsInArea(locationManager.location!)
+            
+            if NSUserData.integerForKey("limitArea") == 1{
+                animateInfoBar("Too many crumbs in area")
+            }
+        }
+        if checkLocation() == false{//this is the code i am most proud of, animation is so good
+            animateInfoBar("Location is down")
+            
+            timer = NSTimer.scheduledTimerWithTimeInterval(10.0, target: self, selector: #selector(checkToDeAnimate), userInfo: nil, repeats: true)
+        }
+        view.addGestureRecognizer(tap)
+    }
+    
+    @IBAction func PickerViewButton(sender: AnyObject) {
+        
+        
+        msgTimePickerField.hidden = false
+        msgTimePickerField.becomeFirstResponder()
+        
+        /*UIView.animateWithDuration(0.3, animations: {() -> Void in
+            self.msgTimePickerField.frame = CGRectMake(0, self.view.bounds.size.height - self.msgTimePickerField.bounds.size.height, self.msgTimePickerField.bounds.size.width, self.msgTimePickerField.bounds.size.height)
+        })*/
+
+    }
+    func UndoPickerView(){
+        msgTimePickerField.hidden = true
+ 
+        msgTimePickerField.resignFirstResponder()
+    }
+    
+    
+    //MARK: timer
+    func checkToDeAnimate(){
+        if checkLocation() == true{
+            UNanimateInfoBar()
+            timer?.invalidate()
         }
     }
+    
+    //MARK: Subview
+    
+    func animateInfoBar(alert: String){
+        let duration = 0.5
+        let delay = 0.5
+        let options = UIViewAnimationOptions.TransitionCurlDown
+        let damping:CGFloat = 1 // set damping ration
+        let velocity:CGFloat = 1.0
+        self.makeSubViewIndicator(alert)
+        UIView.animateWithDuration(duration, delay: delay, usingSpringWithDamping: damping, initialSpringVelocity: velocity, options: options, animations: {
+            self.view.viewWithTag(5)!.frame = CGRect(x: 0, y:((self.view.viewWithTag(1)!.frame.size.height)), width: (self.view.frame.size.width), height: 20)
+            
+            }) { (true) in
+        }
+        //makeSubViewIndicator("Location is down")
+    }
+    func UNanimateInfoBar(){
+        let duration = 1.0
+        let delay = 0.0
+        let options = UIViewAnimationOptions.TransitionCurlUp
+        let damping:CGFloat = 1 // set damping ration
+        let velocity:CGFloat = 1.0
+        
+        UIView.animateWithDuration(duration, delay: delay, usingSpringWithDamping: damping, initialSpringVelocity: velocity, options: options, animations: {
+            self.removeInfoBarView()
+        }) { (true) in
+            self.view.viewWithTag(5)!.removeFromSuperview()
 
-
+        }
+        //makeSubViewIndicator("Location is down")
+        
+    }
+    
+    func makeSubViewIndicator(text: String){
+        view.viewWithTag(2)?.transform.ty = (view.viewWithTag(2)?.transform.ty)! + 20
+        let labelAnimate = UITextField(frame: CGRect(x: 0, y:((self.view.viewWithTag(1)!.frame.size.height)), width: (view.frame.size.width), height: 20))
+        labelAnimate.userInteractionEnabled = false
+        labelAnimate.text = text
+        labelAnimate.textColor = UIColor.whiteColor()
+        labelAnimate.textAlignment = NSTextAlignment.Center
+        labelAnimate.tag = 4
+        
+        //rectangle
+        let backgroundrect = UIView()
+        backgroundrect.frame = CGRect(x: 0, y:((self.view.viewWithTag(1)!.frame.size.height)), width: (view.frame.size.width), height: 20)
+        backgroundrect.backgroundColor = UIColor(red: 90/255, green: 174/255, blue: 255/255, alpha: 1)
+        
+        backgroundrect.tag = 5
+        
+        view.addSubview(backgroundrect)
+        view.addSubview(labelAnimate)
+    }
+    func removeInfoBarView(){
+        self.view.viewWithTag(5)!.frame = CGRect(x: 0, y:((self.navigationController?.navigationBar.frame.size.height)!), width: (view.frame.size.width), height: 0)
+        
+        for subview in view.subviews{
+            if let stackview = subview as? UIStackView{
+                stackview.transform.ty = stackview.transform.ty - 20
+            }
+            if let label = subview as? UILabel{
+                label.transform.ty = label.transform.ty - 20
+            }
+        }
+        self.view.viewWithTag(4)!.removeFromSuperview()
+    }
+    
+    
+    func dismissKeyboard() {
+        //Causes the view (or one of its embedded text fields) to resign the first responder status.
+        view.endEditing(true)
+    }
+    func hideKeyboardWhenTappedAround() {
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(WriteCrumbViewController.dismissKeyboard))
+        view.addGestureRecognizer(tap)
+    }
+    
     
     //MARK: ICloud and Coredata
     
@@ -138,6 +240,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
         publicData.saveRecord(record, completionHandler: { record, error in
             if error != nil {
                 print(error.debugDescription)
+                print("ck error in write crumbs")
             }
         })
     }
@@ -156,7 +259,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
         messageMO.setValue(crumbmessage.senderuuid, forKey: "senderuuid")
         messageMO.setValue(crumbmessage.votes, forKey: "votevalue")
         messageMO.setValue(NSUUID().UUIDString, forKey: "recorduuid")
-        messageMO.setValue(crumbmessage.addressStr, forKey: "addressStr")
+        //messageMO.setValue(crumbmessage.addressStr, forKey: "addressStr")
 
         
         do {
@@ -164,6 +267,8 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
             //print("saved to coredata")
         } catch {
             print(error)
+            print("cd error in write crumbs")
+
         }
 
     }
@@ -180,7 +285,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
                 NSUserData.setValue(cCounter, forKey: "crumbCount")
                 self.UpdateCrumbCount(cCounter)
                 
-                barCrumbCounterNumber.title = "\(NSUserData.stringForKey("crumbCount")!)/5"
+                //barCrumbCounterNumber.title = "\(NSUserData.stringForKey("crumbCount")!)/5"
                 
                 let senderUser = NSUserData.stringForKey("userName")!
                 let date = NSDate()
@@ -189,18 +294,17 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
                 //create crumbMessage object
                 crumbmessage = CrumbMessage(text: crumbMessageTextView.text, senderName: senderUser, location: locationManager.location!, timeDropped: date, timeLimit: timeChoice!, senderuuid: NSUserData.stringForKey("recordID")!, votes: 1)
                 
-                crumbmessage!.convertCoordinatesToAddress((crumbmessage!.location), completion: { (answer) in
-                    self.crumbmessage!.addressStr = answer!
+                //crumbmessage!.convertCoordinatesToAddress((crumbmessage!.location), completion: { (answer) in
+                    //self.crumbmessage!.addressStr = answer!
                     
-                    self.saveToCoreData(self.crumbmessage!)
-                    self.saveToCloud(self.crumbmessage)//saves without msg
+                self.saveToCoreData(self.crumbmessage!)
+                self.saveToCloud(self.crumbmessage)//saves without msg
                     
-                    self.NSUserData.setValue(NSDate(), forKey: "SinceLastCheck")
-                    
-                    NSNotificationCenter.defaultCenter().postNotificationName("loadYours", object: nil)
+                self.NSUserData.setValue(NSDate(), forKey: "SinceLastCheck")
+                NSNotificationCenter.defaultCenter().postNotificationName("load", object: nil)
                     self.dismissViewControllerAnimated(true, completion: nil)
                     
-               })//NEED ERROR HANDLING HERE
+              // })//NEED ERROR HANDLING HERE
 
                 
             } else {
@@ -231,17 +335,6 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
     func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return pickerTimeLimit[row]
     }
-    
-    
-    func hideKeyboardWhenTappedAround() {
-        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(WriteCrumbViewController.dismissKeyboard))
-        view.addGestureRecognizer(tap)
-    }
-    
-    func dismissKeyboard() {
-        view.endEditing(true)
-    }
-    
     //MARK: msgTextView Methods
     
     //test if crumb passes length and if enough crumbs
@@ -266,6 +359,53 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
         }
     }
     
+    //test msglength
+    func msgLengthTest() -> Bool {
+        if crumbMessageTextView.text.characters.count >= 257 || crumbMessageTextView.text.characters.count < 1 || crumbMessageTextView.text == "What do you think?" {//fixed 256 off by one error; if want to shorten to 128 make sure to set as 129
+            //fails to send
+            return false
+        }
+        else{
+            //succeeds in test; able to send
+            return true
+        }
+    }
+    func checkLocation() -> Bool{
+        if locationManager.location != nil{
+            return true
+        } else{
+            return false
+        }
+    }
+    //check valid field, better tests than mine "/
+    func postButtonEnabledIfTestsTrue() {
+        
+        // Disable the Save button if the text field is empty.
+        let text = crumbMessageTextView.text ?? ""
+        if crumbMessageTextView.text != "What do you think?" && crumbMessageTextView.text.characters.count <= 256 {
+            if checkLocation() {
+                postButtonOutlet.enabled = !text.isEmpty
+            }
+        }
+    }
+    
+    //Placeholder Text for msgview:
+    //change text color to black when user begins editing textView and disable post button
+    func textViewDidBeginEditing(textView: UITextView) {
+        
+        //disable save button if editing
+        //postButtonOutlet.enabled = false
+        
+        if crumbMessageTextView.textColor == UIColor.lightGrayColor() {
+            crumbMessageTextView.text = nil
+            crumbMessageTextView.textColor = UIColor.blackColor()
+        }
+    }
+    
+    
+    func textViewDidChangeSelection(textView: UITextView) {
+        postButtonEnabledIfTestsTrue()
+    }
     //track chars in msgview and highlight dat sheeit
     func textViewDidChange(textView: UITextView) {
         msgCharCount = crumbMessageTextView.text.characters.count
@@ -279,54 +419,12 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
             charLabelCount.textColor = UIColor(red: 0, green: 0, blue: 0, alpha: 1)
         }
     }
-    
-    //test msglength
-    func msgLengthTest() -> Bool {
-        if crumbMessageTextView.text.characters.count >= 257 || crumbMessageTextView.text.characters.count < 1 || crumbMessageTextView.text == "Write your message here. here." {//fixed 256 off by one error; if want to shorten to 128 make sure to set as 129
-            //fails to send
-            return false
-        }
-        else{
-            //succeeds in test; able to send
-            return true
-        }
-    }
-    
-    //Placeholder Text for msgview:
-    //change text color to black when user begins editing textView and disable post button
-    func textViewDidBeginEditing(textView: UITextView) {
-        
-        //disable save button if editing
-        postButtonOutlet.enabled = false
-        
-        if crumbMessageTextView.textColor == UIColor.lightGrayColor() {
-            crumbMessageTextView.text = nil
-            crumbMessageTextView.textColor = UIColor.blackColor()
-        }
-    }
-    
-    //check valid field, better tests than mine "/
-    func postButtonEnabledIfTestsTrue() {
-        
-        // Disable the Save button if the text field is empty.
-        let text = crumbMessageTextView.text ?? ""
-        if crumbMessageTextView.text != "Write your message here." && crumbMessageTextView.text.characters.count <= 256 {
-            if checkLocation() {
-                postButtonOutlet.enabled = !text.isEmpty
-            }
-            else{
-                print("loc is not available")// add a loc indicator somehow; make sure user knows we cant find their loc & it is their fault not apps
-            }
-        }
-    }
-    
     //If user didn't edit field return to gray
     func textViewDidEndEditing(textView: UITextView) {
         if crumbMessageTextView.text.isEmpty{
-            crumbMessageTextView.text = "Write your message here."
+            crumbMessageTextView.text = "What do you think?"
             crumbMessageTextView.textColor = UIColor.lightGrayColor()
         }
-        postButtonEnabledIfTestsTrue()
     }
     
     // make sure user doesnt make newlines
@@ -338,26 +436,16 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
         return true
     }
     
-    func checkLocation() -> Bool{
-        if locationManager.location != nil{
-            return true
-        } else{
-            
-            print("location services are down")
-            return false
-        }
-    }
-    
+
     //MARK: Navigation
-    
     //cancel writecrumb and return to yourcrumbtableview
-    @IBAction func cancel(sender: UIBarButtonItem) {
+    @IBAction func CancelPost(sender: AnyObject) {
         dismissViewControllerAnimated(true, completion: nil)
     }
     //Make CrumbMessage and push to iCloud
-    @IBAction func postBarButton(sender: AnyObject) {
+/*    @IBAction func postBarButton(sender: AnyObject) {
         addCrumbCDAndCK(sender)
         
     }
-
+*/
 }

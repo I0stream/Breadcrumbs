@@ -38,12 +38,13 @@ class Helper{
                     
                     loadedMessage!.uRecordID = uniqueRecordID
                     
-                    let timeToDelete: NSDate = (loadedMessage?.timeDropped.dateByAddingTimeInterval(NSTimeInterval(dbtimelimit)))!
-                    let currentTime = NSDate.init()
-                    
-                    let testTime = currentTime.compare(timeToDelete) == NSComparisonResult.OrderedDescending
                     let testID = loadedMessage?.senderuuid != self.NSUserData.stringForKey("recordID")!
-                    if testTime && testID{
+                    
+                    print(loadedMessage?.senderName)
+                    print(loadedMessage?.location)
+                    print(loadedMessage!.calculate())
+                    
+                    if (loadedMessage!.calculate() > 0) && testID{
                         
                         //TESTS IF LOADED MSG IS IN COREDATA IF NOT THEN STORES IT BRAH
                         let fetchRequest = NSFetchRequest(entityName: "Message")
@@ -53,17 +54,17 @@ class Helper{
                         do {
                             if let fetchResults = try self.moc.executeFetchRequest(fetchRequest) as? [Message]{
                                 if fetchResults.isEmpty{//keep reading tuts man your having mucho trouble-o
-                                    loadedMessage!.convertCoordinatesToAddress((loadedMessage!.location), completion: { (answer) in
+                                    //loadedMessage!.convertCoordinatesToAddress((loadedMessage!.location), completion: { (answer) in
                                         
-                                        loadedMessage!.addressStr = answer!
+                                        //loadedMessage!.addressStr = answer!
                                         
                                         self.saveToCoreData(loadedMessage!)
                                         if UIApplication.sharedApplication().applicationState != UIApplicationState.Active{
-                                            self.pingNotifications()//if this is how we will do it, we must have a seen and unseen marker
+                                            self.notify()//if this is how we will do it, we must have a seen and unseen marker
                                         }
                                         
                                         
-                                    })
+                                   // })
                                     
                                     //set value to limit crumbs in area like let newvalue =  NSUserData.IntForKey("limitarea")! + 1
                                     // self.NSUserData.setValue(, forKey: "limitArea")
@@ -75,14 +76,17 @@ class Helper{
                             let fetchError = error as NSError
                             print(fetchError)
                         }
-                    }else if loadedMessage!.calculate() <= 0 //|| Report >= 7//if message is past due delete the ckuffer
+                    }
+                    else if loadedMessage!.calculate() <= 0//if message is past due delete the ckufer
                     {
                         //delete, I think
                         print("delete crumb")
-                        dispatch_group_enter(AppDelegate().myGroup)
-                        self.cloudKitDeleteCrumb(CKRecordID(recordName: (loadedMessage?.uRecordID)!))
-                        print("Finished request delete \(cmsg)")
-                        dispatch_group_leave(AppDelegate().myGroup)
+                        print(loadedMessage!)
+                        
+                        let yum = CKRecordID(recordName: (loadedMessage?.uRecordID)!)
+                        self.cloudKitDeleteCrumb(yum)
+                        
+                        //print("Finished request delete \(cmsg)")
                     }else{break}
                 }
             }else {
@@ -132,8 +136,6 @@ class Helper{
 
     }
     
-    
-    
     //used in yourTableView and othersTableView
     //If true load myUsers, if false loadOthers also remember to add to crumbmessages[]
     func loadCoreDataMessage(typeOfCrumbLoading:Bool) -> [CrumbMessage]? {        
@@ -160,12 +162,12 @@ class Helper{
                         let fmtimelimit = fetchedmsgsCD[i].timeLimit as! Int
                         let fmsenderuuid = fetchedmsgsCD[i].senderuuid! as String
                         let fmvotes = fetchedmsgsCD[i].votevalue as! Int
-                        let fmaddressStr = fetchedmsgsCD[i].addressStr as String!
+                        //let fmaddressStr = fetchedmsgsCD[i].addressStr as String!
                         
                         let fmCrumbMessageYours = CrumbMessage(text: fmtext, senderName: fmsenderName, location: fmlocation, timeDropped: fmtimedropped, timeLimit: fmtimelimit, senderuuid: fmsenderuuid, votes: fmvotes)
                         
                         fmCrumbMessageYours?.uRecordID = fetchedmsgsCD[i].recorduuid! as String
-                        fmCrumbMessageYours?.addressStr = fmaddressStr
+                        //fmCrumbMessageYours?.addressStr = fmaddressStr
                         crumbmessagestoload += [fmCrumbMessageYours!]
                         
                     }
@@ -181,14 +183,14 @@ class Helper{
                         let fmvote = fetchedmsgsCD[i].votevalue! as Int
                         let fmrecorduuid = fetchedmsgsCD[i].recorduuid! as String
                         let fmhasVoted = fetchedmsgsCD[i].hasVoted as! Int
-                        //let fmviewedOther = fetchedmsgsCD[i].viewedOther as! Int
-                        let fmaddressStr = fetchedmsgsCD[i].addressStr as String!
+                        let fmviewedOther = fetchedmsgsCD[i].viewedOther as! Int
+                        //let fmaddressStr = fetchedmsgsCD[i].addressStr as String!
                         
                         let fmCrumbMessageOther = CrumbMessage(text: fmtext, senderName: fmsenderName, location: fmlocation, timeDropped: fmtimedropped, timeLimit: fmtimelimit, senderuuid: fmsenderuuid, votes: fmvote)
                         fmCrumbMessageOther?.uRecordID = fmrecorduuid
                         fmCrumbMessageOther?.hasVoted = fmhasVoted
-                        //fmCrumbMessageOther?.viewedOther = fmviewedOther
-                        fmCrumbMessageOther?.addressStr = fmaddressStr
+                        fmCrumbMessageOther?.viewedOther = fmviewedOther
+                        //fmCrumbMessageOther?.addressStr = fmaddressStr
                         
                         crumbmessagestoload += [fmCrumbMessageOther!]
                     }
@@ -202,13 +204,11 @@ class Helper{
         return crumbmessagestoload
     }
     
-    
-    
     //MARK: UPDATE
     
     
     //used in appdelegate in application did become active /IS UNTESTED/
-    func updateTableViewVoteValues(){
+    func updateTableViewVoteValues(){//checks for all msgs, need to do it only for alive msgs
         
         //grab all crumbs within cd that are alive
         // ******************************************
@@ -303,9 +303,9 @@ class Helper{
         messageMO.setValue(crumbmessage.senderuuid, forKey: "senderuuid")
         messageMO.setValue(crumbmessage.votes, forKey: "votevalue")
         messageMO.setValue(crumbmessage.uRecordID, forKey: "recorduuid")
-        //messageMO.setValue(0, forKey: "viewedOther")
+        messageMO.setValue(0, forKey: "viewedOther")
         messageMO.setValue(0, forKey: "hasVoted")
-        messageMO.setValue(crumbmessage.addressStr, forKey: "addressStr")
+        //messageMO.setValue(crumbmessage.addressStr, forKey: "addressStr")
         
         do {
             try messageMO.managedObjectContext?.save()
@@ -324,7 +324,7 @@ class Helper{
     
     
     //MARK: DELETE
-    func cloudKitDeleteCrumb(currentRecordID: CKRecordID){//should only be used by timelimit checkers/load and store
+    @objc func cloudKitDeleteCrumb(currentRecordID: CKRecordID){//should only be used by timelimit checkers/load and store
         
         let container = CKContainer.defaultContainer()
         let publicData = container.publicCloudDatabase
@@ -333,7 +333,9 @@ class Helper{
             if error == nil{
                 print("record is deleted from cloudkit")
             }else{
+                print("error in cloudkitdeletecrumb in helperfunctions")
                 print(error)
+                
                 //alert user delete failed
             }
         })
@@ -369,16 +371,9 @@ class Helper{
     
     //MARK: Notification
     
-    func pingNotifications(){//used in appdelegate/load and store, only by others crumbs
-        notify()
-        print("ping notif: new Breadcrumb!")//ping notif
-        
-    }
-    
-    
     //Notification function for load and store
     
-    func notify() {
+    func notify() {//used in load and store
         guard let settings = UIApplication.sharedApplication().currentUserNotificationSettings() else { return }
         
         if settings.types == .None {
@@ -389,11 +384,14 @@ class Helper{
         
         let notification = UILocalNotification()
         notification.fireDate = NSDate(timeIntervalSinceNow: 5)
-        notification.alertBody = "SaUcy breadcrumbs are near you! come check'em out!"
-        notification.alertAction = "just kidding!"
+        notification.alertBody = "New Breadcrumbs! come check'em out!"
+        notification.alertAction = "Confirm"
         notification.soundName = UILocalNotificationDefaultSoundName
         notification.userInfo = ["CustomField1": "w00t"]
         UIApplication.sharedApplication().scheduleLocalNotification(notification)
+        
+        print("ping notif: new Breadcrumb!")//ping notif
+        NSNotificationCenter.defaultCenter().postNotificationName("loadOthers", object: nil)//loads new msgs from cd
     }
 
     

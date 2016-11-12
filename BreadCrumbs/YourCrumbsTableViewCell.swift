@@ -13,7 +13,7 @@ class YourCrumbsTableViewCell: UITableViewCell {
     //MARK: Properties
     
     @IBOutlet weak var TimeRemainingValueLabel: UILabel!
-    @IBOutlet weak var LocationPosted: UILabel!    
+//    @IBOutlet weak var LocationPosted: UILabel!
     @IBOutlet weak var TextViewCellOutlet: UITextView!
     @IBOutlet weak var VoteValue: UILabel!
     @IBOutlet weak var YouTheUserLabel: UILabel!
@@ -32,6 +32,12 @@ class YourCrumbsTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
 
+    @IBAction func editActionButton(sender: AnyObject) {//for deleting msgs only yours
+        print("pressed")//probably do this through delegation
+        //delegate button pressed
+        //cell index to open this cells editing
+        //press red button to delete
+    }
 
     //MARK: Actions
     

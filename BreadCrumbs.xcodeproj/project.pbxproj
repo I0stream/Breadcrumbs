@@ -10,8 +10,10 @@
 		650862A51CD507E400006DAD /* PageManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650862A41CD507E400006DAD /* PageManagerViewController.swift */; };
 		6515D12C1CC148EB00570205 /* CrumbMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6515D12B1CC148EB00570205 /* CrumbMessage.swift */; };
 		6515D12D1CC148EB00570205 /* CrumbMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6515D12B1CC148EB00570205 /* CrumbMessage.swift */; };
+		6538741B1DD54FA9009ABDBF /* old code in Resources */ = {isa = PBXBuildFile; fileRef = 6538741A1DD54FA9009ABDBF /* old code */; };
 		6539C0F91CFBC7920072F1E3 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6539C0F81CFBC7920072F1E3 /* CoreData.framework */; };
 		653BFF9C1CCA0BB7005923E9 /* ViewCrumbViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 653BFF9B1CCA0BB7005923E9 /* ViewCrumbViewController.swift */; };
+		6543DA511DC47CEA00197513 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6543DA501DC47CEA00197513 /* Comment.swift */; };
 		654B116F1CB9705800BD6313 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 654B116E1CB9705800BD6313 /* AppDelegate.swift */; };
 		654B11711CB9705800BD6313 /* WriteCrumbViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 654B11701CB9705800BD6313 /* WriteCrumbViewController.swift */; };
 		654B11741CB9705800BD6313 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 654B11721CB9705800BD6313 /* Main.storyboard */; };
@@ -23,6 +25,9 @@
 		654C0B5B1CC6AE4200060E58 /* YourCrumbsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 654C0B5A1CC6AE4200060E58 /* YourCrumbsTableViewController.swift */; };
 		656D65EC1CFA5E5F001F8950 /* Message+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 656D65EA1CFA5E5F001F8950 /* Message+CoreDataProperties.swift */; };
 		656D65ED1CFA5E5F001F8950 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 656D65EB1CFA5E5F001F8950 /* Message.swift */; };
+		6576060E1DCD69D4006860C6 /* CrumbTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576060A1DCD69D4006860C6 /* CrumbTableViewCell.swift */; };
+		6576060F1DCD69D4006860C6 /* CommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576060B1DCD69D4006860C6 /* CommentCell.swift */; };
+		657606101DCD69D4006860C6 /* ViewCrumbs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576060C1DCD69D4006860C6 /* ViewCrumbs.swift */; };
 		6577DCC81D3D6DBB00C25F52 /* UserInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6577DCC71D3D6DBB00C25F52 /* UserInfo.swift */; };
 		6578159F1D62BE0B004F4660 /* HelperFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6578159E1D62BE0B004F4660 /* HelperFunctions.swift */; };
 		65866C0A1CD6466200038400 /* UserStartingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65866C091CD6466200038400 /* UserStartingViewController.swift */; };
@@ -33,6 +38,7 @@
 		65EF38A91D21D2B400161A3E /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65EF38A81D21D2B400161A3E /* SignInViewController.swift */; };
 		65F556BC1CD219030014AC30 /* OthersCrumbsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F556BB1CD219030014AC30 /* OthersCrumbsTableViewController.swift */; };
 		65F556BE1CD21D760014AC30 /* OthersCrumbsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F556BD1CD21D760014AC30 /* OthersCrumbsTableViewCell.swift */; };
+		65FD97361DD289A4003A1BB4 /* CreateCommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65FD97351DD289A4003A1BB4 /* CreateCommentViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -48,8 +54,10 @@
 /* Begin PBXFileReference section */
 		650862A41CD507E400006DAD /* PageManagerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PageManagerViewController.swift; path = ../PageManagerViewController.swift; sourceTree = "<group>"; };
 		6515D12B1CC148EB00570205 /* CrumbMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CrumbMessage.swift; path = ../CrumbMessage.swift; sourceTree = "<group>"; };
+		6538741A1DD54FA9009ABDBF /* old code */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "old code"; path = "../old code"; sourceTree = "<group>"; };
 		6539C0F81CFBC7920072F1E3 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		653BFF9B1CCA0BB7005923E9 /* ViewCrumbViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewCrumbViewController.swift; sourceTree = "<group>"; };
+		6543DA501DC47CEA00197513 /* Comment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
 		654B116B1CB9705800BD6313 /* BreadCrumbs.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BreadCrumbs.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		654B116E1CB9705800BD6313 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		654B11701CB9705800BD6313 /* WriteCrumbViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteCrumbViewController.swift; sourceTree = "<group>"; };
@@ -65,6 +73,9 @@
 		654C0B5A1CC6AE4200060E58 /* YourCrumbsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YourCrumbsTableViewController.swift; sourceTree = "<group>"; };
 		656D65EA1CFA5E5F001F8950 /* Message+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Message+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		656D65EB1CFA5E5F001F8950 /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		6576060A1DCD69D4006860C6 /* CrumbTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CrumbTableViewCell.swift; sourceTree = SOURCE_ROOT; };
+		6576060B1DCD69D4006860C6 /* CommentCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentCell.swift; sourceTree = SOURCE_ROOT; };
+		6576060C1DCD69D4006860C6 /* ViewCrumbs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewCrumbs.swift; sourceTree = SOURCE_ROOT; };
 		6577DCC71D3D6DBB00C25F52 /* UserInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserInfo.swift; sourceTree = "<group>"; };
 		6578159E1D62BE0B004F4660 /* HelperFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HelperFunctions.swift; sourceTree = "<group>"; };
 		65866C091CD6466200038400 /* UserStartingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserStartingViewController.swift; sourceTree = "<group>"; };
@@ -76,6 +87,7 @@
 		65EF38A81D21D2B400161A3E /* SignInViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignInViewController.swift; sourceTree = "<group>"; };
 		65F556BB1CD219030014AC30 /* OthersCrumbsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OthersCrumbsTableViewController.swift; path = ../OthersCrumbsTableViewController.swift; sourceTree = "<group>"; };
 		65F556BD1CD21D760014AC30 /* OthersCrumbsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OthersCrumbsTableViewCell.swift; sourceTree = "<group>"; };
+		65FD97351DD289A4003A1BB4 /* CreateCommentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateCommentViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -129,23 +141,25 @@
 				65CB617A1CD3D175002D6F9E /* BreadCrumbs.entitlements */,
 				65A5A2D51CF681B60019DB49 /* MessageDataModel.xcdatamodeld */,
 				654B116E1CB9705800BD6313 /* AppDelegate.swift */,
-				6515D12B1CC148EB00570205 /* CrumbMessage.swift */,
-				6578159E1D62BE0B004F4660 /* HelperFunctions.swift */,
-				6577DCC71D3D6DBB00C25F52 /* UserInfo.swift */,
-				65EF38A81D21D2B400161A3E /* SignInViewController.swift */,
+				65B9FF031DCD79C900C09F85 /* Classes and helper */,
 				650862A41CD507E400006DAD /* PageManagerViewController.swift */,
-				65866C091CD6466200038400 /* UserStartingViewController.swift */,
-				654B11701CB9705800BD6313 /* WriteCrumbViewController.swift */,
+				65EF38A81D21D2B400161A3E /* SignInViewController.swift */,
 				654C0B5A1CC6AE4200060E58 /* YourCrumbsTableViewController.swift */,
 				654C0B581CC565B200060E58 /* YourCrumbsTableViewCell.swift */,
+				654B11701CB9705800BD6313 /* WriteCrumbViewController.swift */,
 				653BFF9B1CCA0BB7005923E9 /* ViewCrumbViewController.swift */,
 				65F556BB1CD219030014AC30 /* OthersCrumbsTableViewController.swift */,
 				65F556BD1CD21D760014AC30 /* OthersCrumbsTableViewCell.swift */,
 				65CE77A31CD3A96000CDFC49 /* NewOthersCrumbsViewController.swift */,
+				6576060C1DCD69D4006860C6 /* ViewCrumbs.swift */,
+				657606111DCD69E1006860C6 /* viewCrumbsSubs */,
 				65C659CC1D2C8CEA00E11210 /* SettingsViewController.swift */,
 				654B11751CB9705800BD6313 /* Assets.xcassets */,
+				6577DCC71D3D6DBB00C25F52 /* UserInfo.swift */,
 				654B11771CB9705800BD6313 /* LaunchScreen.storyboard */,
 				654B117A1CB9705800BD6313 /* Info.plist */,
+				65866C091CD6466200038400 /* UserStartingViewController.swift */,
+				6538741A1DD54FA9009ABDBF /* old code */,
 			);
 			path = BreadCrumbs;
 			sourceTree = "<group>";
@@ -157,6 +171,26 @@
 				654B11851CB9705800BD6313 /* Info.plist */,
 			);
 			path = BreadCrumbsTests;
+			sourceTree = "<group>";
+		};
+		657606111DCD69E1006860C6 /* viewCrumbsSubs */ = {
+			isa = PBXGroup;
+			children = (
+				6576060A1DCD69D4006860C6 /* CrumbTableViewCell.swift */,
+				6576060B1DCD69D4006860C6 /* CommentCell.swift */,
+				65FD97351DD289A4003A1BB4 /* CreateCommentViewController.swift */,
+			);
+			name = viewCrumbsSubs;
+			sourceTree = "<group>";
+		};
+		65B9FF031DCD79C900C09F85 /* Classes and helper */ = {
+			isa = PBXGroup;
+			children = (
+				6515D12B1CC148EB00570205 /* CrumbMessage.swift */,
+				6543DA501DC47CEA00197513 /* Comment.swift */,
+				6578159E1D62BE0B004F4660 /* HelperFunctions.swift */,
+			);
+			name = "Classes and helper";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -256,6 +290,7 @@
 			files = (
 				654B11791CB9705800BD6313 /* LaunchScreen.storyboard in Resources */,
 				654B11761CB9705800BD6313 /* Assets.xcassets in Resources */,
+				6538741B1DD54FA9009ABDBF /* old code in Resources */,
 				654B11741CB9705800BD6313 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -274,11 +309,15 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6576060E1DCD69D4006860C6 /* CrumbTableViewCell.swift in Sources */,
 				65CE77A41CD3A96000CDFC49 /* NewOthersCrumbsViewController.swift in Sources */,
+				6543DA511DC47CEA00197513 /* Comment.swift in Sources */,
+				65FD97361DD289A4003A1BB4 /* CreateCommentViewController.swift in Sources */,
 				65F556BC1CD219030014AC30 /* OthersCrumbsTableViewController.swift in Sources */,
 				654B11711CB9705800BD6313 /* WriteCrumbViewController.swift in Sources */,
 				65A5A2D71CF681B60019DB49 /* MessageDataModel.xcdatamodeld in Sources */,
 				654C0B5B1CC6AE4200060E58 /* YourCrumbsTableViewController.swift in Sources */,
+				657606101DCD69D4006860C6 /* ViewCrumbs.swift in Sources */,
 				6577DCC81D3D6DBB00C25F52 /* UserInfo.swift in Sources */,
 				65F556BE1CD21D760014AC30 /* OthersCrumbsTableViewCell.swift in Sources */,
 				65EF38A91D21D2B400161A3E /* SignInViewController.swift in Sources */,
@@ -288,6 +327,7 @@
 				654B116F1CB9705800BD6313 /* AppDelegate.swift in Sources */,
 				65C659CD1D2C8CEA00E11210 /* SettingsViewController.swift in Sources */,
 				653BFF9C1CCA0BB7005923E9 /* ViewCrumbViewController.swift in Sources */,
+				6576060F1DCD69D4006860C6 /* CommentCell.swift in Sources */,
 				656D65ED1CFA5E5F001F8950 /* Message.swift in Sources */,
 				654C0B591CC565B200060E58 /* YourCrumbsTableViewCell.swift in Sources */,
 				650862A51CD507E400006DAD /* PageManagerViewController.swift in Sources */,

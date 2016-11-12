@@ -23,38 +23,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     let helperfunctions = Helper()
     
     
-    var timer1 = NSTimer()
-    var timer2 = NSTimer()
+    weak var timer1 = NSTimer()
     
     var backgroundLocationTask: UIBackgroundTaskIdentifier?
     
-    var myGroup = dispatch_group_create()
+    //var myGroup = dispatch_group_create()
 
     //how bout i test this fucker by putting a bullet in it
     
     func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
-        //self.NSUserData.setValue(0, forKey: "crumbCount")
-
-        /*IF internet access or cell phone service or locationservices are nil
-         let the user know and dont crash app
-         */
-        //test if user is signed in. if he is, go to pgmanagerVC; if not, go to signInVC
-        
-        /*if CFloat(UIDevice.currentDevice().systemVersion) >= 7 {
-            application.statusBarStyle = .LightContent
-            self.window!.clipsToBounds = true
-            self.window!.frame = CGRectMake(0, 20, self.window!.frame.size.width, self.window!.frame.size.height - 20)
-        }*/
-        
+       
         self.NSUserData.setValue(0, forKey: "counterLoc")
      
-        if isICloudContainerAvailable() && NSUserData.stringForKey("userName") != nil{
+        if isICloudContainerAvailable() && NSUserData.stringForKey("userName") != nil && NSUserData.stringForKey("recordID") != nil{
             self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
             
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             
-            let initialViewController = storyboard.instantiateViewControllerWithIdentifier("pgManager") as! PageManagerViewController
-            //let initialViewController = storyboard.instantiateViewControllerWithIdentifier("tabBarTest") as! UITabBarController
+            
+            let initialViewController = storyboard.instantiateViewControllerWithIdentifier("TabBarController") as! UITabBarController
             
             self.window?.rootViewController = initialViewController
             self.window?.makeKeyAndVisible()
@@ -78,8 +65,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
 
             initLocationManager()
             
-            application.registerUserNotificationSettings(UIUserNotificationSettings(forTypes: [.Alert, .Badge, .Sound], categories: nil))            
-            
             //***********************************************************************************************************************//
 
             AppDelegate().NSUserData.setValue(0, forKey: "limitArea")
@@ -93,7 +78,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             
-            let initialViewController = storyboard.instantiateViewControllerWithIdentifier("SignIn")
+            let initialViewController = storyboard.instantiateViewControllerWithIdentifier("pgManager") as! PageManagerViewController
+            //let initialViewController = storyboard.instantiateViewControllerWithIdentifier("IntroShill")
             
             self.window?.rootViewController = initialViewController
             self.window?.makeKeyAndVisible()
@@ -101,14 +87,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
         return true
     }
-    
-    //MARK: notifications
-    
-    
-    func testssss() -> Void{
-        helperfunctions.pingNotifications()
-    }
-    
     //MARK: Location Stuff
     //***********************************************************************************************************************//
     
@@ -141,12 +119,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             let query = CKQuery(recordType: "CrumbMessage", predicate: predicate)
             
             helperfunctions.loadIcloudMessageToCoreData(query)
-            
+            print("load and store has run")
             locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
 
-            print("load and store has run")
         }
     }
+
     
     //***********************************************************************************************************************//
 
@@ -230,7 +208,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             let timeElapsedh = Int((-Lastdate!.timeIntervalSinceNow + oldExcess!) / 3600)//converts nsdate to time elapsed in hours
             let excess = round((-Lastdate!.timeIntervalSinceNow + oldExcess!) % 3600)
             
-            print("hours elapsed:\(timeElapsedh) extra seconds stored:\(round(oldExcess!)) s")
+            //print("hours elapsed:\(timeElapsedh) extra seconds stored:\(round(oldExcess!)) s")
             
             if timeElapsedh + cCount <= 5 && timeElapsedh >= 1 {
                 cCount = cCount + timeElapsedh
@@ -243,6 +221,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             self.NSUserData.setValue(excess, forKey: "excesstime")//unused seconds from this check
             
             self.NSUserData.setValue(NSDate(), forKey: "SinceLastCheck")
+            
         }
      
      }
@@ -362,16 +341,34 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     
     func applicationWillEnterForeground(application: UIApplication) {
         // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
-    }
+        }
     
     func applicationDidBecomeActive(application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
         
-        NSNotificationCenter.defaultCenter().postNotificationName("loadYours", object: nil)//reloads crmessages from cd
-        NSNotificationCenter.defaultCenter().postNotificationName("loadOthers", object: nil)//loads new msgs from cd
-        AddCrumbCount()
-        helperfunctions.updateTableViewVoteValues()
-        
+        if isICloudContainerAvailable() && NSUserData.stringForKey("userName") != nil && locationManager.location != nil{
+            loadAndStoreiCloudMsgsBasedOnLoc()
+            //UPDATE VOTES HERE
+            helperfunctions.updateTableViewVoteValues()//updates all votes
+            //should use delegation or something
+            NSNotificationCenter.defaultCenter().postNotificationName("load", object: nil)//reloads crmessages from cd everywhere
+            AddCrumbCount()
+            /*if !checkLocation(){
+                
+            }*/
+            
+        }else if isICloudContainerAvailable() && NSUserData.stringForKey("userName") == nil{
+            NSNotificationCenter.defaultCenter().postNotificationName("ReloadSignIn", object: nil)
+            
+            self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
+            
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            
+            let initialViewController = storyboard.instantiateViewControllerWithIdentifier("SignIn")
+            
+            self.window?.rootViewController = initialViewController
+            self.window?.makeKeyAndVisible()
+        }
 
         //When app is reopened check cloudkit for updated vote values for crumbs that are still alive
     }
@@ -381,5 +378,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
         self.saveContext()
     }
-    
+    func checkLocation() -> Bool{
+        if locationManager.location != nil{
+            return true
+        } else{
+            return false
+        }
+    }
 }

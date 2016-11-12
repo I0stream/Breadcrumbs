@@ -9,20 +9,17 @@
 import UIKit
 import CloudKit
 
-class SettingsViewController: UIViewController {
-
-    let NSUserData = AppDelegate().NSUserData
-    
+class SettingsViewController: UserStartingViewController {
     
     @IBOutlet weak var UserNameLabel: UILabel!
     @IBOutlet weak var ChangeNameField: UITextField!
+    @IBOutlet weak var errorMessageLabel: UILabel!
+    
+    var delegate: SettingsViewControllerDelegate?
     
     override func viewDidLoad() {
-        super.viewDidLoad()
-        
-        self.UserNameLabel.text = NSUserData.stringForKey("userName")
-
-
+        //super.viewDidLoad()
+        self.UserNameLabel.text = username
         // Do any additional setup after loading the view.
     }
 
@@ -45,7 +42,7 @@ class SettingsViewController: UIViewController {
                 
                 publicData.saveRecord(record!, completionHandler: {theRecord, error in
                     if error == nil{
-                        print("successful update!")
+                        //print("successful update!")
                         dispatch_async(dispatch_get_main_queue()) {
                             self.UserNameLabel.text = userInput
                         }
@@ -57,21 +54,22 @@ class SettingsViewController: UIViewController {
                 print(error)
             }
         })
-
     }
     
-
+    //the button action that changes the username
     @IBAction func ChangeNameButton(sender: AnyObject) {
         if ChangeNameField.text?.characters.count < 1 || ChangeNameField.text?.characters.count > 16{
-            print("enter a valid username")
+            errorMessageLabel.text = "enter a valid username"
         }else{
             NSUserData.setValue(ChangeNameField.text, forKey: "userName")
             changeNameCK(ChangeNameField.text!)
+            
+            if let del = self.delegate {
+                del.changedUsername(ChangeNameField.text!)
+            }
         }
     }
-    
-    @IBAction func Done(sender: UIBarButtonItem) {
-        dismissViewControllerAnimated(true, completion: nil)
-    }
-    
+}
+protocol SettingsViewControllerDelegate: class {
+    func changedUsername(str: String)
 }

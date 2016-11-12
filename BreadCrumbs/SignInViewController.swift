@@ -15,28 +15,40 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     
     @IBOutlet weak var setUserNameTextField: UITextField!
     
+    @IBOutlet weak var AView: UIView!
     @IBOutlet weak var signUpButton: UIButton!
-    @IBOutlet weak var notifyErrorLabel: UILabel!
+    @IBOutlet weak var ErrorDisp: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
+        
         self.setUserNameTextField.delegate = self
         self.hideKeyboardWhenTappedAround()
         
         checkUserStatus()
         // Do any additional setup after loading the view.
+        
+        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(SignInViewController.loadList(_:)),name:"ReloadSignIn", object: nil)
+        
+        ErrorDisp.hidden = true
+
+    }
+    func loadList(notification: NSNotification){//yayay//This solves the others crumbs problem i think
+        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+            self.checkUserStatus()
+        })
     }
     
     //cloudkit user authentication
     func checkUserStatus(){
         if NSFileManager.defaultManager().ubiquityIdentityToken != nil {
             //print("a user is signed into icloud")
+            signUpButton.enabled = true
+            ErrorDisp.hidden = true
         }
         else {
-            print("Please sign into icloud")
-            signUpButton.enabled = false
-            notifyErrorLabel.text! = "Please sign into icloud"
+            ErrorDisp.text! = "Please sign into icloud and enable icloud drive"
+            ErrorDisp.hidden = false
         }
     }
  
@@ -51,7 +63,6 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         record.setValue(5, forKey: "crumbCount")
         record.setValue(0, forKey: "premiumStatus")
         
-        
         publicData.saveRecord(record, completionHandler: { record, error in
             if error != nil {
                 print(error.debugDescription)
@@ -59,6 +70,12 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         })
         
     }
+    func textFieldDidEndEditing(textField: UITextField) {
+        AView.hidden = false
+        //signUpButton.hidden = false
+    }
+    
+    
     //MARK: Actions
     
     //sign in action
@@ -66,10 +83,9 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     @IBAction func signUpAction(sender: UIButton) {
         
         
-        if  setUserNameTextField.text?.characters.count > 1 && setUserNameTextField.text?.characters.count < 16 {
+        if  setUserNameTextField.text?.characters.count > 0 && setUserNameTextField.text?.characters.count < 21 {
             
             //make a record in cloudkit if a userinfo for this account is not found
-            
             createUserInfo(setUserNameTextField.text!)
             //set value in nsuserdefaults
             NSUserData.setValue(setUserNameTextField.text, forKey: "userName")
@@ -84,15 +100,6 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
             print("\n\(NSUserData.stringForKey("userName")!) is my name!")
             self.resignFirstResponder()
             
-            //move these somewhere
-            //***********************************************************************************************************************//
-            
-            AppDelegate().initLocationManager()
-            
-            //***********************************************************************************************************************//
-            
-            //has load and store run already? has autocrumbadd?
-            
             //gets and sets userrecordID
             iCloudUserIDAsync() {
                 recordID, error in
@@ -104,22 +111,13 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
                     print("Fetched iCloudID was nil")
                 }
             }
-            
-            
-            NSTimer.scheduledTimerWithTimeInterval(60.0, target: AppDelegate(), selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 30 sec for a msg
-            
-            
-            //error here, for some reason a selector is being sent to the instance and it is unrecognized
-            //this is causing a shite error to be thrown and flipping the damn thing over
-            //target was 'self' should be appdelegate, now fixed
-            
-            
-            //NSTimer.scheduledTimerWithTimeInterval(1.0, target: AppDelegate() , selector: #selector(AppDelegate.checkThemAddEm), userInfo: nil, repeats: true)//checks then adds a msg every hour
-            
-            self.performSegueWithIdentifier("SignInSegue", sender: sender)//presents weird and i also want user to be able to access this and sign out/in again. cant change username after picking though. may need more view controllers
+            performSegueWithIdentifier("SignInSegue", sender: sender)//presents weird and i also want user to be able to access this and sign out/in again. cant change username after picking though. may need more view controllers
         }
-        else if setUserNameTextField.text?.characters.count < 1 || setUserNameTextField.text?.characters.count > 16{
-            print("enter a valid lengthed username")
+        else if setUserNameTextField.text?.characters.count < 0 || setUserNameTextField.text?.characters.count > 21{
+            ErrorDisp.text = "enter a valid length username"
+            ErrorDisp.hidden = false
+        } else if NSFileManager.defaultManager().ubiquityIdentityToken == nil{
+            print("do nothing")
         }
     }
 

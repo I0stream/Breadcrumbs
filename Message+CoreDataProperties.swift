@@ -34,9 +34,9 @@ extension Message {
     @NSManaged var votevalue: NSNumber?
     @NSManaged var recorduuid: String?
     @NSManaged var viewedOther: NSNumber?//stored as a 0 or 1 1 == seen/true
-    @NSManaged var hasVoted: NSNumber?//stored as a 0 or 1 1 == seen/true
+    @NSManaged var hasVoted: NSNumber?//stored as a -1,0,1 zero is no vote
     @NSManaged var addressStr: String?//stores an address like this "\(locality!), \(thoroughfare!), \(country!)"
-    @NSManaged var creatorUniqueID: String //used to test messages against each other, allows multiple people to have the same name
+    //@NSManaged var creatorUniqueID: String //used to test messages against each other, allows multiple people to have the same name
     
     func initFromLocation(location: CLLocation) {
         self.latitude           = location.coordinate.latitude
