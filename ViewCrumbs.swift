@@ -16,7 +16,7 @@ class ViewCrumbs: UIViewController, UITableViewDelegate, CreateCommentDelegate, 
 
     //MARK: Variables
     var viewbreadcrumb: CrumbMessage?
-    var comments = [Comment]()
+    var comments = [CommentShort]()
     let helperFunctions = Helper()
     weak var delegate: NewOthersCrumbsViewControllerDelegate?
     
@@ -48,8 +48,8 @@ class ViewCrumbs: UIViewController, UITableViewDelegate, CreateCommentDelegate, 
         
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 95
-        
-        let new = Comment(username: "TrumpenFuhrer", text: "We won bigly and we will keep winning until you tire of winning!")
+        let now = NSDate()
+        let new = CommentShort(username: "TrumpenFuhrer", text: "We won bigly and we will keep winning until you tire of winning!", timeSent: now)
         comments += [new]
     }
     override func viewWillDisappear(animated: Bool) {
@@ -105,7 +105,7 @@ class ViewCrumbs: UIViewController, UITableViewDelegate, CreateCommentDelegate, 
         performSegueWithIdentifier("writeComment", sender: sender)
     }
     
-    func addNewComment(newComment: Comment){
+    func addNewComment(newComment: CommentShort){
         comments += [newComment]
         tableView.reloadData()
     }

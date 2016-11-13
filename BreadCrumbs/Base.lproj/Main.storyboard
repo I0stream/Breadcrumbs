@@ -215,7 +215,7 @@
                                     <constraint firstAttribute="height" constant="100" id="Qx6-ds-rRn"/>
                                 </constraints>
                             </view>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="mSf-Th-Qvb">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="mSf-Th-Qvb">
                                 <rect key="frame" x="0.0" y="100" width="414" height="587"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <color key="separatorColor" red="0.97254901959999995" green="0.97254901959999995" blue="0.97254901959999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -398,17 +398,29 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="swJ-yf-TnK">
                                 <rect key="frame" x="15" y="125" width="384" height="210"/>
                                 <subviews>
-                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" text="What do you think?" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="s5b-64-TSL">
-                                        <rect key="frame" x="15" y="15" width="354" height="180"/>
+                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" text="What do you think?" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="s5b-64-TSL">
+                                        <rect key="frame" x="15" y="15" width="354" height="155"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <color key="textColor" red="0.69019607843137254" green="0.69019607843137254" blue="0.69019607843137254" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="18"/>
-                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
+                                        <textInputTraits key="textInputTraits" autocapitalizationType="sentences" enablesReturnKeyAutomatically="YES"/>
                                     </textView>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="char#" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="FPV-1E-cOc">
+                                        <rect key="frame" x="327" y="178" width="42" height="21"/>
+                                        <constraints>
+                                            <constraint firstAttribute="width" constant="42" id="1gt-wp-NfQ"/>
+                                            <constraint firstAttribute="height" constant="21" id="OYU-M0-UkP"/>
+                                        </constraints>
+                                        <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                        <color key="textColor" white="0.63460395690000004" alpha="1" colorSpace="calibratedWhite"/>
+                                        <nil key="highlightedColor"/>
+                                    </label>
                                 </subviews>
                                 <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                 <constraints>
                                     <constraint firstAttribute="height" constant="210" id="5sg-sF-Nes"/>
+                                    <constraint firstAttribute="bottom" secondItem="FPV-1E-cOc" secondAttribute="bottom" constant="11" id="8vi-Ry-ADS"/>
+                                    <constraint firstAttribute="trailing" secondItem="FPV-1E-cOc" secondAttribute="trailing" constant="15" id="AL4-Nn-jy0"/>
                                     <constraint firstAttribute="trailing" secondItem="s5b-64-TSL" secondAttribute="trailing" constant="15" id="GHM-pp-pPB"/>
                                     <constraint firstItem="s5b-64-TSL" firstAttribute="top" secondItem="swJ-yf-TnK" secondAttribute="top" constant="15" id="LBY-3I-yGu"/>
                                     <constraint firstItem="s5b-64-TSL" firstAttribute="leading" secondItem="swJ-yf-TnK" secondAttribute="leading" constant="15" id="uDb-Lw-PD8"/>
@@ -456,6 +468,7 @@
                     </view>
                     <connections>
                         <outlet property="WriteCommentTextView" destination="s5b-64-TSL" id="iJJ-HT-POW"/>
+                        <outlet property="charCount" destination="FPV-1E-cOc" id="Sji-6U-LeR"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Hub-0p-qEV" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -729,10 +742,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="zpQ-qd-jxH">
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="zpQ-qd-jxH">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="360"/>
                             </mapView>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="kcu-42-o7K">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="kcu-42-o7K">
                                 <rect key="frame" x="15" y="301" width="384" height="435"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <prototypes>
@@ -788,9 +801,6 @@
                                                             <state key="normal" title="comment">
                                                                 <color key="titleColor" red="0.96078431369999995" green="0.65098039220000004" blue="0.13725490200000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                             </state>
-                                                            <connections>
-                                                                <action selector="CreateCommentButton:" destination="VsF-Ir-h6S" eventType="touchUpInside" id="5YE-Sy-zjF"/>
-                                                            </connections>
                                                         </button>
                                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="Xp6-Fq-mAb">
                                                             <rect key="frame" x="338" y="33" width="21" height="20"/>
@@ -799,9 +809,6 @@
                                                                 <constraint firstAttribute="height" constant="20" id="Vak-4b-E1b"/>
                                                             </constraints>
                                                             <state key="normal" image="Cancel-Orange"/>
-                                                            <connections>
-                                                                <action selector="ExitCrumbButton:" destination="VsF-Ir-h6S" eventType="touchUpInside" id="qze-G1-c5b"/>
-                                                            </connections>
                                                         </button>
                                                     </subviews>
                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
@@ -836,6 +843,8 @@
                                         <color key="backgroundColor" red="0.97254901959999995" green="0.97254901959999995" blue="0.97254901959999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <inset key="separatorInset" minX="15" minY="0.0" maxX="15" maxY="0.0"/>
                                         <connections>
+                                            <outlet property="CreateCommentButton" destination="E3T-Z4-bCR" id="3uU-0p-B0u"/>
+                                            <outlet property="ExitCrumbButton" destination="Xp6-Fq-mAb" id="Wuu-c1-mVa"/>
                                             <outlet property="MsgTextView" destination="0ej-as-NBa" id="IHh-Xf-mAi"/>
                                             <outlet property="TimeLabel" destination="Shj-xu-v9q" id="SOC-4I-QZc"/>
                                             <outlet property="TimeLeftLabel" destination="zxa-uY-lf5" id="JyN-GT-y8u"/>
@@ -874,10 +883,10 @@
                                                     </constraints>
                                                 </view>
                                                 <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" scrollEnabled="NO" editable="NO" text="At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium " selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eqY-gk-kWx">
-                                                    <rect key="frame" x="15" y="39.999999999999993" width="354" height="54.333333333333321"/>
+                                                    <rect key="frame" x="15" y="40" width="354" height="64"/>
                                                     <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                     <color key="textColor" red="0.30588235289999999" green="0.30588235289999999" blue="0.30588235289999999" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
-                                                    <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                                    <fontDescription key="fontDescription" type="system" pointSize="15"/>
                                                     <textInputTraits key="textInputTraits" autocapitalizationType="sentences"/>
                                                 </textView>
                                             </subviews>
@@ -885,6 +894,7 @@
                                                 <constraint firstItem="eqY-gk-kWx" firstAttribute="leading" secondItem="kcd-At-CfW" secondAttribute="leading" constant="15" id="7dC-MG-ZOf"/>
                                                 <constraint firstItem="QlZ-GT-LSj" firstAttribute="leading" secondItem="kcd-At-CfW" secondAttribute="leading" id="Ccv-EG-iDO"/>
                                                 <constraint firstItem="QlZ-GT-LSj" firstAttribute="top" secondItem="kcd-At-CfW" secondAttribute="top" constant="20" id="MLS-yW-0Za"/>
+                                                <constraint firstAttribute="bottomMargin" secondItem="eqY-gk-kWx" secondAttribute="bottom" constant="40" id="VUc-i8-Wb7"/>
                                                 <constraint firstAttribute="trailing" secondItem="QlZ-GT-LSj" secondAttribute="trailing" id="gdj-vF-5Dh"/>
                                                 <constraint firstAttribute="trailing" secondItem="eqY-gk-kWx" secondAttribute="trailing" constant="15" id="nYY-No-rvy"/>
                                                 <constraint firstAttribute="bottom" secondItem="QlZ-GT-LSj" secondAttribute="bottom" id="ppa-W3-TeS"/>
@@ -917,6 +927,7 @@
                     <connections>
                         <outlet property="YourtableView" destination="kcu-42-o7K" id="nb4-jC-trl"/>
                         <outlet property="mapView" destination="zpQ-qd-jxH" id="uDW-dg-zGq"/>
+                        <segue destination="Iqz-AP-xRw" kind="show" identifier="writeComment" id="dHn-zW-pVu"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5Gv-rS-oLj" userLabel="First Responder" sceneMemberID="firstResponder"/>

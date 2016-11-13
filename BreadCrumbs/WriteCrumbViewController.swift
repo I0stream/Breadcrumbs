@@ -16,7 +16,7 @@ import UIKit
 import CoreLocation
 import CoreData
 
-class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerViewDelegate, UIPickerViewDataSource, CLLocationManagerDelegate {
+class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerViewDelegate, UIPickerViewDataSource, CLLocationManagerDelegate{
     
     //MARK: Variables
     var msgCharCount:Int = 0
@@ -408,15 +408,18 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
     }
     //track chars in msgview and highlight dat sheeit
     func textViewDidChange(textView: UITextView) {
-        msgCharCount = crumbMessageTextView.text.characters.count
-        charLabelCount.text = String(256 - msgCharCount)
-        
+        if crumbMessageTextView.text != "What do you think"{
+            msgCharCount = crumbMessageTextView.text.characters.count
+            charLabelCount.text = String(256 - msgCharCount)
+        } else {
+            charLabelCount.text = String(256)
+        }
         if crumbMessageTextView.text.characters.count >= 256 {
             //TODO: highlight >:( number indicating too long
             //will doo soon ------------
             charLabelCount.textColor = UIColor(red: 1, green: 0, blue: 0, alpha: 1)
         }else{
-            charLabelCount.textColor = UIColor(red: 0, green: 0, blue: 0, alpha: 1)
+            charLabelCount.textColor = UIColor(red: 162/255, green: 162/255, blue: 162/255, alpha: 1)
         }
     }
     //If user didn't edit field return to gray
