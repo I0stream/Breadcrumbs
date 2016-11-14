@@ -398,7 +398,7 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="swJ-yf-TnK">
                                 <rect key="frame" x="15" y="125" width="384" height="210"/>
                                 <subviews>
-                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" text="What do you think?" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="s5b-64-TSL">
+                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" bounces="NO" scrollEnabled="NO" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" text="What do you think?" textAlignment="natural" translatesAutoresizingMaskIntoConstraints="NO" id="s5b-64-TSL">
                                         <rect key="frame" x="15" y="15" width="354" height="155"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <color key="textColor" red="0.69019607843137254" green="0.69019607843137254" blue="0.69019607843137254" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -421,10 +421,10 @@
                                     <constraint firstAttribute="height" constant="210" id="5sg-sF-Nes"/>
                                     <constraint firstAttribute="bottom" secondItem="FPV-1E-cOc" secondAttribute="bottom" constant="11" id="8vi-Ry-ADS"/>
                                     <constraint firstAttribute="trailing" secondItem="FPV-1E-cOc" secondAttribute="trailing" constant="15" id="AL4-Nn-jy0"/>
+                                    <constraint firstAttribute="bottom" secondItem="s5b-64-TSL" secondAttribute="bottom" constant="40" id="Ez9-zp-aev"/>
                                     <constraint firstAttribute="trailing" secondItem="s5b-64-TSL" secondAttribute="trailing" constant="15" id="GHM-pp-pPB"/>
                                     <constraint firstItem="s5b-64-TSL" firstAttribute="top" secondItem="swJ-yf-TnK" secondAttribute="top" constant="15" id="LBY-3I-yGu"/>
                                     <constraint firstItem="s5b-64-TSL" firstAttribute="leading" secondItem="swJ-yf-TnK" secondAttribute="leading" constant="15" id="uDb-Lw-PD8"/>
-                                    <constraint firstAttribute="bottom" secondItem="s5b-64-TSL" secondAttribute="bottom" constant="15" id="ym5-WS-YZv"/>
                                 </constraints>
                             </view>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Vi6-X6-fCP">
@@ -438,6 +438,7 @@
                                         </state>
                                         <connections>
                                             <action selector="MakeComment:" destination="Iqz-AP-xRw" eventType="touchUpInside" id="LcG-5g-PxV"/>
+                                            <action selector="submitComment:" destination="Iqz-AP-xRw" eventType="touchUpInside" id="4V7-li-ZfN"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -469,6 +470,7 @@
                     <connections>
                         <outlet property="WriteCommentTextView" destination="s5b-64-TSL" id="iJJ-HT-POW"/>
                         <outlet property="charCount" destination="FPV-1E-cOc" id="Sji-6U-LeR"/>
+                        <outlet property="submitView" destination="Vi6-X6-fCP" id="1aU-N1-uCk"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Hub-0p-qEV" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -687,6 +689,9 @@
                                         <state key="normal" title="Send">
                                             <color key="titleColor" red="0.97254901959999995" green="0.97254901959999995" blue="0.97254901959999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         </state>
+                                        <connections>
+                                            <action selector="PostMessage:" destination="he1-fY-bVj" eventType="touchUpInside" id="Lsn-eT-joD"/>
+                                        </connections>
                                     </button>
                                 </subviews>
                                 <color key="backgroundColor" red="0.96078431369999995" green="0.65098039220000004" blue="0.13725490200000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -724,6 +729,7 @@
                         <outlet property="msgTimePickerField" destination="alf-DN-hWn" id="99i-cD-wdW"/>
                         <outlet property="pickeroutlet" destination="kt6-GP-phf" id="EUX-qb-Psn"/>
                         <outlet property="postButtonOutlet" destination="HGp-s7-xyM" id="Go7-VU-iXy"/>
+                        <outlet property="submitView" destination="eOK-kk-XLA" id="Fbp-7b-TEP"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eEM-Jg-h91" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -742,10 +748,10 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="zpQ-qd-jxH">
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" misplaced="YES" mapType="standard" translatesAutoresizingMaskIntoConstraints="NO" id="zpQ-qd-jxH">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="360"/>
                             </mapView>
-                            <tableView clipsSubviews="YES" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="kcu-42-o7K">
+                            <tableView clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="kcu-42-o7K">
                                 <rect key="frame" x="15" y="301" width="384" height="435"/>
                                 <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="calibratedWhite"/>
                                 <prototypes>

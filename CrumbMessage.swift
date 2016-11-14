@@ -20,7 +20,7 @@ class CrumbMessage{
     var location: CLLocation
     var timeDropped: NSDate
     var timeLimit: Int
-    var uRecordID: String?
+    var uRecordID: String?//the id of the unique record
     var viewedOther: Int?
     var hasVoted: Int?
     //var addressStr: String?

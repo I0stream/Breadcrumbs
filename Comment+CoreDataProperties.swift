@@ -20,5 +20,5 @@ extension Comment {
     @NSManaged public var timeSent: NSDate?
     @NSManaged public var text: String?
     @NSManaged public var username: String?
-
+    @NSManaged var message: Message// not right?
 }

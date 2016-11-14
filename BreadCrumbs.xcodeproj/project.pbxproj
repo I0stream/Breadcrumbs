@@ -13,9 +13,9 @@
 		6538741B1DD54FA9009ABDBF /* old code in Resources */ = {isa = PBXBuildFile; fileRef = 6538741A1DD54FA9009ABDBF /* old code */; };
 		6539C0F91CFBC7920072F1E3 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6539C0F81CFBC7920072F1E3 /* CoreData.framework */; };
 		653BFF9C1CCA0BB7005923E9 /* ViewCrumbViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 653BFF9B1CCA0BB7005923E9 /* ViewCrumbViewController.swift */; };
+		6540B5311DD909E80014A0BC /* WriteCrumbViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6540B5301DD909E80014A0BC /* WriteCrumbViewController.swift */; };
 		6543DA511DC47CEA00197513 /* CommentShort.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6543DA501DC47CEA00197513 /* CommentShort.swift */; };
 		654B116F1CB9705800BD6313 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 654B116E1CB9705800BD6313 /* AppDelegate.swift */; };
-		654B11711CB9705800BD6313 /* WriteCrumbViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 654B11701CB9705800BD6313 /* WriteCrumbViewController.swift */; };
 		654B11741CB9705800BD6313 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 654B11721CB9705800BD6313 /* Main.storyboard */; };
 		654B11761CB9705800BD6313 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 654B11751CB9705800BD6313 /* Assets.xcassets */; };
 		654B11791CB9705800BD6313 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 654B11771CB9705800BD6313 /* LaunchScreen.storyboard */; };
@@ -28,19 +28,19 @@
 		6576060E1DCD69D4006860C6 /* CrumbTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576060A1DCD69D4006860C6 /* CrumbTableViewCell.swift */; };
 		6576060F1DCD69D4006860C6 /* CommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576060B1DCD69D4006860C6 /* CommentCell.swift */; };
 		657606101DCD69D4006860C6 /* ViewCrumbs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576060C1DCD69D4006860C6 /* ViewCrumbs.swift */; };
+		657756B51DD93C8F00ABAFD7 /* MIDatePicker-master in Resources */ = {isa = PBXBuildFile; fileRef = 657756B41DD93C8F00ABAFD7 /* MIDatePicker-master */; };
 		6577DCC81D3D6DBB00C25F52 /* UserInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6577DCC71D3D6DBB00C25F52 /* UserInfo.swift */; };
 		6578159F1D62BE0B004F4660 /* HelperFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6578159E1D62BE0B004F4660 /* HelperFunctions.swift */; };
 		657861F91DD829050027C5A0 /* Comment+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657861F71DD829050027C5A0 /* Comment+CoreDataClass.swift */; };
 		657861FA1DD829050027C5A0 /* Comment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657861F81DD829050027C5A0 /* Comment+CoreDataProperties.swift */; };
+		657861FC1DD877A40027C5A0 /* CreateCommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657861FB1DD877A40027C5A0 /* CreateCommentViewController.swift */; };
 		65866C0A1CD6466200038400 /* UserStartingViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65866C091CD6466200038400 /* UserStartingViewController.swift */; };
-		65A5A2D71CF681B60019DB49 /* MessageDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 65A5A2D51CF681B60019DB49 /* MessageDataModel.xcdatamodeld */; };
 		65C659CD1D2C8CEA00E11210 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C659CC1D2C8CEA00E11210 /* SettingsViewController.swift */; };
 		65CB617C1CD3EA4F002D6F9E /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65CB617B1CD3EA4F002D6F9E /* CloudKit.framework */; };
 		65CE77A41CD3A96000CDFC49 /* NewOthersCrumbsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65CE77A31CD3A96000CDFC49 /* NewOthersCrumbsViewController.swift */; };
 		65EF38A91D21D2B400161A3E /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65EF38A81D21D2B400161A3E /* SignInViewController.swift */; };
 		65F556BC1CD219030014AC30 /* OthersCrumbsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F556BB1CD219030014AC30 /* OthersCrumbsTableViewController.swift */; };
 		65F556BE1CD21D760014AC30 /* OthersCrumbsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F556BD1CD21D760014AC30 /* OthersCrumbsTableViewCell.swift */; };
-		65FD97361DD289A4003A1BB4 /* CreateCommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65FD97351DD289A4003A1BB4 /* CreateCommentViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -59,10 +59,10 @@
 		6538741A1DD54FA9009ABDBF /* old code */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "old code"; path = "../old code"; sourceTree = "<group>"; };
 		6539C0F81CFBC7920072F1E3 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		653BFF9B1CCA0BB7005923E9 /* ViewCrumbViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewCrumbViewController.swift; sourceTree = "<group>"; };
+		6540B5301DD909E80014A0BC /* WriteCrumbViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WriteCrumbViewController.swift; sourceTree = "<group>"; };
 		6543DA501DC47CEA00197513 /* CommentShort.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentShort.swift; sourceTree = "<group>"; };
 		654B116B1CB9705800BD6313 /* BreadCrumbs.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = BreadCrumbs.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		654B116E1CB9705800BD6313 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
-		654B11701CB9705800BD6313 /* WriteCrumbViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = WriteCrumbViewController.swift; sourceTree = "<group>"; };
 		654B11731CB9705800BD6313 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		654B11751CB9705800BD6313 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		654B11781CB9705800BD6313 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
@@ -78,10 +78,12 @@
 		6576060A1DCD69D4006860C6 /* CrumbTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CrumbTableViewCell.swift; sourceTree = SOURCE_ROOT; };
 		6576060B1DCD69D4006860C6 /* CommentCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentCell.swift; sourceTree = SOURCE_ROOT; };
 		6576060C1DCD69D4006860C6 /* ViewCrumbs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewCrumbs.swift; sourceTree = SOURCE_ROOT; };
+		657756B41DD93C8F00ABAFD7 /* MIDatePicker-master */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "MIDatePicker-master"; sourceTree = SOURCE_ROOT; };
 		6577DCC71D3D6DBB00C25F52 /* UserInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserInfo.swift; sourceTree = "<group>"; };
 		6578159E1D62BE0B004F4660 /* HelperFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HelperFunctions.swift; sourceTree = "<group>"; };
 		657861F71DD829050027C5A0 /* Comment+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Comment+CoreDataClass.swift"; sourceTree = "<group>"; };
 		657861F81DD829050027C5A0 /* Comment+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Comment+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		657861FB1DD877A40027C5A0 /* CreateCommentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateCommentViewController.swift; sourceTree = "<group>"; };
 		65866C091CD6466200038400 /* UserStartingViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserStartingViewController.swift; sourceTree = "<group>"; };
 		65A5A2D61CF681B60019DB49 /* MessageDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MessageDataModel.xcdatamodel; sourceTree = "<group>"; };
 		65C659CC1D2C8CEA00E11210 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
@@ -91,7 +93,6 @@
 		65EF38A81D21D2B400161A3E /* SignInViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignInViewController.swift; sourceTree = "<group>"; };
 		65F556BB1CD219030014AC30 /* OthersCrumbsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OthersCrumbsTableViewController.swift; path = ../OthersCrumbsTableViewController.swift; sourceTree = "<group>"; };
 		65F556BD1CD21D760014AC30 /* OthersCrumbsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OthersCrumbsTableViewCell.swift; sourceTree = "<group>"; };
-		65FD97351DD289A4003A1BB4 /* CreateCommentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateCommentViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -152,7 +153,7 @@
 				65EF38A81D21D2B400161A3E /* SignInViewController.swift */,
 				654C0B5A1CC6AE4200060E58 /* YourCrumbsTableViewController.swift */,
 				654C0B581CC565B200060E58 /* YourCrumbsTableViewCell.swift */,
-				654B11701CB9705800BD6313 /* WriteCrumbViewController.swift */,
+				6540B5301DD909E80014A0BC /* WriteCrumbViewController.swift */,
 				653BFF9B1CCA0BB7005923E9 /* ViewCrumbViewController.swift */,
 				65F556BB1CD219030014AC30 /* OthersCrumbsTableViewController.swift */,
 				65F556BD1CD21D760014AC30 /* OthersCrumbsTableViewCell.swift */,
@@ -166,6 +167,7 @@
 				654B117A1CB9705800BD6313 /* Info.plist */,
 				65866C091CD6466200038400 /* UserStartingViewController.swift */,
 				6538741A1DD54FA9009ABDBF /* old code */,
+				657756B41DD93C8F00ABAFD7 /* MIDatePicker-master */,
 			);
 			path = BreadCrumbs;
 			sourceTree = "<group>";
@@ -182,9 +184,9 @@
 		657606111DCD69E1006860C6 /* viewCrumbsSubs */ = {
 			isa = PBXGroup;
 			children = (
+				657861FB1DD877A40027C5A0 /* CreateCommentViewController.swift */,
 				6576060A1DCD69D4006860C6 /* CrumbTableViewCell.swift */,
 				6576060B1DCD69D4006860C6 /* CommentCell.swift */,
-				65FD97351DD289A4003A1BB4 /* CreateCommentViewController.swift */,
 			);
 			name = viewCrumbsSubs;
 			sourceTree = "<group>";
@@ -297,6 +299,7 @@
 				654B11791CB9705800BD6313 /* LaunchScreen.storyboard in Resources */,
 				654B11761CB9705800BD6313 /* Assets.xcassets in Resources */,
 				6538741B1DD54FA9009ABDBF /* old code in Resources */,
+				657756B51DD93C8F00ABAFD7 /* MIDatePicker-master in Resources */,
 				654B11741CB9705800BD6313 /* Main.storyboard in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -318,17 +321,16 @@
 				6576060E1DCD69D4006860C6 /* CrumbTableViewCell.swift in Sources */,
 				65CE77A41CD3A96000CDFC49 /* NewOthersCrumbsViewController.swift in Sources */,
 				6543DA511DC47CEA00197513 /* CommentShort.swift in Sources */,
-				65FD97361DD289A4003A1BB4 /* CreateCommentViewController.swift in Sources */,
 				65F556BC1CD219030014AC30 /* OthersCrumbsTableViewController.swift in Sources */,
-				654B11711CB9705800BD6313 /* WriteCrumbViewController.swift in Sources */,
-				65A5A2D71CF681B60019DB49 /* MessageDataModel.xcdatamodeld in Sources */,
 				654C0B5B1CC6AE4200060E58 /* YourCrumbsTableViewController.swift in Sources */,
 				657606101DCD69D4006860C6 /* ViewCrumbs.swift in Sources */,
 				6577DCC81D3D6DBB00C25F52 /* UserInfo.swift in Sources */,
 				65F556BE1CD21D760014AC30 /* OthersCrumbsTableViewCell.swift in Sources */,
 				65EF38A91D21D2B400161A3E /* SignInViewController.swift in Sources */,
 				65866C0A1CD6466200038400 /* UserStartingViewController.swift in Sources */,
+				657861FC1DD877A40027C5A0 /* CreateCommentViewController.swift in Sources */,
 				656D65EC1CFA5E5F001F8950 /* Message+CoreDataProperties.swift in Sources */,
+				6540B5311DD909E80014A0BC /* WriteCrumbViewController.swift in Sources */,
 				6515D12C1CC148EB00570205 /* CrumbMessage.swift in Sources */,
 				654B116F1CB9705800BD6313 /* AppDelegate.swift in Sources */,
 				65C659CD1D2C8CEA00E11210 /* SettingsViewController.swift in Sources */,

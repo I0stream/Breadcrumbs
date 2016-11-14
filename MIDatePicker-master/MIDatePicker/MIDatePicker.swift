@@ -23,7 +23,8 @@ class MIDatePicker: UIView {
         private let contentHeight: CGFloat = 250
         private let bouncingOffset: CGFloat = 20
         
-        //var startDate: NSDate?//        var times: [Int] = [1,4,8,12,24,48]
+        var times: [Int] = [1,4,8,12,24,48]
+        var startDate: Int = 1
         
         var confirmButtonTitle = "Seleziona"
         var cancelButtonTitle = "Annulla"
@@ -63,10 +64,11 @@ class MIDatePicker: UIView {
     
     // MARK: - IBAction
     @IBAction func confirmButtonDidTapped(sender: AnyObject) {
-        
+        config.times = picker.times
         //config.startDate = datePicker.date
         
         dismiss()
+        delegate?.miDatePicker(self, didSelect: picker.times)
         //delegate?.miDatePicker(self, didSelect: datePicker.date)
         
     }

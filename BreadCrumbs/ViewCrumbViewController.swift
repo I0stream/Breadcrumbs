@@ -120,7 +120,14 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
             return commentCells
         }
     }
-    
+    // prepare view with object data;
+    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+        if (segue.identifier == "writeComment") {
+            let upcoming = segue.destinationViewController as! CreateCommentViewController
+            upcoming.viewbreadcrumb = viewbreadcrumb
+        }
+        
+    }
     
 
     

@@ -31,6 +31,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
     weak var timer = NSTimer()
     
     //MARK: Properties
+    
     @IBOutlet weak var pickeroutlet: UIButton!
     @IBOutlet weak var msgTimePickerField: UIPickerView!
     
@@ -38,11 +39,15 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
     @IBOutlet weak var crumbMessageTextView: UITextView!
     @IBOutlet weak var charLabelCount: UILabel!
     
+    @IBOutlet weak var submitView: UIView!
     @IBOutlet weak var postButtonOutlet: UIButton!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        postButtonOutlet.enabled = false
+        
+        
+        var datePicker = MIDatePicker.getFromNib()
+        datePicker.delegate = self
         
         // Handle the text field’s user input through delegate callbacks.
         self.crumbMessageTextView.delegate = self
@@ -55,10 +60,11 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
         self.msgTimePickerField.dataSource = self
         self.msgTimePickerField.delegate = self
         msgTimePickerField.hidden = true
-
+        
         //populate crumb counter number
         //barCrumbCounterNumber.title = "\(NSUserData.stringForKey("crumbCount")!)/5"
         
+        submitView.hidden = true
         
         //fuck if I know, post button off unless pass tests
         postButtonEnabledIfTestsTrue()
@@ -93,13 +99,13 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
         msgTimePickerField.becomeFirstResponder()
         
         /*UIView.animateWithDuration(0.3, animations: {() -> Void in
-            self.msgTimePickerField.frame = CGRectMake(0, self.view.bounds.size.height - self.msgTimePickerField.bounds.size.height, self.msgTimePickerField.bounds.size.width, self.msgTimePickerField.bounds.size.height)
-        })*/
-
+         self.msgTimePickerField.frame = CGRectMake(0, self.view.bounds.size.height - self.msgTimePickerField.bounds.size.height, self.msgTimePickerField.bounds.size.width, self.msgTimePickerField.bounds.size.height)
+         })*/
+        
     }
     func UndoPickerView(){
         msgTimePickerField.hidden = true
- 
+        
         msgTimePickerField.resignFirstResponder()
     }
     
@@ -124,7 +130,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
         UIView.animateWithDuration(duration, delay: delay, usingSpringWithDamping: damping, initialSpringVelocity: velocity, options: options, animations: {
             self.view.viewWithTag(5)!.frame = CGRect(x: 0, y:((self.view.viewWithTag(1)!.frame.size.height)), width: (self.view.frame.size.width), height: 20)
             
-            }) { (true) in
+        }) { (true) in
         }
         //makeSubViewIndicator("Location is down")
     }
@@ -139,7 +145,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
             self.removeInfoBarView()
         }) { (true) in
             self.view.viewWithTag(5)!.removeFromSuperview()
-
+            
         }
         //makeSubViewIndicator("Location is down")
         
@@ -194,7 +200,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
     func UpdateCrumbCount(cCount: Int){
         
         let recordID = NSUserData.stringForKey("recordID")!
-
+        
         let specificID = CKRecordID(recordName: "\(recordID)")
         
         let container = CKContainer.defaultContainer()
@@ -217,7 +223,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
                 print("error")
             }
         })
-    
+        
     }
     
     func saveToCloud(crumbmessage: CrumbMessage?){
@@ -260,7 +266,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
         messageMO.setValue(crumbmessage.votes, forKey: "votevalue")
         messageMO.setValue(NSUUID().UUIDString, forKey: "recorduuid")
         //messageMO.setValue(crumbmessage.addressStr, forKey: "addressStr")
-
+        
         
         do {
             try messageMO.managedObjectContext?.save()
@@ -268,9 +274,9 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
         } catch {
             print(error)
             print("cd error in write crumbs")
-
+            
         }
-
+        
     }
     
     //add crumb to coredata
@@ -295,17 +301,17 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
                 crumbmessage = CrumbMessage(text: crumbMessageTextView.text, senderName: senderUser, location: locationManager.location!, timeDropped: date, timeLimit: timeChoice!, senderuuid: NSUserData.stringForKey("recordID")!, votes: 1)
                 
                 //crumbmessage!.convertCoordinatesToAddress((crumbmessage!.location), completion: { (answer) in
-                    //self.crumbmessage!.addressStr = answer!
-                    
+                //self.crumbmessage!.addressStr = answer!
+                
                 self.saveToCoreData(self.crumbmessage!)
                 self.saveToCloud(self.crumbmessage)//saves without msg
-                    
+                
                 self.NSUserData.setValue(NSDate(), forKey: "SinceLastCheck")
                 NSNotificationCenter.defaultCenter().postNotificationName("load", object: nil)
-                    self.dismissViewControllerAnimated(true, completion: nil)
-                    
-              // })//NEED ERROR HANDLING HERE
-
+                self.dismissViewControllerAnimated(true, completion: nil)
+                
+                // })//NEED ERROR HANDLING HERE
+                
                 
             } else {
                 print("Tests did fail :(")/*I need to add an indicator and disable the post button if the
@@ -381,10 +387,11 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
     func postButtonEnabledIfTestsTrue() {
         
         // Disable the Save button if the text field is empty.
-        let text = crumbMessageTextView.text ?? ""
+        //let text = crumbMessageTextView.text ?? ""
         if crumbMessageTextView.text != "What do you think?" && crumbMessageTextView.text.characters.count <= 256 {
             if checkLocation() {
-                postButtonOutlet.enabled = !text.isEmpty
+                submitView.hidden = false
+                postButtonOutlet.enabled = true
             }
         }
     }
@@ -427,6 +434,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
         if crumbMessageTextView.text.isEmpty{
             crumbMessageTextView.text = "What do you think?"
             crumbMessageTextView.textColor = UIColor.lightGrayColor()
+            submitView.hidden = true
         }
     }
     
@@ -439,16 +447,18 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
         return true
     }
     
-
+    
     //MARK: Navigation
     //cancel writecrumb and return to yourcrumbtableview
     @IBAction func CancelPost(sender: AnyObject) {
         dismissViewControllerAnimated(true, completion: nil)
     }
-    //Make CrumbMessage and push to iCloud
-/*    @IBAction func postBarButton(sender: AnyObject) {
+    @IBAction func PostMessage(sender: AnyObject) {
         addCrumbCDAndCK(sender)
-        
     }
-*/
+    //Make CrumbMessage and push to iCloud
+    /*    @IBAction func postBarButton(sender: AnyObject) {
+     
+     }
+     */
 }
