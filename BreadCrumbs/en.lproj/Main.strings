@@ -1,0 +1,177 @@
+
+/* Class = "UILabel"; text = "Your Crumbs"; ObjectID = "0LK-9Z-wfp"; */
+"0LK-9Z-wfp.text" = "Your Crumbs";
+
+/* Class = "UITextView"; text = "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia"; ObjectID = "0ej-as-NBa"; */
+"0ej-as-NBa.text" = "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia";
+
+/* Class = "UILabel"; text = "Change user name"; ObjectID = "4ON-id-ht3"; */
+"4ON-id-ht3.text" = "Change user name";
+
+/* Class = "UILabel"; text = "Settings"; ObjectID = "7gs-Ca-jsI"; */
+"7gs-Ca-jsI.text" = "Settings";
+
+/* Class = "UIButton"; normalTitle = "Update"; ObjectID = "9uQ-kt-Iuc"; */
+"9uQ-kt-Iuc.normalTitle" = "Update";
+
+/* Class = "UILabel"; text = "Comment"; ObjectID = "AOb-hL-zmW"; */
+"AOb-hL-zmW.text" = "Comment";
+
+/* Class = "UILabel"; text = "24 hours left"; ObjectID = "Ae5-ti-GAF"; */
+"Ae5-ti-GAF.text" = "24 hours left";
+
+/* Class = "UILabel"; text = "Your name"; ObjectID = "Ap7-vd-CzR"; */
+"Ap7-vd-CzR.text" = "Your name";
+
+/* Class = "UILabel"; text = "Choose a username"; ObjectID = "Bn9-Wd-2iX"; */
+"Bn9-Wd-2iX.text" = "Choose a username";
+
+/* Class = "UIViewController"; title = "Intro - 2"; ObjectID = "DE9-jq-gap"; */
+"DE9-jq-gap.title" = "Intro - 2";
+
+/* Class = "UIButton"; normalTitle = "comment"; ObjectID = "E3T-Z4-bCR"; */
+"E3T-Z4-bCR.normalTitle" = "comment";
+
+/* Class = "UIViewController"; title = "Others"; ObjectID = "EYr-Zr-JzC"; */
+"EYr-Zr-JzC.title" = "Others";
+
+/* Class = "UILabel"; text = "char#"; ObjectID = "FPV-1E-cOc"; */
+"FPV-1E-cOc.text" = "char#";
+
+/* Class = "UILabel"; text = "artemida"; ObjectID = "Fz0-In-vZh"; */
+"Fz0-In-vZh.text" = "artemida";
+
+/* Class = "UITabBarItem"; title = "Item"; ObjectID = "GE6-TD-1Le"; */
+"GE6-TD-1Le.title" = "Item";
+
+/* Class = "UILabel"; text = "Your name"; ObjectID = "GUf-Tn-88S"; */
+"GUf-Tn-88S.text" = "Your name";
+
+/* Class = "UITextView"; text = "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia"; ObjectID = "HEB-AT-0bo"; */
+"HEB-AT-0bo.text" = "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia";
+
+/* Class = "UIButton"; normalTitle = "Send"; ObjectID = "HGp-s7-xyM"; */
+"HGp-s7-xyM.normalTitle" = "Send";
+
+/* Class = "UILabel"; text = "Palo Alto"; ObjectID = "KDK-8m-e8W"; */
+"KDK-8m-e8W.text" = "Palo Alto";
+
+/* Class = "UILabel"; text = "time ago"; ObjectID = "KHz-Vg-13f"; */
+"KHz-Vg-13f.text" = "time ago";
+
+/* Class = "UIViewController"; title = "Intro - 3"; ObjectID = "L9Z-u4-jds"; */
+"L9Z-u4-jds.title" = "Intro - 3";
+
+/* Class = "UILabel"; text = "char#"; ObjectID = "M1V-yj-zBR"; */
+"M1V-yj-zBR.text" = "char#";
+
+/* Class = "UILabel"; text = "2 votes"; ObjectID = "Nf9-xM-vSG"; */
+"Nf9-xM-vSG.text" = "2 votes";
+
+/* Class = "UILabel"; text = "time ago"; ObjectID = "Qxo-xs-MHq"; */
+"Qxo-xs-MHq.text" = "time ago";
+
+/* Class = "UILabel"; text = "Customer Support"; ObjectID = "SSL-Ei-Ioa"; */
+"SSL-Ei-Ioa.text" = "Customer Support";
+
+/* Class = "UIButton"; normalTitle = "Save"; ObjectID = "SUn-nk-vhd"; */
+"SUn-nk-vhd.normalTitle" = "Save";
+
+/* Class = "UITextView"; text = "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia"; ObjectID = "SfN-Tx-RBZ"; */
+"SfN-Tx-RBZ.text" = "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum deleniti atque corrupti quos dolores et quas molestias excepturi sint occaecati cupiditate non provident, similique sunt in culpa qui officia deserunt mollitia";
+
+/* Class = "UILabel"; text = "time ago"; ObjectID = "Shj-xu-v9q"; */
+"Shj-xu-v9q.text" = "time ago";
+
+/* Class = "UILabel"; text = "It uses both the phones location and notification services to bring you closer to your community"; ObjectID = "TXd-lX-7zK"; */
+"TXd-lX-7zK.text" = "It uses both the phones location and notification services to bring you closer to your community";
+
+/* Class = "UIButton"; normalTitle = "vote"; ObjectID = "XZ4-da-x3r"; */
+"XZ4-da-x3r.normalTitle" = "vote";
+
+/* Class = "UILabel"; text = "Your name"; ObjectID = "YFa-QG-iBa"; */
+"YFa-QG-iBa.text" = "Your name";
+
+/* Class = "UILabel"; text = "2 votes"; ObjectID = "Zgw-Le-meq"; */
+"Zgw-Le-meq.text" = "2 votes";
+
+/* Class = "UIButton"; normalTitle = "5 crumbs"; ObjectID = "a0g-dz-aeE"; */
+"a0g-dz-aeE.normalTitle" = "5 crumbs";
+
+/* Class = "UIButton"; normalTitle = "Send"; ObjectID = "cHi-ul-lWO"; */
+"cHi-ul-lWO.normalTitle" = "Send";
+
+/* Class = "UITextField"; placeholder = "Username"; ObjectID = "cIj-Hy-Kpk"; */
+"cIj-Hy-Kpk.placeholder" = "Username";
+
+/* Class = "UILabel"; text = "Choose a username"; ObjectID = "cjR-M5-Lg3"; */
+"cjR-M5-Lg3.text" = "Choose a username";
+
+/* Class = "UIButton"; normalTitle = "4 hours"; ObjectID = "dY9-WW-LCF"; */
+"dY9-WW-LCF.normalTitle" = "4 hours";
+
+/* Class = "UILabel"; text = "Rate the app"; ObjectID = "eD2-lw-Spi"; */
+"eD2-lw-Spi.text" = "Rate the app";
+
+/* Class = "UIViewController"; title = "Intro - 1"; ObjectID = "eor-8z-TgE"; */
+"eor-8z-TgE.title" = "Intro - 1";
+
+/* Class = "UITextView"; text = "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium "; ObjectID = "eqY-gk-kWx"; */
+"eqY-gk-kWx.text" = "At vero eos et accusamus et iusto odio dignissimos ducimus qui blanditiis praesentium ";
+
+/* Class = "UILabel"; text = "A social app were you can leave short messages where ever you are "; ObjectID = "fhV-kZ-5JJ"; */
+"fhV-kZ-5JJ.text" = "A social app were you can leave short messages where ever you are ";
+
+/* Class = "UILabel"; text = "Please sign into icloud and enable icloud drive"; ObjectID = "gJt-Q5-dOr"; */
+"gJt-Q5-dOr.text" = "Please sign into icloud and enable icloud drive";
+
+/* Class = "UITabBarItem"; title = "New"; ObjectID = "gV0-Fl-MWg"; */
+"gV0-Fl-MWg.title" = "New";
+
+/* Class = "UILabel"; text = "Edit"; ObjectID = "joI-Kn-pST"; */
+"joI-Kn-pST.text" = "Edit";
+
+/* Class = "UITextField"; placeholder = "Username"; ObjectID = "kj3-W3-R0K"; */
+"kj3-W3-R0K.placeholder" = "Username";
+
+/* Class = "UIButton"; normalTitle = "4 hours"; ObjectID = "kt6-GP-phf"; */
+"kt6-GP-phf.normalTitle" = "4 hours";
+
+/* Class = "UIButton"; normalTitle = "Update"; ObjectID = "lAU-UA-Owm"; */
+"lAU-UA-Owm.normalTitle" = "Update";
+
+/* Class = "UIButton"; normalTitle = "Start"; ObjectID = "lRy-69-Vfe"; */
+"lRy-69-Vfe.normalTitle" = "Start";
+
+/* Class = "UITextView"; text = "What do you think?"; ObjectID = "mh6-6q-Y94"; */
+"mh6-6q-Y94.text" = "What do you think?";
+
+/* Class = "UILabel"; text = "24 hours left"; ObjectID = "n1x-Mv-dJf"; */
+"n1x-Mv-dJf.text" = "24 hours left";
+
+/* Class = "UIViewController"; title = "yourMsg"; ObjectID = "s33-eK-Q9h"; */
+"s33-eK-Q9h.title" = "yourMsg";
+
+/* Class = "UITextView"; text = "What do you think?"; ObjectID = "s5b-64-TSL"; */
+"s5b-64-TSL.text" = "What do you think?";
+
+/* Class = "UIButton"; normalTitle = "preview"; ObjectID = "shO-UP-lqm"; */
+"shO-UP-lqm.normalTitle" = "preview";
+
+/* Class = "UIButton"; normalTitle = "edit"; ObjectID = "tsk-7L-Sss"; */
+"tsk-7L-Sss.normalTitle" = "edit";
+
+/* Class = "UILabel"; text = "Post"; ObjectID = "w6D-LN-aqC"; */
+"w6D-LN-aqC.text" = "Post";
+
+/* Class = "UILabel"; text = "Anyone nearby will receive your messages and you will receive theirs too!"; ObjectID = "weQ-Hn-2wU"; */
+"weQ-Hn-2wU.text" = "Anyone nearby will receive your messages and you will receive theirs too!";
+
+/* Class = "UILabel"; text = "time ago"; ObjectID = "wt0-kQ-NFp"; */
+"wt0-kQ-NFp.text" = "time ago";
+
+/* Class = "UITextView"; text = "What do you think?"; ObjectID = "zqj-20-wB4"; */
+"zqj-20-wB4.text" = "What do you think?";
+
+/* Class = "UILabel"; text = "24 hours left"; ObjectID = "zxa-uY-lf5"; */
+"zxa-uY-lf5.text" = "24 hours left";

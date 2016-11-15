@@ -3,19 +3,20 @@
 //  Agenda medica
 //
 //  Created by Mario on 15/06/16.
-//  Copyright © 2016 Mario. All rights reserved.
+//  Copyright © 2016 Mario. All rights reserved. it's a me
 //
 
 import UIKit
 
 protocol MIDatePickerDelegate: class {
-    
-    func miDatePicker(amDatePicker: MIDatePicker, didSelect date: NSDate)
+    func miDatePicker(amDatePicker: MIDatePicker, didSelect time: Int)
     func miDatePickerDidCancelSelection(amDatePicker: MIDatePicker)
-    
+    //func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int
+    //func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int
+    //func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String?
 }
 
-class MIDatePicker: UIView {
+class MIDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
     
     // MARK: - Config
     struct Config {
@@ -23,22 +24,22 @@ class MIDatePicker: UIView {
         private let contentHeight: CGFloat = 250
         private let bouncingOffset: CGFloat = 20
         
-        var times: [Int] = [1,4,8,12,24,48]
-        var startDate: Int = 1
+        var times: [String] = ["4","8","12","24","48"]
         
-        var confirmButtonTitle = "Seleziona"
-        var cancelButtonTitle = "Annulla"
+        var confirmButtonTitle = "Confirm"
+        var cancelButtonTitle = "Cancel"
         
         var headerHeight: CGFloat = 50
         
         var animationDuration: NSTimeInterval = 0.3
         
-        var contentBackgroundColor: UIColor = UIColor.lightGrayColor()
-        var headerBackgroundColor: UIColor = UIColor.whiteColor()
-        var confirmButtonColor: UIColor = UIColor.blueColor()
-        var cancelButtonColor: UIColor = UIColor.blackColor()
+        var contentBackgroundColor: UIColor = UIColor.whiteColor()
+        var headerBackgroundColor: UIColor = UIColor(red: 248/255, green: 248/255, blue: 248/255, alpha: 1)
+        //var confirmButtonColor: UIColor = UIColor.blueColor()
+        //var cancelButtonColor: UIColor = UIColor.blackColor()
         
-        var overlayBackgroundColor: UIColor = UIColor.blackColor().colorWithAlphaComponent(0.6)
+        var overlayBackgroundColor: UIColor = UIColor.blackColor().colorWithAlphaComponent(0.5)
+        
         
     }
     
@@ -47,7 +48,7 @@ class MIDatePicker: UIView {
     weak var delegate: MIDatePickerDelegate?
     
     // MARK: - IBOutlets
-    @IBOutlet weak var picker: UIPickerView
+    @IBOutlet weak var picker: UIPickerView?
     @IBOutlet weak var confirmButton: UIButton!
     @IBOutlet weak var cancelButton: UIButton!
     @IBOutlet weak var headerView: UIView!
@@ -58,17 +59,27 @@ class MIDatePicker: UIView {
     var overlayButton: UIButton!
     
     // MARK: - Init
+    
+    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
+        return 1
+    }
+    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return config.times.count
+    }
+    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return config.times[row]
+    }
+    
     static func getFromNib() -> MIDatePicker {
         return UINib.init(nibName: String(self), bundle: nil).instantiateWithOwner(self, options: nil).last as! MIDatePicker
     }
-    
+
     // MARK: - IBAction
     @IBAction func confirmButtonDidTapped(sender: AnyObject) {
-        config.times = picker.times
         //config.startDate = datePicker.date
         
         dismiss()
-        delegate?.miDatePicker(self, didSelect: picker.times)
+        delegate?.miDatePicker(self, didSelect: (picker?.selectedRowInComponent(0))!)
         //delegate?.miDatePicker(self, didSelect: datePicker.date)
         
     }
@@ -85,14 +96,17 @@ class MIDatePicker: UIView {
         //if let startDate = config.startDate {
         //    datePicker.date = startDate
         //}
+        picker?.delegate = self
+        picker?.dataSource = self
+        picker?.showsSelectionIndicator = true
         
         headerViewHeightConstraint.constant = config.headerHeight
         
         confirmButton.setTitle(config.confirmButtonTitle, forState: .Normal)
         cancelButton.setTitle(config.cancelButtonTitle, forState: .Normal)
         
-        confirmButton.setTitleColor(config.confirmButtonColor, forState: .Normal)
-        cancelButton.setTitleColor(config.cancelButtonColor, forState: .Normal)
+        //confirmButton.setTitleColor(config.confirmButtonColor, forState: .Normal)
+        //cancelButton.setTitleColor(config.cancelButtonColor, forState: .Normal)
         
         headerView.backgroundColor = config.headerBackgroundColor
         backgroundView.backgroundColor = config.contentBackgroundColor
@@ -137,7 +151,7 @@ class MIDatePicker: UIView {
             NSLayoutConstraint(item: self, attribute: .Height, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1.0, constant: frame.height)
         )
         
-        move(goUp: false)
+        move(false)
         
     }
     
@@ -152,7 +166,7 @@ class MIDatePicker: UIView {
         parentVC.view.endEditing(true)
         
         setup(parentVC)
-        move(goUp: true)
+        move(true)
         
         UIView.animateWithDuration(
             config.animationDuration, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 5, options: .CurveEaseIn, animations: {
@@ -168,7 +182,7 @@ class MIDatePicker: UIView {
     }
     func dismiss(completion: (() -> ())? = nil) {
         
-        move(goUp: false)
+        move(false)
         
         UIView.animateWithDuration(
             config.animationDuration, animations: {

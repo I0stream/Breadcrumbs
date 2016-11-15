@@ -16,24 +16,32 @@ import UIKit
 import CoreLocation
 import CoreData
 
-class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerViewDelegate, UIPickerViewDataSource, CLLocationManagerDelegate{
+class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocationManagerDelegate, MIDatePickerDelegate{
     
     //MARK: Variables
     var msgCharCount:Int = 0
     var timeDroppedvar: String?
-    var pickerTimeLimit = ["4","8","12","24"]
+    var pickerTimeLimit = [4,8,12,24,48]
     let NSUserData = AppDelegate().NSUserData
     let locationManager: CLLocationManager = AppDelegate().locationManager
     let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext //yay
     let helperfunctions = Helper()
     var crumbmessage: CrumbMessage?
     
+    var currentTime = 4
+    
+    let datePicker = MIDatePicker.getFromNib()
+
+    
     weak var timer = NSTimer()
     
     //MARK: Properties
     
     @IBOutlet weak var pickeroutlet: UIButton!
-    @IBOutlet weak var msgTimePickerField: UIPickerView!
+    //@IBOutlet weak var msgTimePickerField: UIPickerView!
+    
+    
+    //@IBOutlet weak var TimePicker: MIDatePicker!
     
     //@IBOutlet weak var barCrumbCounterNumber: UIBarButtonItem!
     @IBOutlet weak var crumbMessageTextView: UITextView!
@@ -45,8 +53,6 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
     override func viewDidLoad() {
         super.viewDidLoad()
         
-        
-        var datePicker = MIDatePicker.getFromNib()
         datePicker.delegate = self
         
         // Handle the text field’s user input through delegate callbacks.
@@ -57,9 +63,9 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
         crumbMessageTextView.textColor = UIColor.lightGrayColor()
         
         //init pickerview
-        self.msgTimePickerField.dataSource = self
-        self.msgTimePickerField.delegate = self
-        msgTimePickerField.hidden = true
+        //self.msgTimePickerField.dataSource = self
+        //self.msgTimePickerField.delegate = self
+        //msgTimePickerField.hidden = true
         
         //populate crumb counter number
         //barCrumbCounterNumber.title = "\(NSUserData.stringForKey("crumbCount")!)/5"
@@ -91,25 +97,29 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
         }
         view.addGestureRecognizer(tap)
     }
-    
-    @IBAction func PickerViewButton(sender: AnyObject) {
-        
-        
-        msgTimePickerField.hidden = false
-        msgTimePickerField.becomeFirstResponder()
-        
-        /*UIView.animateWithDuration(0.3, animations: {() -> Void in
-         self.msgTimePickerField.frame = CGRectMake(0, self.view.bounds.size.height - self.msgTimePickerField.bounds.size.height, self.msgTimePickerField.bounds.size.width, self.msgTimePickerField.bounds.size.height)
-         })*/
-        
+    func miDatePicker(amDatePicker: MIDatePicker, didSelect time: Int) {
+        // Do something when the user has confirmed a selected date
+        currentTime = pickerTimeLimit[time]
+        pickeroutlet.setTitle("\(currentTime) hours", forState: .Normal)
+        print(currentTime)
     }
-    func UndoPickerView(){
-        msgTimePickerField.hidden = true
-        
-        msgTimePickerField.resignFirstResponder()
+    func miDatePickerDidCancelSelection(amDatePicker: MIDatePicker) {
+        // Do something then user tapped the cancel button
     }
     
+    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
+     return 1
+    }
+    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+        return datePicker.config.times.count
+    }
+    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+        return datePicker.config.times[row]
+    }
     
+    @IBAction func ShowPicker(sender: AnyObject) {
+        datePicker.show(inVC: self)
+    }
     //MARK: timer
     func checkToDeAnimate(){
         if checkLocation() == true{
@@ -295,10 +305,10 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
                 
                 let senderUser = NSUserData.stringForKey("userName")!
                 let date = NSDate()
-                let timeChoice = Int(pickerTimeLimit[msgTimePickerField.selectedRowInComponent(0)])
+
                 
                 //create crumbMessage object
-                crumbmessage = CrumbMessage(text: crumbMessageTextView.text, senderName: senderUser, location: locationManager.location!, timeDropped: date, timeLimit: timeChoice!, senderuuid: NSUserData.stringForKey("recordID")!, votes: 1)
+                crumbmessage = CrumbMessage(text: crumbMessageTextView.text, senderName: senderUser, location: locationManager.location!, timeDropped: date, timeLimit: currentTime, senderuuid: NSUserData.stringForKey("recordID")!, votes: 1)
                 
                 //crumbmessage!.convertCoordinatesToAddress((crumbmessage!.location), completion: { (answer) in
                 //self.crumbmessage!.addressStr = answer!
@@ -329,18 +339,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
     }
     
     
-    //MARK: PickerView Methods
-    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
-        return 1
-    }
     
-    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return pickerTimeLimit.count;
-    }
-    
-    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return pickerTimeLimit[row]
-    }
     //MARK: msgTextView Methods
     
     //test if crumb passes length and if enough crumbs
@@ -415,7 +414,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, UIPickerVi
     }
     //track chars in msgview and highlight dat sheeit
     func textViewDidChange(textView: UITextView) {
-        if crumbMessageTextView.text != "What do you think"{
+        if crumbMessageTextView.text != "What do you think?"{
             msgCharCount = crumbMessageTextView.text.characters.count
             charLabelCount.text = String(256 - msgCharCount)
         } else {
