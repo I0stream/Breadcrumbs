@@ -11,6 +11,6 @@ import Foundation
 import CoreData
 
 
-public class Comment: NSManagedObject {
+open class Comment: NSManagedObject {
 
 }

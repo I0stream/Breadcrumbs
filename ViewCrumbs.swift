@@ -48,11 +48,11 @@ class ViewCrumbs: UIViewController, UITableViewDelegate, CreateCommentDelegate, 
         
         tableView.rowHeight = UITableViewAutomaticDimension
         tableView.estimatedRowHeight = 95
-        let now = NSDate()
+        let now = Date()
         let new = CommentShort(username: "TrumpenFuhrer", text: "We won bigly and we will keep winning until you tire of winning!", timeSent: now)
         comments += [new]
     }
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         //send crumbvote here somehow
         if counter != 0 && hasVotedInScreen == true{
             print(theVoteValueToBeStored)
@@ -62,18 +62,17 @@ class ViewCrumbs: UIViewController, UITableViewDelegate, CreateCommentDelegate, 
             }
         }
     }
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSectionsInTableView(_ tableView: UITableView) -> Int {
         return 1
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let num = comments.count + 1
         return num
     }
-    
-    func tableView(tableView: UITableView, cellForRowAt indexPath: NSIndexPath) -> UITableViewCell{
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.row == 0 {
-            let cell = tableView.dequeueReusableCellWithIdentifier("crumb", forIndexPath: indexPath) as! CrumbTableViewCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: "crumb", for: indexPath) as! CrumbTableViewCell
             //set the data here
             
             let crumbmsg = viewbreadcrumb
@@ -91,7 +90,7 @@ class ViewCrumbs: UIViewController, UITableViewDelegate, CreateCommentDelegate, 
             return cell
         }else {
             print("cell")
-            let cell = tableView.dequeueReusableCellWithIdentifier("mycell", forIndexPath: indexPath) as! CommentCell
+            let cell = tableView.dequeueReusableCell(withIdentifier: "mycell", for: indexPath) as! CommentCell
             
             let comment = comments[(indexPath.row - 2)]
             cell.CommentTextView.text = comment.text
@@ -101,58 +100,58 @@ class ViewCrumbs: UIViewController, UITableViewDelegate, CreateCommentDelegate, 
     }
     
 
-    @IBAction func CreateCommentButton(sender: AnyObject) {
-        performSegueWithIdentifier("writeComment", sender: sender)
+    @IBAction func CreateCommentButton(_ sender: AnyObject) {
+        performSegue(withIdentifier: "writeComment", sender: sender)
     }
     
-    func addNewComment(newComment: CommentShort){
+    func addNewComment(_ newComment: CommentShort){
         comments += [newComment]
         tableView.reloadData()
     }
 
 
     
-    func crumbVote(vote: Int, counter: Int) {//what happens when a vote conflicts between cd and ck?, this just does ck atm
+    func crumbVote(_ vote: Int, counter: Int) {//what happens when a vote conflicts between cd and ck?, this just does ck atm
         let specificID = CKRecordID(recordName: (viewbreadcrumb?.uRecordID)!)
         voteCKVote(specificID)
         voteCoreDataVote((viewbreadcrumb?.uRecordID)!,counter: counter)
     }
     
     //redo these to only update a value not add
-    func voteCKVote(recorduuid: CKRecordID){
+    func voteCKVote(_ recorduuid: CKRecordID){
         
-        let container = CKContainer.defaultContainer()
+        let container = CKContainer.default()
         let publicData = container.publicCloudDatabase
         
-        publicData.fetchRecordWithID(recorduuid, completionHandler: {record, error in
+        publicData.fetch(withRecordID: recorduuid, completionHandler: {record, error in
             if error == nil{
                 let newvalue = self.theVoteValueToBeStored
                 
-                record!.setObject(newvalue, forKey: "votes")
+                record!.setObject(newvalue as CKRecordValue?, forKey: "votes")
                 
-                publicData.saveRecord(record!, completionHandler: {theRecord, error in
+                publicData.save(record!, completionHandler: {theRecord, error in
                     if error == nil{
                         print("saved version")
                     }else{
-                        print(error)
+                        print(error.debugDescription)
                     }
                 })
             }else{
-                print(error)
+                print(error.debugDescription)
             }
         })
     }
     
     //updates coredata with the new value
-    func voteCoreDataVote(cdrecorduuid: String, counter: Int){
+    func voteCoreDataVote(_ cdrecorduuid: String, counter: Int){
         
         let predicate = NSPredicate(format: "recorduuid == %@", cdrecorduuid)
         
-        let fetchRequest = NSFetchRequest(entityName: "Message")
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Message")
         fetchRequest.predicate = predicate
         
         do {// change it, it not work y?
-            let fetchedMsgs = try helperFunctions.moc.executeFetchRequest(fetchRequest) as! [Message]
+            let fetchedMsgs = try helperFunctions.moc.fetch(fetchRequest) as! [Message]
             
             fetchedMsgs.first?.setValue(theVoteValueToBeStored, forKey: "votevalue")
             fetchedMsgs.first?.setValue(counter, forKey: "hasVoted")

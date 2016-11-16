@@ -43,6 +43,7 @@
 		65EF38A91D21D2B400161A3E /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65EF38A81D21D2B400161A3E /* SignInViewController.swift */; };
 		65F556BC1CD219030014AC30 /* OthersCrumbsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F556BB1CD219030014AC30 /* OthersCrumbsTableViewController.swift */; };
 		65F556BE1CD21D760014AC30 /* OthersCrumbsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F556BD1CD21D760014AC30 /* OthersCrumbsTableViewCell.swift */; };
+		65FCBD681DDBF2B9002D07BA /* MessageDataModel.xcdatamodeld in Sources */ = {isa = PBXBuildFile; fileRef = 65A5A2D51CF681B60019DB49 /* MessageDataModel.xcdatamodeld */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -120,9 +121,57 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		65219BAD1DDBFE11006765C3 /* mainViews */ = {
+			isa = PBXGroup;
+			children = (
+				654C0B5A1CC6AE4200060E58 /* YourCrumbsTableViewController.swift */,
+				65F556BB1CD219030014AC30 /* OthersCrumbsTableViewController.swift */,
+				65219BB31DDC0011006765C3 /* ViewCrumb */,
+				65866C091CD6466200038400 /* SettingsViewController.swift */,
+				65219BAE1DDBFEB5006765C3 /* settingSubVCs */,
+			);
+			name = mainViews;
+			sourceTree = "<group>";
+		};
+		65219BAE1DDBFEB5006765C3 /* settingSubVCs */ = {
+			isa = PBXGroup;
+			children = (
+				65C659CC1D2C8CEA00E11210 /* ChangeUserNameViewController.swift */,
+			);
+			name = settingSubVCs;
+			sourceTree = "<group>";
+		};
+		65219BB11DDBFF5D006765C3 /* create */ = {
+			isa = PBXGroup;
+			children = (
+				6540B5301DD909E80014A0BC /* WriteCrumbViewController.swift */,
+				657861FB1DD877A40027C5A0 /* CreateCommentViewController.swift */,
+			);
+			name = create;
+			sourceTree = "<group>";
+		};
+		65219BB21DDBFFA4006765C3 /* pickerView */ = {
+			isa = PBXGroup;
+			children = (
+				657756B41DD93C8F00ABAFD7 /* MIDatePicker-master */,
+				657756B61DD9488D00ABAFD7 /* MIDatePicker.swift */,
+				657756B71DD9488D00ABAFD7 /* MIDatePicker.xib */,
+			);
+			name = pickerView;
+			sourceTree = "<group>";
+		};
+		65219BB31DDC0011006765C3 /* ViewCrumb */ = {
+			isa = PBXGroup;
+			children = (
+				653BFF9B1CCA0BB7005923E9 /* ViewCrumbViewController.swift */,
+			);
+			name = ViewCrumb;
+			sourceTree = "<group>";
+		};
 		654B11621CB9705800BD6313 = {
 			isa = PBXGroup;
 			children = (
+				65A5A2D51CF681B60019DB49 /* MessageDataModel.xcdatamodeld */,
 				654B116D1CB9705800BD6313 /* BreadCrumbs */,
 				6539C0F81CFBC7920072F1E3 /* CoreData.framework */,
 				65CB617B1CD3EA4F002D6F9E /* CloudKit.framework */,
@@ -144,30 +193,21 @@
 		654B116D1CB9705800BD6313 /* BreadCrumbs */ = {
 			isa = PBXGroup;
 			children = (
-				65A5A2D51CF681B60019DB49 /* MessageDataModel.xcdatamodeld */,
 				65FCBCAD1DDBCAB4002D07BA /* CDItems */,
+				65B9FF031DCD79C900C09F85 /* Classes and helper */,
 				654B11721CB9705800BD6313 /* Main.storyboard */,
 				654B116E1CB9705800BD6313 /* AppDelegate.swift */,
-				65B9FF031DCD79C900C09F85 /* Classes and helper */,
-				657606111DCD69E1006860C6 /* viewCrumbsSubs */,
-				65EF38A81D21D2B400161A3E /* SignInViewController.swift */,
 				650862A41CD507E400006DAD /* PageManagerViewController.swift */,
-				654C0B5A1CC6AE4200060E58 /* YourCrumbsTableViewController.swift */,
-				654C0B581CC565B200060E58 /* YourCrumbsTableViewCell.swift */,
-				6540B5301DD909E80014A0BC /* WriteCrumbViewController.swift */,
-				653BFF9B1CCA0BB7005923E9 /* ViewCrumbViewController.swift */,
-				65F556BB1CD219030014AC30 /* OthersCrumbsTableViewController.swift */,
-				65F556BD1CD21D760014AC30 /* OthersCrumbsTableViewCell.swift */,
+				65EF38A81D21D2B400161A3E /* SignInViewController.swift */,
+				65219BB11DDBFF5D006765C3 /* create */,
+				657606111DCD69E1006860C6 /* cells */,
+				65219BAD1DDBFE11006765C3 /* mainViews */,
 				65CE77A31CD3A96000CDFC49 /* NewOthersCrumbsViewController.swift */,
 				6576060C1DCD69D4006860C6 /* ViewCrumbs.swift */,
-				65866C091CD6466200038400 /* SettingsViewController.swift */,
-				65C659CC1D2C8CEA00E11210 /* ChangeUserNameViewController.swift */,
-				657756B61DD9488D00ABAFD7 /* MIDatePicker.swift */,
-				657756B71DD9488D00ABAFD7 /* MIDatePicker.xib */,
+				65219BB21DDBFFA4006765C3 /* pickerView */,
 				654B11771CB9705800BD6313 /* LaunchScreen.storyboard */,
 				654B117A1CB9705800BD6313 /* Info.plist */,
 				6538741A1DD54FA9009ABDBF /* old code */,
-				657756B41DD93C8F00ABAFD7 /* MIDatePicker-master */,
 				654B11751CB9705800BD6313 /* Assets.xcassets */,
 				65CB617A1CD3D175002D6F9E /* BreadCrumbs.entitlements */,
 			);
@@ -183,14 +223,15 @@
 			path = BreadCrumbsTests;
 			sourceTree = "<group>";
 		};
-		657606111DCD69E1006860C6 /* viewCrumbsSubs */ = {
+		657606111DCD69E1006860C6 /* cells */ = {
 			isa = PBXGroup;
 			children = (
-				657861FB1DD877A40027C5A0 /* CreateCommentViewController.swift */,
+				654C0B581CC565B200060E58 /* YourCrumbsTableViewCell.swift */,
+				65F556BD1CD21D760014AC30 /* OthersCrumbsTableViewCell.swift */,
 				6576060A1DCD69D4006860C6 /* CrumbTableViewCell.swift */,
 				6576060B1DCD69D4006860C6 /* CommentCell.swift */,
 			);
-			name = viewCrumbsSubs;
+			name = cells;
 			sourceTree = "<group>";
 		};
 		65B9FF031DCD79C900C09F85 /* Classes and helper */ = {
@@ -343,6 +384,7 @@
 				657756B81DD9488D00ABAFD7 /* MIDatePicker.swift in Sources */,
 				6577DCC81D3D6DBB00C25F52 /* UserInfo.swift in Sources */,
 				65F556BE1CD21D760014AC30 /* OthersCrumbsTableViewCell.swift in Sources */,
+				65FCBD681DDBF2B9002D07BA /* MessageDataModel.xcdatamodeld in Sources */,
 				65EF38A91D21D2B400161A3E /* SignInViewController.swift in Sources */,
 				65866C0A1CD6466200038400 /* SettingsViewController.swift in Sources */,
 				657861FC1DD877A40027C5A0 /* CreateCommentViewController.swift in Sources */,
@@ -507,7 +549,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Debug;
@@ -527,7 +569,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = SabreTechnologiesLLC.BreadCrumbs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE = "";
-				SWIFT_VERSION = 2.3;
+				SWIFT_VERSION = 3.0;
 				TARGETED_DEVICE_FAMILY = 1;
 			};
 			name = Release;
@@ -597,7 +639,8 @@
 				65A5A2D61CF681B60019DB49 /* MessageDataModel.xcdatamodel */,
 			);
 			currentVersion = 65A5A2D61CF681B60019DB49 /* MessageDataModel.xcdatamodel */;
-			path = MessageDataModel.xcdatamodeld;
+			name = MessageDataModel.xcdatamodeld;
+			path = BreadCrumbs/MessageDataModel.xcdatamodeld;
 			sourceTree = "<group>";
 			versionGroupType = wrapper.xcdatamodel;
 		};

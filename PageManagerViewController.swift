@@ -24,8 +24,8 @@ class PageManagerViewController: UIPageViewController, UIPageViewControllerDataS
         self.delegate = self
         
         let startingView = self.viewControllerAtIndex(self.indexcounter)
-        let mainViews: NSArray = [startingView]
-        self.setViewControllers(mainViews as? [UIViewController], direction: UIPageViewControllerNavigationDirection.Forward, animated: false, completion: nil)
+        let mainViews = [startingView]//if it breaks this is the problem, changed from nsarray to emplied uivc
+        self.setViewControllers(mainViews as? [UIViewController], direction: UIPageViewControllerNavigationDirection.forward, animated: false, completion: nil)
         
         /*I dont really understand what to do here
          it is strange
@@ -43,27 +43,27 @@ class PageManagerViewController: UIPageViewController, UIPageViewControllerDataS
     //it doubles the second viewcontroller:::FIXED <3
     //also if one swipes right then left, the 3 view is never instantiated:::FIXED <3
 
-    func viewControllerAtIndex(index: Int) -> UIViewController! {
+    func viewControllerAtIndex(_ index: Int) -> UIViewController! {
         //This method creates a new instance of the specified view controller each time you call it.
               
         //UserView
         if index == 0 {
-            return self.storyboard!.instantiateViewControllerWithIdentifier("IntroShill") 
+            return self.storyboard!.instantiateViewController(withIdentifier: "IntroShill") 
         }
         
         //Your bread crumb table view controller view
         if index == 1 {
-            return self.storyboard!.instantiateViewControllerWithIdentifier("Intro-2")
+            return self.storyboard!.instantiateViewController(withIdentifier: "Intro-2")
 
         }
         
         //Other users bread crumb table view controller view
         if index == 2 {
-            return self.storyboard!.instantiateViewControllerWithIdentifier("Intro-3")
+            return self.storyboard!.instantiateViewController(withIdentifier: "Intro-3")
 
         }
         if index == 3{
-            return self.storyboard!.instantiateViewControllerWithIdentifier("SignIn") 
+            return self.storyboard!.instantiateViewController(withIdentifier: "SignIn") 
         }
         
         return nil
@@ -72,10 +72,10 @@ class PageManagerViewController: UIPageViewController, UIPageViewControllerDataS
     
     //MARK: pageviewcontrollerdatasource
     
-    func pageViewController(pageViewController: UIPageViewController, viewControllerAfterViewController viewController: UIViewController) -> UIViewController? {
+    func pageViewController(_ pageViewController: UIPageViewController, viewControllerAfter viewController: UIViewController) -> UIViewController? {
         
         let identifier = viewController.restorationIdentifier
-        let index = self.identifiers.indexOfObject(identifier!)
+        let index = self.identifiers.index(of: identifier!)
         
         //var restorationID = restorationIdentifier;
 
@@ -93,10 +93,10 @@ class PageManagerViewController: UIPageViewController, UIPageViewControllerDataS
         return self.viewControllerAtIndex(self.indexcounter)
     }
     
-    func pageViewController(pageViewController: UIPageViewController, viewControllerBeforeViewController viewController: UIViewController) -> UIViewController? {
+    func pageViewController(_ pageViewController: UIPageViewController, viewControllerBefore viewController: UIViewController) -> UIViewController? {
         
         let identifier = viewController.restorationIdentifier
-        let index = self.identifiers.indexOfObject(identifier!)
+        let index = self.identifiers.index(of: identifier!)
         
         //limits swiping back
         if index == 0 {

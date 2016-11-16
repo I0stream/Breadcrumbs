@@ -17,7 +17,7 @@
                 <pageViewController storyboardIdentifier="pgManager" autoresizesArchivedViewToFullSize="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" transitionStyle="scroll" navigationOrientation="horizontal" spineLocation="none" id="0jd-1T-HCL" customClass="PageManagerViewController" customModule="BreadCrumbs" customModuleProvider="target" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eKq-qk-Kpq" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-2451" y="-1670"/>
+            <point key="canvasLocation" x="-3730" y="-973"/>
         </scene>
         <!--Intro - 1-->
         <scene sceneID="KJC-U0-O2g">
@@ -67,7 +67,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="C6m-7B-w3R" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-1600" y="-1670"/>
+            <point key="canvasLocation" x="-2878" y="-973"/>
         </scene>
         <!--Sign In View Controller-->
         <scene sceneID="too-CK-03s">
@@ -167,7 +167,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="OZ3-c1-V1T" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="318.84057971014494" y="-1670.3804347826087"/>
+            <point key="canvasLocation" x="-959" y="-973"/>
         </scene>
         <!--Tab Bar Controller-->
         <scene sceneID="DOA-Uj-3zd">
@@ -360,7 +360,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="zTU-34-FpI" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="319" y="-973"/>
+            <point key="canvasLocation" x="52" y="-973"/>
         </scene>
         <!--Create Comment View Controller-->
         <scene sceneID="5oR-HN-sgk">
@@ -480,7 +480,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="Hub-0p-qEV" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1942" y="-973"/>
+            <point key="canvasLocation" x="1674" y="-973"/>
         </scene>
         <!--Intro - 2-->
         <scene sceneID="0Fl-L2-53O">
@@ -530,7 +530,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="JQ4-VQ-4lE" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-957" y="-1670"/>
+            <point key="canvasLocation" x="-2236" y="-973"/>
         </scene>
         <!--Intro - 3-->
         <scene sceneID="gcN-gT-wZq">
@@ -580,7 +580,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5wm-0H-G9z" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-323.1884057971015" y="-1670.3804347826087"/>
+            <point key="canvasLocation" x="-1601" y="-973"/>
         </scene>
         <!--Write Crumb View Controller-->
         <scene sceneID="tfK-am-DQr">
@@ -734,7 +734,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eEM-Jg-h91" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1941" y="-221"/>
+            <point key="canvasLocation" x="1674" y="-307"/>
         </scene>
         <!--yourMsg-->
         <scene sceneID="twW-Il-kHZ">
@@ -938,12 +938,11 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="5Gv-rS-oLj" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1174" y="-973"/>
+            <point key="canvasLocation" x="907" y="-973"/>
         </scene>
         <!--Change User Name View Controller-->
         <scene sceneID="XJb-6L-7VP">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="SDE-eu-e4V" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController storyboardIdentifier="changeUserName" useStoryboardIdentifierAsRestorationIdentifier="YES" id="s1b-KH-qCe" customClass="ChangeUserNameViewController" customModule="BreadCrumbs" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="cGR-lu-2vH"/>
@@ -1018,18 +1017,14 @@
                             <constraint firstItem="Rtj-oY-W8f" firstAttribute="leading" secondItem="9yn-Kd-9IZ" secondAttribute="leading" id="zf1-gb-n4m"/>
                         </constraints>
                     </view>
-                    <connections>
-                        <outlet property="GibMessageLabel" destination="cjR-M5-Lg3" id="5g5-C7-HlC"/>
-                        <outlet property="setUserNameTextField" destination="cIj-Hy-Kpk" id="M7A-Vi-3yb"/>
-                    </connections>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="SDE-eu-e4V" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1174" y="420"/>
+            <point key="canvasLocation" x="907" y="420"/>
         </scene>
         <!--More-->
         <scene sceneID="WDj-OR-dbw">
             <objects>
-                <placeholder placeholderIdentifier="IBFirstResponder" id="NMp-SB-tvt" userLabel="First Responder" sceneMemberID="firstResponder"/>
                 <viewController id="28W-jT-Dei" customClass="SettingsViewController" customModule="BreadCrumbs" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="nk7-86-5I8"/>
@@ -1185,8 +1180,9 @@
                         <offsetWrapper key="titlePositionAdjustment" horizontal="0.0" vertical="-15"/>
                     </tabBarItem>
                 </viewController>
+                <placeholder placeholderIdentifier="IBFirstResponder" id="NMp-SB-tvt" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="319" y="420"/>
+            <point key="canvasLocation" x="52" y="420"/>
         </scene>
         <!--View Controller-->
         <scene sceneID="c5t-7n-IWM">
@@ -1321,7 +1317,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="7l8-v1-egf" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="1174" y="-1670"/>
+            <point key="canvasLocation" x="907" y="-1670"/>
         </scene>
         <!--Others-->
         <scene sceneID="BMT-cR-Rmj">
@@ -1486,7 +1482,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="hX5-uc-dTL" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="319" y="-306"/>
+            <point key="canvasLocation" x="52" y="-307"/>
         </scene>
     </scenes>
     <resources>
@@ -1499,7 +1495,7 @@
         <image name="pexels-photo-25182" width="5689" height="3798"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Z5g-uf-dNi"/>
+        <segue reference="SqE-w9-VHj"/>
         <segue reference="OWZ-9w-7Zi"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.0" green="0.0" blue="1" alpha="0.12023168103448276" colorSpace="calibratedRGB"/>

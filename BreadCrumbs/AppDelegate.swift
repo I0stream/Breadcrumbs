@@ -19,11 +19,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     var seenError : Bool = false
     var locationFixAchieved : Bool = false
     var locationStatus : NSString = "Not Started"
-    let NSUserData = NSUserDefaults.standardUserDefaults()
+    let NSUserData = UserDefaults.standard
     let helperfunctions = Helper()
     
     
-    weak var timer1 = NSTimer()
+    weak var timer1 = Timer()
     
     var backgroundLocationTask: UIBackgroundTaskIdentifier?
     
@@ -31,23 +31,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
 
     //how bout i test this fucker by putting a bullet in it
     
-    func application(application: UIApplication, didFinishLaunchingWithOptions launchOptions: [NSObject: AnyObject]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
        
         self.NSUserData.setValue(0, forKey: "counterLoc")
      
-        if isICloudContainerAvailable() && NSUserData.stringForKey("userName") != nil && NSUserData.stringForKey("recordID") != nil{
-            self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
+        if isICloudContainerAvailable() && NSUserData.string(forKey: "userName") != nil && NSUserData.string(forKey: "recordID") != nil{
+            self.window = UIWindow(frame: UIScreen.main.bounds)
             
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             
             
-            let initialViewController = storyboard.instantiateViewControllerWithIdentifier("TabBarController") as! UITabBarController
+            let initialViewController = storyboard.instantiateViewController(withIdentifier: "TabBarController") as! UITabBarController
             
             self.window?.rootViewController = initialViewController
             self.window?.makeKeyAndVisible()
             
             //gets and sets userrecordID
-            if NSUserData.stringForKey("recordID") == nil/*|| user != signedIn*/{
+            if NSUserData.string(forKey: "recordID") == nil/*|| user != signedIn*/{
                 iCloudUserIDAsync() {
                     recordID, error in
                     if let userID = recordID?.recordName {
@@ -69,16 +69,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
 
             AppDelegate().NSUserData.setValue(0, forKey: "limitArea")
             
-            self.timer1 = NSTimer.scheduledTimerWithTimeInterval(60.0, target: self, selector: #selector(AppDelegate.loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 60 sec for a msg
+            self.timer1 = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(AppDelegate.loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 60 sec for a msg
             
         }
         
         else {
-            self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
+            self.window = UIWindow(frame: UIScreen.main.bounds)
             
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             
-            let initialViewController = storyboard.instantiateViewControllerWithIdentifier("pgManager") as! PageManagerViewController
+            let initialViewController = storyboard.instantiateViewController(withIdentifier: "pgManager") as! PageManagerViewController
             //let initialViewController = storyboard.instantiateViewControllerWithIdentifier("IntroShill")
             
             self.window?.rootViewController = initialViewController
@@ -131,7 +131,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
 
     //mine inits
     func isICloudContainerAvailable()->Bool {
-        if NSFileManager.defaultManager().ubiquityIdentityToken != nil {
+        if FileManager.default.ubiquityIdentityToken != nil {
             return true
         }
         else {
@@ -141,27 +141,27 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     
     //MARK: Further cloudkit functions
     //***********************************************************************************************************************//
-    func iCloudUserIDAsync(complete: (instance: CKRecordID?, error: NSError?) -> ()) {
-        let container = CKContainer.defaultContainer()
-        container.fetchUserRecordIDWithCompletionHandler() {
+    func iCloudUserIDAsync(_ complete: @escaping (_ instance: CKRecordID?, _ error: NSError?) -> ()) {
+        let container = CKContainer.default()
+        container.fetchUserRecordID() {
             recordID, error in
             if error != nil {
                 print(error!.localizedDescription)
-                complete(instance: nil, error: error)
+                complete(nil, error as NSError?)
             } else {
-                complete(instance: recordID, error: nil)
+                complete(recordID, nil)
             }
         }
     }
     
     func getUserInfo(){
-        let container = CKContainer.defaultContainer()
+        let container = CKContainer.default()
         let publicData = container.publicCloudDatabase
-        let CKuserID: CKRecordID = CKRecordID(recordName: NSUserData.stringForKey("recordID")!)
+        let CKuserID: CKRecordID = CKRecordID(recordName: NSUserData.string(forKey: "recordID")!)
         
-        let query = CKQuery(recordType: "UserInfo", predicate: NSPredicate(format: "%K == %@", "creatorUserRecordID" ,CKReference(recordID: CKuserID, action: CKReferenceAction.None)))
+        let query = CKQuery(recordType: "UserInfo", predicate: NSPredicate(format: "%K == %@", "creatorUserRecordID" ,CKReference(recordID: CKuserID, action: CKReferenceAction.none)))
         
-        publicData.performQuery(query, inZoneWithID: nil) {
+        publicData.perform(query, inZoneWith: nil) {
             results, error in
             if error == nil{
                 for userinfo in results! {//need to have this update if user has already signed in before
@@ -176,7 +176,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                     self.NSUserData.setValue(recordName, forKey: "recordName")
                 }
             }else{
-                print(error)
+                print(error!)
             }
         }
         
@@ -193,20 +193,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     //reset date of last check to now
     //***********************************************************************************************************************//
     func AddCrumbCount(){//for both nsuserdefaults and cloudkit
-        var cCount = NSUserData.integerForKey("crumbCount")
+        var cCount = NSUserData.integer(forKey: "crumbCount")
         
-        let Lastdate:NSDate? = NSUserData.objectForKey("SinceLastCheck") as? NSDate
+        let Lastdate:Date? = NSUserData.object(forKey: "SinceLastCheck") as? Date
         
         if cCount < 5 && Lastdate?.description != nil{//extra hour is sneeking its way in here soumehow
             
-            var oldExcess = NSUserData.objectForKey("excesstime") as? Double//excess 'seconds' from last check
+            var oldExcess = NSUserData.object(forKey: "excesstime") as? Double//excess 'seconds' from last check
             
             if oldExcess == nil {//if blank give it zero
                 oldExcess = 0.0
             }
             
             let timeElapsedh = Int((-Lastdate!.timeIntervalSinceNow + oldExcess!) / 3600)//converts nsdate to time elapsed in hours
-            let excess = round((-Lastdate!.timeIntervalSinceNow + oldExcess!) % 3600)
+            let excess = round((-Lastdate!.timeIntervalSinceNow + oldExcess!).truncatingRemainder(dividingBy: 3600))
             
             //print("hours elapsed:\(timeElapsedh) extra seconds stored:\(round(oldExcess!)) s")
             
@@ -220,7 +220,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             
             self.NSUserData.setValue(excess, forKey: "excesstime")//unused seconds from this check
             
-            self.NSUserData.setValue(NSDate(), forKey: "SinceLastCheck")
+            self.NSUserData.setValue(Date(), forKey: "SinceLastCheck")
             
         }
      
@@ -230,30 +230,30 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     //***********************************************************************************************************************//
 
     
-    func locationManager(manager: CLLocationManager, didFailWithError error: NSError) {
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
         locationManager.stopUpdatingLocation()
         print(error)
     }
     
-    func locationManager(manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
     }
     
-    func locationManager(manager: CLLocationManager,
-                         didChangeAuthorizationStatus status: CLAuthorizationStatus) {
+    func locationManager(_ manager: CLLocationManager,
+                         didChangeAuthorization status: CLAuthorizationStatus) {
         var shouldIAllow = false
         
         switch status {
-        case CLAuthorizationStatus.Restricted:
+        case CLAuthorizationStatus.restricted:
             locationStatus = "Restricted Access to location"
-        case CLAuthorizationStatus.Denied:
+        case CLAuthorizationStatus.denied:
             locationStatus = "User denied access to location"
-        case CLAuthorizationStatus.NotDetermined:
+        case CLAuthorizationStatus.notDetermined:
             locationStatus = "Status not determined"
         default:
             locationStatus = "Allowed to location Access"
             shouldIAllow = true
         }
-        NSNotificationCenter.defaultCenter().postNotificationName("LabelHasbeenUpdated", object: nil)
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "LabelHasbeenUpdated"), object: nil)
         if (shouldIAllow == true) {
             NSLog("Location to Allowed")
             // Start location services
@@ -270,32 +270,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         lazy var managedObjectContext: NSManagedObjectContext = {
         // Returns the managed object context for the application (which is already bound to the persistent store coordinator for the application.) This property is optional since there are legitimate error conditions that could cause the creation of the context to fail.
         let coordinator = self.persistentStoreCoordinator
-        var managedObjectContext = NSManagedObjectContext(concurrencyType: .MainQueueConcurrencyType)
+        var managedObjectContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
         managedObjectContext.persistentStoreCoordinator = coordinator
         return managedObjectContext
     }()
     
-    lazy var applicationDocumentsDirectory: NSURL = {
-        let urls = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)
+    lazy var applicationDocumentsDirectory: URL = {
+        let urls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         return urls[urls.count-1]
     }()
     
     lazy var managedObjectModel: NSManagedObjectModel = {
-        let modelURL = NSBundle.mainBundle().URLForResource("MessageDataModel", withExtension: "momd")!
-        return NSManagedObjectModel(contentsOfURL: modelURL)!
+        let modelURL = Bundle.main.url(forResource: "MessageDataModel", withExtension: "momd")!
+        return NSManagedObjectModel(contentsOf: modelURL)!
     }()
     
     lazy var persistentStoreCoordinator: NSPersistentStoreCoordinator = {
         let coordinator = NSPersistentStoreCoordinator(managedObjectModel: self.managedObjectModel)
-        let url = self.applicationDocumentsDirectory.URLByAppendingPathComponent("BreadCrumbs.sqlite")
+        let url = self.applicationDocumentsDirectory.appendingPathComponent("BreadCrumbs.sqlite")
         var failureReason = "There was an error creating or loading the application's saved data."
         do {
-            try coordinator.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: url, options: nil)
+            try coordinator.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: url, options: nil)
         } catch {
             // Report any error we got.
             var dict = [String: AnyObject]()
-            dict[NSLocalizedDescriptionKey] = "Failed to initialize the application's saved data"
-            dict[NSLocalizedFailureReasonErrorKey] = failureReason
+            dict[NSLocalizedDescriptionKey] = "Failed to initialize the application's saved data" as AnyObject?
+            dict[NSLocalizedFailureReasonErrorKey] = failureReason as AnyObject?
             
             dict[NSUnderlyingErrorKey] = error as NSError
             let wrappedError = NSError(domain: "YOUR_ERROR_DOMAIN", code: 9999, userInfo: dict)
@@ -325,12 +325,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     //MARK: misc stack
     //***********************************************************************************************************************//
 
-    func applicationWillResignActive(application: UIApplication) {
+    func applicationWillResignActive(_ application: UIApplication) {
         // Sent when the application is about to move from active to inactive state. This can occur for certain types of temporary interruptions (such as an incoming phone call or SMS message) or when the user quits the application and it begins the transition to the background state.
         // Use this method to pause ongoing tasks, disable timers, and throttle down OpenGL ES frame rates. Games should use this method to pause the game.
     }
     
-    func applicationDidEnterBackground(application: UIApplication) {
+    func applicationDidEnterBackground(_ application: UIApplication) {
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
         self.NSUserData.setValue(0, forKey: "counterLoc")
@@ -339,32 +339,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
     }
     
-    func applicationWillEnterForeground(application: UIApplication) {
+    func applicationWillEnterForeground(_ application: UIApplication) {
         // Called as part of the transition from the background to the inactive state; here you can undo many of the changes made on entering the background.
         }
     
-    func applicationDidBecomeActive(application: UIApplication) {
+    func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
         
-        if isICloudContainerAvailable() && NSUserData.stringForKey("userName") != nil && locationManager.location != nil{
+        if isICloudContainerAvailable() && NSUserData.string(forKey: "userName") != nil && locationManager.location != nil{
             loadAndStoreiCloudMsgsBasedOnLoc()
             //UPDATE VOTES HERE
             helperfunctions.updateTableViewVoteValues()//updates all votes
             //should use delegation or something
-            NSNotificationCenter.defaultCenter().postNotificationName("load", object: nil)//reloads crmessages from cd everywhere
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "load"), object: nil)//reloads crmessages from cd everywhere
             AddCrumbCount()
             /*if !checkLocation(){
                 
             }*/
             
-        }else if isICloudContainerAvailable() && NSUserData.stringForKey("userName") == nil{
-            NSNotificationCenter.defaultCenter().postNotificationName("ReloadSignIn", object: nil)
+        }else if isICloudContainerAvailable() && NSUserData.string(forKey: "userName") == nil{
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "ReloadSignIn"), object: nil)
             
-            self.window = UIWindow(frame: UIScreen.mainScreen().bounds)
+            self.window = UIWindow(frame: UIScreen.main.bounds)
             
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             
-            let initialViewController = storyboard.instantiateViewControllerWithIdentifier("SignIn")
+            let initialViewController = storyboard.instantiateViewController(withIdentifier: "SignIn")
             
             self.window?.rootViewController = initialViewController
             self.window?.makeKeyAndVisible()
@@ -373,7 +373,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         //When app is reopened check cloudkit for updated vote values for crumbs that are still alive
     }
     
-    func applicationWillTerminate(application: UIApplication) {//when app terminates terminate timers and look for large loc changes
+    func applicationWillTerminate(_ application: UIApplication) {//when app terminates terminate timers and look for large loc changes
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:
         
         self.saveContext()

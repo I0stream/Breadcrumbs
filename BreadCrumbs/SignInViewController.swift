@@ -8,6 +8,30 @@
 
 import UIKit
 import CloudKit
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l > r
+  default:
+    return rhs < lhs
+  }
+}
+
 
 class SignInViewController: UIViewController, UITextFieldDelegate {
 
@@ -28,33 +52,33 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         checkUserStatus()
         // Do any additional setup after loading the view.
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(SignInViewController.loadList(_:)),name:"ReloadSignIn", object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(SignInViewController.loadList(_:)),name:NSNotification.Name(rawValue: "ReloadSignIn"), object: nil)
         
-        ErrorDisp.hidden = true
+        ErrorDisp.isHidden = true
 
     }
-    func loadList(notification: NSNotification){//yayay//This solves the others crumbs problem i think
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+    func loadList(_ notification: Notification){//yayay//This solves the others crumbs problem i think
+        DispatchQueue.main.async(execute: { () -> Void in
             self.checkUserStatus()
         })
     }
     
     //cloudkit user authentication
     func checkUserStatus(){
-        if NSFileManager.defaultManager().ubiquityIdentityToken != nil {
+        if FileManager.default.ubiquityIdentityToken != nil {
             //print("a user is signed into icloud")
-            signUpButton.enabled = true
-            ErrorDisp.hidden = true
+            signUpButton.isEnabled = true
+            ErrorDisp.isHidden = true
         }
         else {
             ErrorDisp.text! = "Please sign into icloud and enable icloud drive"
-            ErrorDisp.hidden = false
+            ErrorDisp.isHidden = false
         }
     }
  
-    func createUserInfo(username: String){
+    func createUserInfo(_ username: String){
         
-        let container = CKContainer.defaultContainer()
+        let container = CKContainer.default()
         let publicData = container.publicCloudDatabase
         
         let record = CKRecord(recordType: "UserInfo")
@@ -63,15 +87,15 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         record.setValue(5, forKey: "crumbCount")
         record.setValue(0, forKey: "premiumStatus")
         
-        publicData.saveRecord(record, completionHandler: { record, error in
+        publicData.save(record, completionHandler: { record, error in
             if error != nil {
                 print(error.debugDescription)
             }
         })
         
     }
-    func textFieldDidEndEditing(textField: UITextField) {
-        AView.hidden = false
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        AView.isHidden = false
         //signUpButton.hidden = false
     }
     
@@ -80,7 +104,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     
     //sign in action
     
-    @IBAction func signUpAction(sender: UIButton) {
+    @IBAction func signUpAction(_ sender: UIButton) {
         
         
         if  setUserNameTextField.text?.characters.count > 0 && setUserNameTextField.text?.characters.count < 21 {
@@ -91,13 +115,13 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
             NSUserData.setValue(setUserNameTextField.text, forKey: "userName")
             NSUserData.setValue(5, forKey: "crumbCount")// let cCount = NSUserData.integerForKey("crumbCount")
             
-            let time = NSDate()
+            let time = Date()
             
             self.NSUserData.setValue(time, forKey: "SinceLastCheck")
             
             NSUserData.setValue(0, forKey: "premiumStatus")
             
-            print("\n\(NSUserData.stringForKey("userName")!) is my name!")
+            print("\n\(NSUserData.string(forKey: "userName")!) is my name!")
             self.resignFirstResponder()
             
             //gets and sets userrecordID
@@ -111,12 +135,12 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
                     print("Fetched iCloudID was nil")
                 }
             }
-            performSegueWithIdentifier("SignInSegue", sender: sender)//presents weird and i also want user to be able to access this and sign out/in again. cant change username after picking though. may need more view controllers
+            performSegue(withIdentifier: "SignInSegue", sender: sender)//presents weird and i also want user to be able to access this and sign out/in again. cant change username after picking though. may need more view controllers
         }
         else if setUserNameTextField.text?.characters.count < 0 || setUserNameTextField.text?.characters.count > 21{
             ErrorDisp.text = "enter a valid length username"
-            ErrorDisp.hidden = false
-        } else if NSFileManager.defaultManager().ubiquityIdentityToken == nil{
+            ErrorDisp.isHidden = false
+        } else if FileManager.default.ubiquityIdentityToken == nil{
             print("do nothing")
         }
     }
@@ -130,15 +154,15 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         view.endEditing(true)
     }
     
-    func iCloudUserIDAsync(complete: (instance: CKRecordID?, error: NSError?) -> ()) {
-        let container = CKContainer.defaultContainer()
-        container.fetchUserRecordIDWithCompletionHandler() {
+    func iCloudUserIDAsync(_ complete: @escaping (_ instance: CKRecordID?, _ error: NSError?) -> ()) {
+        let container = CKContainer.default()
+        container.fetchUserRecordID() {
             recordID, error in
             if error != nil {
                 print(error!.localizedDescription)
-                complete(instance: nil, error: error)
+                complete(nil, error as NSError?)
             } else {
-                complete(instance: recordID, error: nil)
+                complete(recordID, nil)
             }
         }
     }

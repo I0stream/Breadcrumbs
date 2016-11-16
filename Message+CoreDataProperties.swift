@@ -22,13 +22,13 @@ extension Message {
     @NSManaged var latitude: NSNumber?
     @NSManaged var longitude: NSNumber?
     @NSManaged var speed: NSNumber?
-    @NSManaged var timestamp: NSDate?
+    @NSManaged var timestamp: Date?
     @NSManaged var verticalAccuracy: NSNumber?
 
     //MSG Attributtes
     @NSManaged var senderName: String?
     @NSManaged var text: String?
-    @NSManaged var timeDropped: NSDate?
+    @NSManaged var timeDropped: Date?
     @NSManaged var timeLimit: NSNumber?
     @NSManaged var senderuuid: String?
     @NSManaged var votevalue: NSNumber?
@@ -38,16 +38,16 @@ extension Message {
     @NSManaged var addressStr: String?//stores an address like this "\(locality!), \(thoroughfare!), \(country!)"
     //@NSManaged var creatorUniqueID: String //used to test messages against each other, allows multiple people to have the same name
     
-    func initFromLocation(location: CLLocation) {
-        self.latitude           = location.coordinate.latitude
-        self.longitude          = location.coordinate.longitude
-        self.altitude           = location.altitude
+    func initFromLocation(_ location: CLLocation) {
+        self.latitude           = location.coordinate.latitude as NSNumber?
+        self.longitude          = location.coordinate.longitude as NSNumber?
+        self.altitude           = location.altitude as NSNumber?
         self.timestamp          = location.timestamp
         
-        self.horizontalAccuracy = location.horizontalAccuracy > 0.0 ? location.horizontalAccuracy : 0.0
-        self.verticalAccuracy   = location.verticalAccuracy > 0.0 ? location.verticalAccuracy : 0.0
-        self.speed              = location.speed > 0.0 ? location.speed : 0.0
-        self.course             = location.course > 0.0 ? location.course : 0.0
+        self.horizontalAccuracy = location.horizontalAccuracy as NSNumber?
+        self.verticalAccuracy   = location.verticalAccuracy as NSNumber?
+        self.speed              = location.speed as NSNumber?
+        self.course             = location.course as NSNumber?
     }
     
     
@@ -70,11 +70,11 @@ extension Message {
         
         let timeDropped = self.timeDropped!
         
-        let timeDeadline:NSDate = timeDropped.dateByAddingTimeInterval(Double(timeLimit!))
+        let timeDeadline:Date = timeDropped.addingTimeInterval(Double(timeLimit!))
         
-        let timeCurrent: NSDate = NSDate()
+        let timeCurrent: Date = Date()
         
-        let timeLeft = timeDeadline.timeIntervalSinceDate(timeCurrent)
+        let timeLeft = timeDeadline.timeIntervalSince(timeCurrent)
         
         if timeLeft >= 0 {
             print(timeLeft)

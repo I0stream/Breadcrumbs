@@ -8,6 +8,30 @@
 
 import UIKit
 import CloudKit
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l < r
+  case (nil, _?):
+    return true
+  default:
+    return false
+  }
+}
+
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+  switch (lhs, rhs) {
+  case let (l?, r?):
+    return l > r
+  default:
+    return rhs < lhs
+  }
+}
+
 
 class ChangeUserNameViewController: SettingsViewController {
     
@@ -28,36 +52,36 @@ class ChangeUserNameViewController: SettingsViewController {
         // Dispose of any resources that can be recreated.
     }
     
-    func changeNameCK(userInput: String){
+    func changeNameCK(_ userInput: String){
         //take record id and use that and the new name to update ck
-        let container = CKContainer.defaultContainer()
+        let container = CKContainer.default()
         let publicData = container.publicCloudDatabase
         
-        let recordID = CKRecordID(recordName: NSUserData.stringForKey("recordID")!)
+        let recordID = CKRecordID(recordName: NSUserData.string(forKey: "recordID")!)
         
-        publicData.fetchRecordWithID(recordID, completionHandler: {record, error in
+        publicData.fetch(withRecordID: recordID, completionHandler: {record, error in
             if error == nil{
                 
-                record!.setObject(userInput, forKey: "userName")
+                record!.setObject(userInput as CKRecordValue?, forKey: "userName")
                 
-                publicData.saveRecord(record!, completionHandler: {theRecord, error in
+                publicData.save(record!, completionHandler: {theRecord, error in
                     if error == nil{
                         //print("successful update!")
-                        dispatch_async(dispatch_get_main_queue()) {
+                        DispatchQueue.main.async {
                             self.UserNameLabel.text = userInput
                         }
                     }else{
-                        print(error)
+                        print(error.debugDescription)
                     }
                 })
             }else{
-                print(error)
+                print(error.debugDescription)
             }
         })
     }
     
     //the button action that changes the username
-    @IBAction func ChangeNameButton(sender: AnyObject) {
+    @IBAction func ChangeNameButton(_ sender: AnyObject) {
         if ChangeNameField.text?.characters.count < 1 || ChangeNameField.text?.characters.count > 16{
             errorMessageLabel.text = "enter a valid username"
         }else{
@@ -71,5 +95,5 @@ class ChangeUserNameViewController: SettingsViewController {
     }
 }
 protocol ChangeUserNameViewControllerDelegate: class {
-    func changedUsername(str: String)
+    func changedUsername(_ str: String)
 }

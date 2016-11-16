@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="11542" systemVersion="15G1108" minimumToolsVersion="Xcode 7.0" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="Comment" representedClassName=".Comment" syncable="YES" codeGenerationType="category">
+    <entity name="Comment" representedClassName=".Comment" syncable="YES">
         <attribute name="text" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="timeSent" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="username" optional="YES" attributeType="String" syncable="YES"/>
@@ -28,7 +28,7 @@
         <relationship name="comments" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Comment" inverseName="message" inverseEntity="Comment" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Message" positionX="-54" positionY="36" width="126" height="58"/>
-        <element name="Comment" positionX="367" positionY="324" width="128" height="58"/>
+        <element name="Comment" positionX="214" positionY="113" width="128" height="103"/>
+        <element name="Message" positionX="-54" positionY="36" width="126" height="328"/>
     </elements>
 </model>

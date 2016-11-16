@@ -26,12 +26,12 @@ class OthersCrumbsTableViewCell: UITableViewCell {
         super.awakeFromNib()
     }
 
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
     }
-    @IBAction func UpvoteAction(sender: AnyObject) {
+    @IBAction func UpvoteAction(_ sender: AnyObject) {
     }
-    @IBAction func DownvoteAction(sender: AnyObject) {
+    @IBAction func DownvoteAction(_ sender: AnyObject) {
     }
     
 

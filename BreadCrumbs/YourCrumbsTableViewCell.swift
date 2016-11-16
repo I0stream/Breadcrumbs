@@ -24,7 +24,7 @@ class YourCrumbsTableViewCell: UITableViewCell {
         // Initialization code
     }
 
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
         //NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: #selector(YourCrumbsTableViewCell().countinDown), userInfo: nil, repeats: true)
@@ -32,7 +32,7 @@ class YourCrumbsTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
 
-    @IBAction func editActionButton(sender: AnyObject) {//for deleting msgs only yours
+    @IBAction func editActionButton(_ sender: AnyObject) {//for deleting msgs only yours
         print("pressed")//probably do this through delegation
         //delegate button pressed
         //cell index to open this cells editing

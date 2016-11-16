@@ -12,22 +12,22 @@ import CloudKit
 
 class Helper{
     
-    let NSUserData = NSUserDefaults.standardUserDefaults()
+    let NSUserData = UserDefaults.standard
     
     //MARK: LOAD
-    func loadIcloudMessageToCoreData(query: CKQuery) {// used in appdelegate and signinviewcontroller
+    func loadIcloudMessageToCoreData(_ query: CKQuery) {// used in appdelegate and signinviewcontroller
         //get public database object
-        let container = CKContainer.defaultContainer()
+        let container = CKContainer.default()
         let publicData = container.publicCloudDatabase
         
-        publicData.performQuery(query, inZoneWithID: nil) { results, error in
+        publicData.perform(query, inZoneWith: nil) { results, error in
             if error == nil{ // There is no error
                 for cmsg in results! {
                     
                     let dbtext = cmsg["text"] as! String
                     let dbsenderName = cmsg["senderName"] as! String
                     let dblocation = cmsg["location"] as! CLLocation
-                    let dbtimedropped = cmsg["timeDropped"] as! NSDate
+                    let dbtimedropped = cmsg["timeDropped"] as! Date
                     let dbtimelimit = cmsg["timeLimit"] as! Int
                     let dbvotes = cmsg["votes"] as! Int
                     let dbsenderuuid = cmsg["senderuuid"] as! String
@@ -38,28 +38,28 @@ class Helper{
                     
                     loadedMessage!.uRecordID = uniqueRecordID
                     
-                    let testID = loadedMessage?.senderuuid != self.NSUserData.stringForKey("recordID")!
+                    let testID = loadedMessage?.senderuuid != self.NSUserData.string(forKey: "recordID")!
                     
-                    print(loadedMessage?.senderName)
-                    print(loadedMessage?.location)
+                    print(loadedMessage?.senderName as Any)
+                    print(loadedMessage?.location.description as Any)
                     print(loadedMessage!.calculate())
                     
                     if (loadedMessage!.calculate() > 0) && testID{
                         
                         //TESTS IF LOADED MSG IS IN COREDATA IF NOT THEN STORES IT BRAH
-                        let fetchRequest = NSFetchRequest(entityName: "Message")
+                        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Message")
                         let cdPredicate = NSPredicate(format: "recorduuid == %@", loadedMessage!.uRecordID!)
                         fetchRequest.predicate = cdPredicate
                         
                         do {
-                            if let fetchResults = try self.moc.executeFetchRequest(fetchRequest) as? [Message]{
+                            if let fetchResults = try self.moc.fetch(fetchRequest) as? [Message]{
                                 if fetchResults.isEmpty{//keep reading tuts man your having mucho trouble-o
                                     //loadedMessage!.convertCoordinatesToAddress((loadedMessage!.location), completion: { (answer) in
                                         
                                         //loadedMessage!.addressStr = answer!
                                         
                                         self.saveToCoreData(loadedMessage!)
-                                        if UIApplication.sharedApplication().applicationState != UIApplicationState.Active{
+                                        if UIApplication.shared.applicationState != UIApplicationState.active{
                                             self.notify()//if this is how we will do it, we must have a seen and unseen marker
                                         }
                                         
@@ -90,30 +90,30 @@ class Helper{
                     }else{break}
                 }
             }else {
-                print(error)//print error
+                print(error.debugDescription)//print error
             }
         }
 
     }
 
     //tests if messages have been recently recieved in teh area  limited to 6/IS UNTESTED/
-    func testStoredMsgsInArea(usersLocation: CLLocation){
+    func testStoredMsgsInArea(_ usersLocation: CLLocation){
         var crumbmessagestotest = [Int]()
         
-        let fetchRequest = NSFetchRequest()
-        let entityDescription = NSEntityDescription.entityForName("Message", inManagedObjectContext: moc)
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>()
+        let entityDescription = NSEntityDescription.entity(forEntityName: "Message", in: moc)
         
         fetchRequest.entity = entityDescription
         
         do {
-            let fetchedmsgsCD = try moc.executeFetchRequest(fetchRequest) as! [Message]
+            let fetchedmsgsCD = try moc.fetch(fetchRequest) as! [Message]
             
             var i = 0
             while  i <= (fetchedmsgsCD.count - 1){//loops through all of coredata store
                 
                 let msgloc = fetchedmsgsCD[i].cdlocation() as CLLocation
                 
-                let nearby = msgloc.distanceFromLocation(usersLocation)// does not take into account high rise buildings
+                let nearby = msgloc.distance(from: usersLocation)// does not take into account high rise buildings
                 if nearby < 50{//is within x meters of users loc
                     
                     let value = 1
@@ -138,17 +138,17 @@ class Helper{
     
     //used in yourTableView and othersTableView
     //If true load myUsers, if false loadOthers also remember to add to crumbmessages[]
-    func loadCoreDataMessage(typeOfCrumbLoading:Bool) -> [CrumbMessage]? {        
+    func loadCoreDataMessage(_ typeOfCrumbLoading:Bool) -> [CrumbMessage]? {        
         var crumbmessagestoload = [CrumbMessage]()
         
-        let fetchRequest = NSFetchRequest()
-        let entityDescription = NSEntityDescription.entityForName("Message", inManagedObjectContext: moc)
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>()
+        let entityDescription = NSEntityDescription.entity(forEntityName: "Message", in: moc)
         
         fetchRequest.entity = entityDescription
         
         do {
-            let fetchedmsgsCD = try moc.executeFetchRequest(fetchRequest) as! [Message]
-            let Usersendername = NSUserData.stringForKey("recordID")!//user user unique id
+            let fetchedmsgsCD = try moc.fetch(fetchRequest) as! [Message]
+            let Usersendername = NSUserData.string(forKey: "recordID")!//user user unique id
             
             var i = 0
             while  i <= (fetchedmsgsCD.count - 1){//loops through all of coredata store
@@ -158,7 +158,7 @@ class Helper{
                         let fmtext = fetchedmsgsCD[i].text! as String
                         let fmsenderName = fetchedmsgsCD[i].senderName! as String
                         let fmlocation = fetchedmsgsCD[i].cdlocation() as CLLocation
-                        let fmtimedropped = fetchedmsgsCD[i].timeDropped! as NSDate
+                        let fmtimedropped = fetchedmsgsCD[i].timeDropped! as Date
                         let fmtimelimit = fetchedmsgsCD[i].timeLimit as! Int
                         let fmsenderuuid = fetchedmsgsCD[i].senderuuid! as String
                         let fmvotes = fetchedmsgsCD[i].votevalue as! Int
@@ -177,7 +177,7 @@ class Helper{
                         let fmtext = fetchedmsgsCD[i].text! as String
                         let fmsenderName = fetchedmsgsCD[i].senderName! as String
                         let fmlocation = fetchedmsgsCD[i].cdlocation() as CLLocation
-                        let fmtimedropped = fetchedmsgsCD[i].timeDropped! as NSDate
+                        let fmtimedropped = fetchedmsgsCD[i].timeDropped! as Date
                         let fmtimelimit = fetchedmsgsCD[i].timeLimit as! Int
                         let fmsenderuuid = fetchedmsgsCD[i].senderuuid! as String
                         let fmvote = fetchedmsgsCD[i].votevalue! as Int
@@ -214,13 +214,13 @@ class Helper{
         // ******************************************
         var RecordIDsToTest = [String]()//takes ids of stored alive crumbs
         
-        let fetchRequest = NSFetchRequest()
-        let entityDescription = NSEntityDescription.entityForName("Message", inManagedObjectContext: moc)
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>()
+        let entityDescription = NSEntityDescription.entity(forEntityName: "Message", in: moc)
         
         fetchRequest.entity = entityDescription
         
         do {
-            let fetchedmsgsCD = try moc.executeFetchRequest(fetchRequest) as! [Message]
+            let fetchedmsgsCD = try moc.fetch(fetchRequest) as! [Message]
             var i = 0
             
             while  i <= (fetchedmsgsCD.count - 1){//loops through all of coredata store
@@ -241,21 +241,21 @@ class Helper{
         //take alive crumbs and make an updater call to ck, update votevalue in alive crumbs
         // ****************************************** //
         
-        let container = CKContainer.defaultContainer()
+        let container = CKContainer.default()
         let publicData = container.publicCloudDatabase
         
         for id in RecordIDsToTest{
             let ckidToTest = CKRecordID(recordName: id)//the message record id to fetch from cloudkit
             
-            publicData.fetchRecordWithID(ckidToTest, completionHandler: {record, error in
+            publicData.fetch(withRecordID: ckidToTest, completionHandler: {record, error in
                 if error == nil{
-                    let newvalue = record!.objectForKey("votes") as! Int
+                    let newvalue = record!.object(forKey: "votes") as! Int
                     
                     //update cd with new vote values
                     // *******************************************/
                     self.updateCdVote(id, voteValue: newvalue)
                 }else{
-                    print(error)
+                    print(error.debugDescription)
                 }
             })
         }
@@ -265,13 +265,13 @@ class Helper{
     }
     
     //used above, takes id and new vote value and updates the alive message. I think
-    func updateCdVote(cdrecorduuid: String, voteValue: Int){
+    func updateCdVote(_ cdrecorduuid: String, voteValue: Int){
         let predicate = NSPredicate(format: "recorduuid == %@", cdrecorduuid)
-        let fetchRequest = NSFetchRequest(entityName: "Message")
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Message")
         fetchRequest.predicate = predicate
         
         do {// change it, it not work y?
-            let fetchedMsgs = try AppDelegate().managedObjectContext.executeFetchRequest(fetchRequest) as! [Message]
+            let fetchedMsgs = try AppDelegate().managedObjectContext.fetch(fetchRequest) as! [Message]
 
             fetchedMsgs.first?.setValue(voteValue, forKey: "votevalue")
             
@@ -290,10 +290,10 @@ class Helper{
     
     
     //MARK: SAVE
-    func saveToCoreData(crumbmessage: CrumbMessage){
+    func saveToCoreData(_ crumbmessage: CrumbMessage){
         //create Message: NSManagedObject
         
-        let messageMO = NSEntityDescription.insertNewObjectForEntityForName("Message", inManagedObjectContext: moc) as! BreadCrumbs.Message
+        let messageMO = NSEntityDescription.insertNewObject(forEntityName: "Message", into: moc) as! BreadCrumbs.Message
         
         messageMO.setValue(crumbmessage.text, forKey: "text")
         messageMO.setValue(crumbmessage.senderName, forKey: "senderName")
@@ -324,17 +324,17 @@ class Helper{
     
     
     //MARK: DELETE
-    @objc func cloudKitDeleteCrumb(currentRecordID: CKRecordID){//should only be used by timelimit checkers/load and store
+    @objc func cloudKitDeleteCrumb(_ currentRecordID: CKRecordID){//should only be used by timelimit checkers/load and store
         
-        let container = CKContainer.defaultContainer()
+        let container = CKContainer.default()
         let publicData = container.publicCloudDatabase
         
-        publicData.deleteRecordWithID(currentRecordID, completionHandler: { (record, error) in
+        publicData.delete(withRecordID: currentRecordID, completionHandler: { (record, error) in
             if error == nil{
                 print("record is deleted from cloudkit")
             }else{
                 print("error in cloudkitdeletecrumb in helperfunctions")
-                print(error)
+                print(error.debugDescription)
                 
                 //alert user delete failed
             }
@@ -343,16 +343,16 @@ class Helper{
         //save?
     }
     
-    func coreDataDeleteCrumb(cdrecorduuid: String){
+    func coreDataDeleteCrumb(_ cdrecorduuid: String){
         let cdPredicate = NSPredicate(format: "recorduuid == %@", cdrecorduuid)
 
-        let fetchRequest = NSFetchRequest(entityName: "Message")
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Message")
         fetchRequest.predicate = cdPredicate
         
         do {
-            let fetchedEntities = try moc.executeFetchRequest(fetchRequest) as! [Message]
+            let fetchedEntities = try moc.fetch(fetchRequest) as! [Message]
             if let entityToDelete = fetchedEntities.first {
-                moc.deleteObject(entityToDelete)
+                moc.delete(entityToDelete)
                 print("record is deleted from coredata")
             }
         } catch {
@@ -374,24 +374,24 @@ class Helper{
     //Notification function for load and store
     
     func notify() {//used in load and store
-        guard let settings = UIApplication.sharedApplication().currentUserNotificationSettings() else { return }
+        guard let settings = UIApplication.shared.currentUserNotificationSettings else { return }
         
-        if settings.types == .None {
-            let ac = UIAlertController(title: "Can't schedule", message: "Either we don't have permission to schedule notifications, or we haven't asked yet.", preferredStyle: .Alert)
-            ac.addAction(UIAlertAction(title: "OK", style: .Default, handler: nil))
+        if settings.types == UIUserNotificationType() {
+            let ac = UIAlertController(title: "Can't schedule", message: "Either we don't have permission to schedule notifications, or we haven't asked yet.", preferredStyle: .alert)
+            ac.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
             return
         }
         
         let notification = UILocalNotification()
-        notification.fireDate = NSDate(timeIntervalSinceNow: 5)
+        notification.fireDate = Date(timeIntervalSinceNow: 5)
         notification.alertBody = "New Breadcrumbs! come check'em out!"
         notification.alertAction = "Confirm"
         notification.soundName = UILocalNotificationDefaultSoundName
         notification.userInfo = ["CustomField1": "w00t"]
-        UIApplication.sharedApplication().scheduleLocalNotification(notification)
+        UIApplication.shared.scheduleLocalNotification(notification)
         
         print("ping notif: new Breadcrumb!")//ping notif
-        NSNotificationCenter.defaultCenter().postNotificationName("loadOthers", object: nil)//loads new msgs from cd
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "loadOthers"), object: nil)//loads new msgs from cd
     }
 
     
@@ -401,36 +401,36 @@ class Helper{
     lazy var moc: NSManagedObjectContext = {
         // Returns the managed object context for the application (which is already bound to the persistent store coordinator for the application.) This property is optional since there are legitimate error conditions that could cause the creation of the context to fail.
         let coordinator = self.persistentStoreCoordinator
-        var managedObjectContext = NSManagedObjectContext(concurrencyType: .MainQueueConcurrencyType)
+        var managedObjectContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
         managedObjectContext.persistentStoreCoordinator = coordinator
         return managedObjectContext
     }()
     
-    lazy var applicationDocumentsDirectory: NSURL = {
+    lazy var applicationDocumentsDirectory: URL = {
         // The directory the application uses to store the Core Data store file. This code uses a directory named "uk.co.plymouthsoftware.core_data" in the application's documents Application Support directory.
-        let urls = NSFileManager.defaultManager().URLsForDirectory(.DocumentDirectory, inDomains: .UserDomainMask)
+        let urls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
         return urls[urls.count-1]
     }()
     
     lazy var managedObjectModel: NSManagedObjectModel = {
         // The managed object model for the application. This property is not optional. It is a fatal error for the application not to be able to find and load its model.
-        let modelURL = NSBundle.mainBundle().URLForResource("MessageDataModel", withExtension: "momd")!
-        return NSManagedObjectModel(contentsOfURL: modelURL)!
+        let modelURL = Bundle.main.url(forResource: "MessageDataModel", withExtension: "momd")!
+        return NSManagedObjectModel(contentsOf: modelURL)!
     }()
     
     lazy var persistentStoreCoordinator: NSPersistentStoreCoordinator = {
         // The persistent store coordinator for the application. This implementation creates and return a coordinator, having added the store for the application to it. This property is optional since there are legitimate error conditions that could cause the creation of the store to fail.
         // Create the coordinator and store
         let coordinator = NSPersistentStoreCoordinator(managedObjectModel: self.managedObjectModel)
-        let url = self.applicationDocumentsDirectory.URLByAppendingPathComponent("BreadCrumbs.sqlite")
+        let url = self.applicationDocumentsDirectory.appendingPathComponent("BreadCrumbs.sqlite")
         var failureReason = "There was an error creating or loading the application's saved data."
         do {
-            try coordinator.addPersistentStoreWithType(NSSQLiteStoreType, configuration: nil, URL: url, options: nil)
+            try coordinator.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: url, options: nil)
         } catch {
             // Report any error we got.
             var dict = [String: AnyObject]()
-            dict[NSLocalizedDescriptionKey] = "Failed to initialize the application's saved data"
-            dict[NSLocalizedFailureReasonErrorKey] = failureReason
+            dict[NSLocalizedDescriptionKey] = "Failed to initialize the application's saved data" as AnyObject?
+            dict[NSLocalizedFailureReasonErrorKey] = failureReason as AnyObject?
             
             dict[NSUnderlyingErrorKey] = error as NSError
             let wrappedError = NSError(domain: "YOUR_ERROR_DOMAIN", code: 9999, userInfo: dict)

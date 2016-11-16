@@ -14,9 +14,9 @@ class CommentShort {
     
     let username: String
     let text: String
-    let timeSent: NSDate
+    let timeSent: Date
     
-    init(username: String, text: String, timeSent: NSDate) {
+    init(username: String, text: String, timeSent: Date) {
         self.username = username
         self.text = text
         self.timeSent = timeSent
@@ -27,15 +27,15 @@ class CommentShort {
    
     
     func dateToStringFormat() -> String{
-        let calendar = NSCalendar.currentCalendar()
-        let components = calendar.components([.Day , .Month , .Year], fromDate: timeSent)
+        let calendar = Calendar.current
+        let components = (calendar as NSCalendar).components([.day , .month , .year], from: timeSent)
         
         //let year =  components.year
         let month = components.month
         let day = components.day
         var StringDate = ""
         
-        switch month {
+        switch month! {
         case 1:
             StringDate = "Jan"
         case 2:
@@ -68,7 +68,7 @@ class CommentShort {
         return StringDate
     }
     
-    func saveAndAddNewComment(uniqueRecordID: String) {
+    func saveAndAddNewComment(_ uniqueRecordID: String) {
         //saveToCD(uniqueRecordID)
         //saveToCK(uniqueRecordID)
     }
@@ -145,13 +145,13 @@ class CommentShort {
         return newdate
     }
     func dateOrganizer() -> String{//short style dates for timeposted
-        let dateformatter = NSDateFormatter()
+        let dateformatter = DateFormatter()
         
-        dateformatter.dateStyle = NSDateFormatterStyle.ShortStyle
+        dateformatter.dateStyle = DateFormatter.Style.short
         
-        dateformatter.timeStyle = NSDateFormatterStyle.ShortStyle
+        dateformatter.timeStyle = DateFormatter.Style.short
         
-        let timeorganized = dateformatter.stringFromDate(timeSent)
+        let timeorganized = dateformatter.string(from: timeSent)
         
         return timeorganized
     }

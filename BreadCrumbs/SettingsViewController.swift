@@ -14,7 +14,7 @@ class SettingsViewController: UIViewController, ChangeUserNameViewControllerDele
     let NSUserData = AppDelegate().NSUserData
     var counter = 0
     let locationManager: CLLocationManager = AppDelegate().locationManager
-    var username: String { get {return NSUserData.stringForKey("userName")!}}
+    var username: String { get {return NSUserData.string(forKey: "userName")!}}
     
     
     @IBOutlet weak var usernameUILabel: UILabel!
@@ -28,21 +28,21 @@ class SettingsViewController: UIViewController, ChangeUserNameViewControllerDele
     }
     
     
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {//navigate to settings controller
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {//navigate to settings controller
         if segue.identifier == "settingId" {
-            if segue.destinationViewController is ChangeUserNameViewController {
-                let destVC = segue.destinationViewController as! ChangeUserNameViewController
+            if segue.destination is ChangeUserNameViewController {
+                let destVC = segue.destination as! ChangeUserNameViewController
                 destVC.delegate = self
                 //print(destVC.delegate.debugDescription)
             }
         }
     }
 
-    @IBAction func settingsButton(sender: AnyObject) {
+    @IBAction func settingsButton(_ sender: AnyObject) {
     }
     
-    func changedUsername(str: String){//updates username from settingscontroller with a delegate :D
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+    func changedUsername(_ str: String){//updates username from settingscontroller with a delegate :D
+        DispatchQueue.main.async(execute: { () -> Void in
             self.usernameUILabel.text = str
         })
     }

@@ -18,7 +18,7 @@ class CrumbMessage{
     var text: String
     var senderName: String
     var location: CLLocation
-    var timeDropped: NSDate
+    var timeDropped: Date
     var timeLimit: Int
     var uRecordID: String?//the id of the unique record
     var viewedOther: Int?
@@ -29,7 +29,7 @@ class CrumbMessage{
     
     
     //MARK: Initialization
-    init?(text: String, senderName: String, location: CLLocation, timeDropped: NSDate
+    init?(text: String, senderName: String, location: CLLocation, timeDropped: Date
         , timeLimit: Int, senderuuid: String, votes: Int?){
         self.text = text
         self.senderName = senderName
@@ -63,7 +63,7 @@ class CrumbMessage{
         })
     }*/
     
-    func displayLocationInfo(placemark: CLPlacemark?) -> String?{//used in convertCoordinatesToAddress for reasons
+    func displayLocationInfo(_ placemark: CLPlacemark?) -> String?{//used in convertCoordinatesToAddress for reasons
         if let containsPlacemark = placemark
         {
             let locality = (containsPlacemark.locality != nil) ? containsPlacemark.locality : ""
@@ -81,11 +81,11 @@ class CrumbMessage{
         //in essence: timedropped + timelimit = timeDeadline; timeCurrent - timeDeadline = timeLeft
         //convert timeleft to days hours 
         
-        let timeDeadline:NSDate = timeDropped.dateByAddingTimeInterval(Double(timeLimit) * 3600)// date crumbs dies
+        let timeDeadline:Date = timeDropped.addingTimeInterval(Double(timeLimit) * 3600)// date crumbs dies
         
-        let timeCurrent: NSDate = NSDate()//current date and time
+        let timeCurrent: Date = Date()//current date and time
         
-        var timeLeft = timeCurrent.timeIntervalSinceDate(timeDeadline) / 3600//time remaining in hours
+        var timeLeft = timeCurrent.timeIntervalSince(timeDeadline) / 3600//time remaining in hours
         
         timeLeft = round(timeLeft * -1)// since its the future we multiply by -1 and round off the %hours
         
@@ -98,38 +98,38 @@ class CrumbMessage{
         
         //convert timeleft to days hours
         
-        let timeDeadline:NSDate = timeDropped.dateByAddingTimeInterval(Double(timeLimit) * 3600)// date crumbs dies
+        let timeDeadline:Date = timeDropped.addingTimeInterval(Double(timeLimit) * 3600)// date crumbs dies
         
-        let timeCurrent: NSDate = NSDate()//current date and time
+        let timeCurrent: Date = Date()//current date and time
         
-        let timeLeftSeconds = -Int(timeCurrent.timeIntervalSinceDate(timeDeadline))//time remaining in seconds
+        let timeLeftSeconds = -Int(timeCurrent.timeIntervalSince(timeDeadline))//time remaining in seconds
         
         return timeLeftSeconds// returnstimesec
     }
     
     
     func dateOrganizer() -> String{//short style dates for timeposted
-        let dateformatter = NSDateFormatter()
+        let dateformatter = DateFormatter()
         
-        dateformatter.dateStyle = NSDateFormatterStyle.ShortStyle
+        dateformatter.dateStyle = DateFormatter.Style.short
         
-        dateformatter.timeStyle = NSDateFormatterStyle.ShortStyle
+        dateformatter.timeStyle = DateFormatter.Style.short
         
-        let timeorganized = dateformatter.stringFromDate(timeDropped)
+        let timeorganized = dateformatter.string(from: timeDropped)
 
         return timeorganized
     }
     
     func dateToStringFormat() -> String{
-        let calendar = NSCalendar.currentCalendar()
-        let components = calendar.components([.Day , .Month , .Year], fromDate: timeDropped)
+        let calendar = Calendar.current
+        let components = (calendar as NSCalendar).components([.day , .month , .year], from: timeDropped)
         
         //let year =  components.year
         let month = components.month
         let day = components.day
         var StringDate = ""
         
-        switch month {
+        switch (month!) {
         case 1:
             StringDate = "Jan"
         case 2:

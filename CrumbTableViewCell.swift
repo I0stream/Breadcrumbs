@@ -31,7 +31,7 @@ class CrumbTableViewCell: UITableViewCell, UITextViewDelegate{
     var counter: Int?
     var hasVotedInScreen: Bool?
     var theVoteValueToBeStored: Int?
-    var timer = NSTimer()
+    var timer = Timer()
     
     
     override func awakeFromNib() {
@@ -47,8 +47,8 @@ class CrumbTableViewCell: UITableViewCell, UITextViewDelegate{
         */
         //autodefine textview size
         let fixedWidth = MsgTextView.frame.size.width
-        MsgTextView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.max))
-        let newSize = MsgTextView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.max))
+        MsgTextView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
+        let newSize = MsgTextView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
         var newFrame = MsgTextView.frame
         newFrame.size = CGSize(width: max(newSize.width, fixedWidth), height: newSize.height)
         MsgTextView.frame = newFrame;
@@ -56,13 +56,13 @@ class CrumbTableViewCell: UITableViewCell, UITextViewDelegate{
         
     }
 
-    override func setSelected(selected: Bool, animated: Bool) {
+    override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
 
         // Configure the view for the selected state
     }
     
-    @IBAction func VoteAction(sender: AnyObject) {
+    @IBAction func VoteAction(_ sender: AnyObject) {
 //        counter = 1
         
     }

@@ -31,7 +31,7 @@ class NewOthersCrumbsViewController: UIViewController, UITextViewDelegate, MKMap
     var counter = 0
     var hasVotedInScreen = false
     var theVoteValueToBeStored: Int = 0
-    var timer = NSTimer()
+    var timer = Timer()
     weak var delegate: NewOthersCrumbsViewControllerDelegate?
     
     override func viewDidLoad() {
@@ -39,11 +39,11 @@ class NewOthersCrumbsViewController: UIViewController, UITextViewDelegate, MKMap
         //init
         self.OtherMsgTextView.delegate = self
         self.mapViewOutlet.delegate = self
-        self.mapViewOutlet.mapType = MKMapType.Standard
+        self.mapViewOutlet.mapType = MKMapType.standard
         
         
         //TextView border
-        OtherMsgTextView.layer.borderColor = UIColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 1.0).CGColor
+        OtherMsgTextView.layer.borderColor = UIColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 1.0).cgColor
         self.OtherMsgTextView.layer.borderWidth = 1.0;
         self.OtherMsgTextView.layer.cornerRadius = 5.0;
         
@@ -63,12 +63,12 @@ class NewOthersCrumbsViewController: UIViewController, UITextViewDelegate, MKMap
         }*/
         
         //fix font size
-        OtherMsgTextView.font = UIFont.systemFontOfSize(17)
+        OtherMsgTextView.font = UIFont.systemFont(ofSize: 17)
         
         //autodefine textview size
         let fixedWidth = OtherMsgTextView.frame.size.width
-        OtherMsgTextView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.max))
-        let newSize = OtherMsgTextView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.max))
+        OtherMsgTextView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
+        let newSize = OtherMsgTextView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
         var newFrame = OtherMsgTextView.frame
         newFrame.size = CGSize(width: max(newSize.width, fixedWidth), height: newSize.height)
         OtherMsgTextView.frame = newFrame;
@@ -83,14 +83,14 @@ class NewOthersCrumbsViewController: UIViewController, UITextViewDelegate, MKMap
         
         if viewbreadcrumb?.hasVoted == 1{
             counter = 1
-            updootColor.setTitleColor(UIColor.redColor(), forState: UIControlState.Normal)
+            updootColor.setTitleColor(UIColor.red, for: UIControlState())
         }
         else if viewbreadcrumb?.hasVoted == -1{
             counter = -1
-            downdootColor.setTitleColor(UIColor.redColor(), forState: UIControlState.Normal)
+            downdootColor.setTitleColor(UIColor.red, for: UIControlState())
         }
     }
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         //send crumbvote here somehow
         if counter != 0 && hasVotedInScreen == true{
             print(theVoteValueToBeStored)
@@ -101,51 +101,51 @@ class NewOthersCrumbsViewController: UIViewController, UITextViewDelegate, MKMap
         }
     }
     
-    func crumbVote(vote: Int, counter: Int) {//what happens when a vote conflicts between cd and ck?, this just does ck atm
+    func crumbVote(_ vote: Int, counter: Int) {//what happens when a vote conflicts between cd and ck?, this just does ck atm
         let specificID = CKRecordID(recordName: (viewbreadcrumb?.uRecordID)!)
         voteCKVote(specificID)
         voteCoreDataVote((viewbreadcrumb?.uRecordID)!,counter: counter)
         
-        dispatch_async(dispatch_get_main_queue()) {
+        DispatchQueue.main.async {
             self.UpVoteValueLabel.text = "\(String(self.viewbreadcrumb!.votes!))"
         }
     }
     
     //redo these to only update a value not add
-    func voteCKVote(recorduuid: CKRecordID){
+    func voteCKVote(_ recorduuid: CKRecordID){
         
-        let container = CKContainer.defaultContainer()
+        let container = CKContainer.default()
         let publicData = container.publicCloudDatabase
         
-        publicData.fetchRecordWithID(recorduuid, completionHandler: {record, error in
+        publicData.fetch(withRecordID: recorduuid, completionHandler: {record, error in
             if error == nil{
                 let newvalue = self.theVoteValueToBeStored
                 
-                record!.setObject(newvalue, forKey: "votes")
+                record!.setObject(newvalue as CKRecordValue?, forKey: "votes")
                 
-                publicData.saveRecord(record!, completionHandler: {theRecord, error in
+                publicData.save(record!, completionHandler: {theRecord, error in
                     if error == nil{
                         print("saved version")
                     }else{
-                        print(error)
+                        print(error as Any)
                     }
                 })
             }else{
-                print(error)
+                print(error as Any)
             }
         })
     }
     
     //updates coredata with the new value
-    func voteCoreDataVote(cdrecorduuid: String, counter: Int){
+    func voteCoreDataVote(_ cdrecorduuid: String, counter: Int){
         
         let predicate = NSPredicate(format: "recorduuid == %@", cdrecorduuid)
          
-        let fetchRequest = NSFetchRequest(entityName: "Message")
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Message")
         fetchRequest.predicate = predicate
         
         do {// change it, it not work y?
-            let fetchedMsgs = try helperFunctions.moc.executeFetchRequest(fetchRequest) as! [Message]
+            let fetchedMsgs = try helperFunctions.moc.fetch(fetchRequest) as! [Message]
             
             fetchedMsgs.first?.setValue(theVoteValueToBeStored, forKey: "votevalue")
             fetchedMsgs.first?.setValue(counter, forKey: "hasVoted")
@@ -163,5 +163,5 @@ class NewOthersCrumbsViewController: UIViewController, UITextViewDelegate, MKMap
     
 }
 protocol NewOthersCrumbsViewControllerDelegate: class {
-    func updateVoteSpecific(NewVoteValue: Int, crumbUUID: String, hasVotedValue: Int)
+    func updateVoteSpecific(_ NewVoteValue: Int, crumbUUID: String, hasVotedValue: Int)
 }

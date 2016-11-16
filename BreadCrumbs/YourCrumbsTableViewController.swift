@@ -21,8 +21,8 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
     var crumbmessages = [CrumbMessage]()// later we will be able to access users current crumbs from the User class; making sure the msg is associated by it's uuid
     var dropped = [CrumbMessage]()
 
-    let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext //yay
-    let NSUserData = NSUserDefaults.standardUserDefaults()
+    let managedObjectContext = (UIApplication.shared.delegate as! AppDelegate).managedObjectContext //yay
+    let NSUserData = UserDefaults.standard
     var count: Int = 0
     
     //@IBOutlet weak var CrumbCountBBI: UIBarButtonItem!
@@ -33,7 +33,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         self.YourTableView.delegate = self
         self.YourTableView.dataSource = self
         
-        NSNotificationCenter.defaultCenter().addObserver(self, selector: #selector(YourCrumbsTableViewController.loadList(_:)),name:"load", object: nil)
+        NotificationCenter.default.addObserver(self, selector: #selector(YourCrumbsTableViewController.loadList(_:)),name:NSNotification.Name(rawValue: "load"), object: nil)
         
         
         //navigationItem.leftBarButtonItem = editButtonItem()//will need to update icloud and coredata of delete
@@ -50,7 +50,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         self.getUserInfo()
         
         self.crumbmessages += helperFunctions.loadCoreDataMessage(true)!//true to load yours
-        self.crumbmessages = self.crumbmessages.reverse()
+        self.crumbmessages = self.crumbmessages.reversed()
         
         YourTableView.rowHeight = UITableViewAutomaticDimension
         YourTableView.estimatedRowHeight = 95
@@ -63,14 +63,14 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
     func getUserInfo(){
         
         //get public database object
-        let container = CKContainer.defaultContainer()
+        let container = CKContainer.default()
         let publicData = container.publicCloudDatabase
         
-        let CKuserID: CKRecordID = CKRecordID(recordName: NSUserData.stringForKey("recordID")!)
+        let CKuserID: CKRecordID = CKRecordID(recordName: NSUserData.string(forKey: "recordID")!)
 
-        let query = CKQuery(recordType: "UserInfo", predicate: NSPredicate(format: "%K == %@", "creatorUserRecordID" ,CKReference(recordID: CKuserID, action: CKReferenceAction.None)))
+        let query = CKQuery(recordType: "UserInfo", predicate: NSPredicate(format: "%K == %@", "creatorUserRecordID" ,CKReference(recordID: CKuserID, action: CKReferenceAction.none)))
         
-        publicData.performQuery(query, inZoneWithID: nil) {
+        publicData.perform(query, inZoneWith: nil) {
             results, error in
             if error == nil{
                 for user in results! {
@@ -89,16 +89,16 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
                     }*/
                 }
             }else{
-                print(error)
+                print(error.debugDescription)
             }
         }
        
     }
     
     // prepare view with object data;
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "yourMsgSegue") {
-            let upcoming = segue.destinationViewController as! ViewCrumbViewController
+            let upcoming = segue.destination as! ViewCrumbViewController
             
             let indexPath = self.YourTableView.indexPathForSelectedRow!
             let crumbmsg = crumbmessages[indexPath.row]
@@ -110,52 +110,52 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
     
     //MARK: Load sample msg
     func loadSampleMessagesYours() { //this method is more trouble than its worth >:(
-        let locationSample: CLLocation = CLLocation().dynamicType.init(latitude: 61.2181, longitude: 149.9003)
-        let testMsg2 = CrumbMessage(text: "This traffic is terrible:(", senderName: NSUserData.stringForKey("userName")!, location: locationSample, timeDropped: NSDate(), timeLimit: 4, senderuuid: NSUserData.stringForKey("recordID")!, votes: 0)
+        let locationSample: CLLocation = type(of: CLLocation()).init(latitude: 61.2181, longitude: 149.9003)
+        let testMsg2 = CrumbMessage(text: "This traffic is terrible:(", senderName: NSUserData.string(forKey: "userName")!, location: locationSample, timeDropped: Date(), timeLimit: 4, senderuuid: NSUserData.string(forKey: "recordID")!, votes: 0)
         crumbmessages += [testMsg2!]
     }
     
     // MARK: - Table view data source
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         return crumbmessages.count
     }
     
     //MARK: DELETE CRUMB
-    func tableView(tableView: UITableView, commitEditingStyle editingStyle: UITableViewCellEditingStyle, forRowAtIndexPath indexPath: NSIndexPath) {
-        if (editingStyle == UITableViewCellEditingStyle.Delete) {
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if (editingStyle == UITableViewCellEditingStyle.delete) {
             
             let crumbmsg = crumbmessages[indexPath.row]
             
             let id = crumbmsg.uRecordID
             helperFunctions.coreDataDeleteCrumb(id!)//must use something other than urecordid
-            crumbmessages.removeAtIndex(indexPath.row)
-            tableView.deleteRowsAtIndexPaths([indexPath], withRowAnimation: UITableViewRowAnimation.Automatic)
+            crumbmessages.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
         }
     }
     
-    func tableView(tableView: UITableView, editingStyleForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCellEditingStyle {
-        if (self.YourTableView.editing) {
-            return UITableViewCellEditingStyle.Delete
+    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle {
+        if (self.YourTableView.isEditing) {
+            return UITableViewCellEditingStyle.delete
         }
-        return UITableViewCellEditingStyle.None
+        return UITableViewCellEditingStyle.none
     }
     
     // MARK: - Navigation
     
     
-    func tableView(tableView: UITableView, didSelectRowAtIndexPath indexPath: NSIndexPath) {
-        self.performSegueWithIdentifier("yourMsgSegue", sender: self)
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        self.performSegue(withIdentifier: "yourMsgSegue", sender: self)
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // Table view cells are reused and should be dequeued using a cell identifier.
         
-        let cell = tableView.dequeueReusableCellWithIdentifier("YourMsgCell", forIndexPath: indexPath) as! YourCrumbsTableViewCell
+        let cell = tableView.dequeueReusableCell(withIdentifier: "YourMsgCell", for: indexPath) as! YourCrumbsTableViewCell
         
         
         /*//TextView border
@@ -171,7 +171,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         cell.TextViewCellOutlet.text = crumbmsg.text
         cell.VoteValue.text = "\(crumbmsg.votes!) votes"
         cell.YouTheUserLabel.text = crumbmsg.senderName
-        cell.YouTheUserLabel.font = UIFont.boldSystemFontOfSize(17)
+        cell.YouTheUserLabel.font = UIFont.boldSystemFont(ofSize: 17)
         cell.TimeRemainingValueLabel.text = crumbmsg.timeRelative()//time is how long ago it was posted, dont see the point to change var name to something more explanatory right now
         if crumbmsg.calculate() > 0 {
             let ref = Int(crumbmsg.calculate())
@@ -190,12 +190,12 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         }else {
             cell.LocationPosted.text = "Address error"
         }*/
-        cell.TextViewCellOutlet.font = UIFont.systemFontOfSize(16)
+        cell.TextViewCellOutlet.font = UIFont.systemFont(ofSize: 16)
         
         return cell
     }
     
-    func tableView(tableView: UITableView, willDisplayCell cell: UITableViewCell, forRowAtIndexPath indexPath: NSIndexPath) {
+    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         let lastLoadedElement = crumbmessages.count - 1
         if indexPath.row == lastLoadedElement {
             if dropped.count >= 15{
@@ -212,14 +212,14 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
     }
 
     //******************************************** Will want to reload votes *****************************************************
-    func loadList(notification: NSNotification){//yayay//This solves the others crumbs problem i think
+    func loadList(_ notification: Notification){//yayay//This solves the others crumbs problem i think
         crumbmessages.removeAll()
         self.crumbmessages += limitTotalCrumbs(helperFunctions.loadCoreDataMessage(true)!)//true to load yours//is only loading one and not looping thorugh crumbs
         //self.crumbmessages)
         
         print("loading in loadlist")
         //crumbNumUpdater()
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
+        DispatchQueue.main.async(execute: { () -> Void in
             self.YourTableView.reloadData()
             
         })
@@ -232,21 +232,21 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         })
     }*/
     
-    func limitTotalCrumbs(crumbs: [CrumbMessage]) -> [CrumbMessage]{
+    func limitTotalCrumbs(_ crumbs: [CrumbMessage]) -> [CrumbMessage]{
         if crumbs.count > 15{
             let remove = crumbs.count - 15
             let final = [CrumbMessage](crumbs.dropFirst(remove))
             
             dropped = [CrumbMessage](crumbs[0...(remove-1)])
-            return final.reverse()
+            return final.reversed()
             
         }else{
-            return crumbs.reverse()
+            return crumbs.reversed()
         }
     }
     
-    @IBAction func PostButton(sender: AnyObject) {
-        self.performSegueWithIdentifier("PostButton", sender: self)
+    @IBAction func PostButton(_ sender: AnyObject) {
+        self.performSegue(withIdentifier: "PostButton", sender: self)
     }
     
 }

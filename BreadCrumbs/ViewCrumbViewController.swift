@@ -36,7 +36,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
                 
         mapView.delegate = self
 
-        mapView.subviews[1].hidden = true//not legal
+        mapView.subviews[1].isHidden = true//not legal
         
         //anotations
         let mkAnnoTest = MKPointAnnotation.init()
@@ -47,7 +47,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         
         YourtableView.rowHeight = UITableViewAutomaticDimension
         YourtableView.estimatedRowHeight = 50
-        let now = NSDate()
+        let now = Date()
         
         let new = CommentShort(username: "Don", text: "We won bigly and we will keep winning until you tire of winning!", timeSent: now)
         comments += [new]
@@ -57,7 +57,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         let attributionLabel = mapView.subviews[1]
         attributionLabel.frame = CGRectMake(8, 20, attributionLabel.frame.size.width, attributionLabel.frame.size.height);
     }*/
-    override func viewWillDisappear(animated: Bool) {
+    override func viewWillDisappear(_ animated: Bool) {
         //send crumbvote here somehow
         if counter != 0 && hasVotedInScreen == true{
             print(theVoteValueToBeStored)
@@ -68,23 +68,23 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
-    func tableView(tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let num = comments.count + 1
         return num
     }
     
-    func numberOfSectionsInTableView(tableView: UITableView) -> Int {
+    func numberOfSections(in tableView: UITableView) -> Int {
         return 1
     }
     
-    func tableView(tableView: UITableView, cellForRowAtIndexPath indexPath: NSIndexPath) -> UITableViewCell {        
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {        
         if indexPath.row == 0 {
             
-            let msgCell = tableView.dequeueReusableCellWithIdentifier("YourMsgCell", forIndexPath: indexPath) as! CrumbTableViewCell
+            let msgCell = tableView.dequeueReusableCell(withIdentifier: "YourMsgCell", for: indexPath) as! CrumbTableViewCell
             
-            msgCell.CreateCommentButton.addTarget(self, action: #selector(ViewCrumbViewController.commentSegue), forControlEvents: .TouchUpInside)
+            msgCell.CreateCommentButton.addTarget(self, action: #selector(ViewCrumbViewController.commentSegue), for: .touchUpInside)
             
-            msgCell.ExitCrumbButton.addTarget(self, action: #selector(ViewCrumbViewController.exitCrumb), forControlEvents: .TouchUpInside)
+            msgCell.ExitCrumbButton.addTarget(self, action: #selector(ViewCrumbViewController.exitCrumb), for: .touchUpInside)
             
             //sets the values for the labels in the cell, time value and location value
             msgCell.MsgTextView.text = viewbreadcrumb!.text
@@ -112,7 +112,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
             
             return msgCell
         }else {
-            let commentCells = tableView.dequeueReusableCellWithIdentifier("commentYours", forIndexPath: indexPath) as! CommentCell
+            let commentCells = tableView.dequeueReusableCell(withIdentifier: "commentYours", for: indexPath) as! CommentCell
             
             let comment = comments[(indexPath.row - 1)]
             commentCells.CommentTextView.text = comment.text
@@ -121,9 +121,9 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     // prepare view with object data;
-    override func prepareForSegue(segue: UIStoryboardSegue, sender: AnyObject?) {
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "writeComment") {
-            let upcoming = segue.destinationViewController as! CreateCommentViewController
+            let upcoming = segue.destination as! CreateCommentViewController
             upcoming.viewbreadcrumb = viewbreadcrumb
         }
         
@@ -131,52 +131,52 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     
 
     
-    func addNewComment(newComment: CommentShort){
+    func addNewComment(_ newComment: CommentShort){
         comments += [newComment]
         YourtableView.reloadData()
     }
     
-    func crumbVote(vote: Int, counter: Int) {//what happens when a vote conflicts between cd and ck?, this just does ck atm
+    func crumbVote(_ vote: Int, counter: Int) {//what happens when a vote conflicts between cd and ck?, this just does ck atm
         let specificID = CKRecordID(recordName: (viewbreadcrumb?.uRecordID)!)
         voteCKVote(specificID)
         voteCoreDataVote((viewbreadcrumb?.uRecordID)!,counter: counter)
     }
     
     //redo these to only update a value not add
-    func voteCKVote(recorduuid: CKRecordID){
+    func voteCKVote(_ recorduuid: CKRecordID){
         
-        let container = CKContainer.defaultContainer()
+        let container = CKContainer.default()
         let publicData = container.publicCloudDatabase
         
-        publicData.fetchRecordWithID(recorduuid, completionHandler: {record, error in
+        publicData.fetch(withRecordID: recorduuid, completionHandler: {record, error in
             if error == nil{
                 let newvalue = self.theVoteValueToBeStored
                 
-                record!.setObject(newvalue, forKey: "votes")
+                record!.setObject(newvalue as CKRecordValue?, forKey: "votes")
                 
-                publicData.saveRecord(record!, completionHandler: {theRecord, error in
+                publicData.save(record!, completionHandler: {theRecord, error in
                     if error == nil{
                         print("saved version")
                     }else{
-                        print(error)
+                        print(error.debugDescription)
                     }
                 })
             }else{
-                print(error)
+                print(error.debugDescription)
             }
         })
     }
     
     //updates coredata with the new value
-    func voteCoreDataVote(cdrecorduuid: String, counter: Int){
+    func voteCoreDataVote(_ cdrecorduuid: String, counter: Int){
         
         let predicate = NSPredicate(format: "recorduuid == %@", cdrecorduuid)
         
-        let fetchRequest = NSFetchRequest(entityName: "Message")
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Message")
         fetchRequest.predicate = predicate
         
         do {// change it, it not work y?
-            let fetchedMsgs = try helperFunctions.moc.executeFetchRequest(fetchRequest) as! [Message]
+            let fetchedMsgs = try helperFunctions.moc.fetch(fetchRequest) as! [Message]
             
             fetchedMsgs.first?.setValue(theVoteValueToBeStored, forKey: "votevalue")
             fetchedMsgs.first?.setValue(counter, forKey: "hasVoted")
@@ -191,11 +191,11 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         
     }
     func commentSegue(){
-        performSegueWithIdentifier("writeComment", sender: self)
+        performSegue(withIdentifier: "writeComment", sender: self)
     }//        performSegueWithIdentifier("writeComment", sender: sender)
 
     func exitCrumb(){
-        dismissViewControllerAnimated(true, completion: nil)
+        dismiss(animated: true, completion: nil)
     }
 }
 

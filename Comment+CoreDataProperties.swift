@@ -13,11 +13,11 @@ import CoreData
 
 extension Comment {
 
-    @nonobjc public override class func fetchRequest() -> NSFetchRequest {
+    @nonobjc open override class func fetchRequest() -> NSFetchRequest<NSFetchRequestResult> {
         return NSFetchRequest(entityName: "Comment");
     }
 
-    @NSManaged public var timeSent: NSDate?
+    @NSManaged public var timeSent: Date?
     @NSManaged public var text: String?
     @NSManaged public var username: String?
     @NSManaged var message: Message// not right?

@@ -19,7 +19,7 @@ class CreateCommentViewController: UIViewController, UITextViewDelegate {
     
     var viewbreadcrumb: CrumbMessage?
     
-    let managedObjectContext = (UIApplication.sharedApplication().delegate as! AppDelegate).managedObjectContext //yay
+    let managedObjectContext = (UIApplication.shared.delegate as! AppDelegate).managedObjectContext //yay
 
     
     weak var delegate: CreateCommentDelegate?
@@ -30,10 +30,10 @@ class CreateCommentViewController: UIViewController, UITextViewDelegate {
         textViewDidChange(WriteCommentTextView)
         //msgView(textView) placeholder text
         WriteCommentTextView.text = "What do you think?"
-        WriteCommentTextView.textColor = UIColor.lightGrayColor()
-        charCount.textColor = UIColor.lightGrayColor()
+        WriteCommentTextView.textColor = UIColor.lightGray
+        charCount.textColor = UIColor.lightGray
         
-        submitView.hidden = true
+        submitView.isHidden = true
     }
 
     override func didReceiveMemoryWarning() {
@@ -41,12 +41,12 @@ class CreateCommentViewController: UIViewController, UITextViewDelegate {
         // Dispose of any resources that can be recreated.
     }
     
-    @IBAction func CancelComment(sender: AnyObject) {
-        dismissViewControllerAnimated(true, completion: nil)
+    @IBAction func CancelComment(_ sender: AnyObject) {
+        dismiss(animated: true, completion: nil)
     }
 
     
-    @IBAction func MakeComment(sender: AnyObject) {
+    @IBAction func MakeComment(_ sender: AnyObject) {
     }
     
     //test msglength
@@ -67,30 +67,30 @@ class CreateCommentViewController: UIViewController, UITextViewDelegate {
         // Disable the Save button if the text field is empty.
         //let text = WriteCommentTextView.text ?? ""
         if WriteCommentTextView.text != "What do you think?" && WriteCommentTextView.text.characters.count <= 126 {
-            submitView.hidden = false
+            submitView.isHidden = false
             //bool.enabled = !text.isEmpty
         }
     }
     
     //Placeholder Text for msgview:
     //change text color to black when user begins editing textView and disable post button
-    func textViewDidBeginEditing(textView: UITextView) {
+    func textViewDidBeginEditing(_ textView: UITextView) {
         
         //disable save button if editing
         //postButtonOutlet.enabled = false
         
-        if WriteCommentTextView.textColor == UIColor.lightGrayColor() {
+        if WriteCommentTextView.textColor == UIColor.lightGray {
             WriteCommentTextView.text = nil
-            WriteCommentTextView.textColor = UIColor.blackColor()
+            WriteCommentTextView.textColor = UIColor.black
         }
     }
     
     
-    func textViewDidChangeSelection(textView: UITextView) {
+    func textViewDidChangeSelection(_ textView: UITextView) {
         postButtonEnabledIfTestsTrue()
     }
     //track chars in msgview and highlight dat sheeit
-    func textViewDidChange(textView: UITextView) {
+    func textViewDidChange(_ textView: UITextView) {
         if WriteCommentTextView.text != "What do you think?"{
             let msgCharCount = WriteCommentTextView.text.characters.count
             charCount.text = String(126 - msgCharCount)
@@ -106,15 +106,15 @@ class CreateCommentViewController: UIViewController, UITextViewDelegate {
         }
     }
     //If user didn't edit field return to gray
-    func textViewDidEndEditing(textView: UITextView) {
+    func textViewDidEndEditing(_ textView: UITextView) {
         if WriteCommentTextView.text.isEmpty{
             WriteCommentTextView.text = "What do you think?"
-            WriteCommentTextView.textColor = UIColor.lightGrayColor()
+            WriteCommentTextView.textColor = UIColor.lightGray
         }
     }
     
     // make sure user doesnt make newlines
-    func textView(textView: UITextView, shouldChangeTextInRange range: NSRange, replacementText text: String) -> Bool {
+    func textView(_ textView: UITextView, shouldChangeTextIn range: NSRange, replacementText text: String) -> Bool {
         if text == "\n"{
             textView.resignFirstResponder()
             return false;
@@ -123,16 +123,16 @@ class CreateCommentViewController: UIViewController, UITextViewDelegate {
     }
     
     func AddComment(){
-        let date = NSDate()
-        let newComment = CommentShort(username: NSUserData.stringForKey("userName")!, text: WriteCommentTextView.text, timeSent: date)
+        let date = Date()
+        let newComment = CommentShort(username: NSUserData.string(forKey: "userName")!, text: WriteCommentTextView.text, timeSent: date)
         
         AddToCD(newComment)
         AddToCK(newComment)
     }
-    func AddToCK(comment: CommentShort){//need to know reference of crumb
+    func AddToCK(_ comment: CommentShort){//need to know reference of crumb
         //upload to iCloud
         
-        let container = CKContainer.defaultContainer()
+        let container = CKContainer.default()
         let publicData = container.publicCloudDatabase
         
         let record = CKRecord(recordType: "Comment")
@@ -143,25 +143,25 @@ class CreateCommentViewController: UIViewController, UITextViewDelegate {
         
         let recordid = CKRecordID(recordName: (viewbreadcrumb?.uRecordID)!)
         
-        let ref = CKReference(recordID: recordid, action: .DeleteSelf)
+        let ref = CKReference(recordID: recordid, action: .deleteSelf)
         record.setValue(ref, forKey: "ownerReference")
-        publicData.saveRecord(record, completionHandler: { record, error in
+        publicData.save(record, completionHandler: { record, error in
             if error != nil {
                 print(error.debugDescription)
                 print("ck error in create comment")
             }
         })
     }
-    func AddToCD(comment: CommentShort){// need to know relationship
+    func AddToCD(_ comment: CommentShort){// need to know relationship
         //create Message: NSManagedObject
         
-        let commentMO = NSEntityDescription.insertNewObjectForEntityForName("Comment", inManagedObjectContext: self.managedObjectContext) as! BreadCrumbs.Comment
+        let commentMO = NSEntityDescription.insertNewObject(forEntityName: "Comment", into: self.managedObjectContext) as! BreadCrumbs.Comment
         
         let predicate = NSPredicate(format: "recorduuid == %@", (viewbreadcrumb?.uRecordID!)!)
-        let fetchRequest = NSFetchRequest(entityName: "Message")
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Message")
         fetchRequest.predicate = predicate
         do {// change it, it not work y?
-            let fetchedMsgs = try managedObjectContext.executeFetchRequest(fetchRequest) as! [Message]
+            let fetchedMsgs = try managedObjectContext.fetch(fetchRequest) as! [Message]
             
             let ComMessage = fetchedMsgs[0]
             commentMO.message = ComMessage
@@ -184,11 +184,11 @@ class CreateCommentViewController: UIViewController, UITextViewDelegate {
 
     }
     
-    @IBAction func submitComment(sender: AnyObject) {
+    @IBAction func submitComment(_ sender: AnyObject) {
         AddComment()
     }
 }
 
 protocol CreateCommentDelegate: class {
-   func addNewComment(newComment: CommentShort)
+   func addNewComment(_ newComment: CommentShort)
 }

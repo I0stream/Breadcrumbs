@@ -9,8 +9,8 @@
 import UIKit
 
 protocol MIDatePickerDelegate: class {
-    func miDatePicker(amDatePicker: MIDatePicker, didSelect time: Int)
-    func miDatePickerDidCancelSelection(amDatePicker: MIDatePicker)
+    func miDatePicker(_ amDatePicker: MIDatePicker, didSelect time: Int)
+    func miDatePickerDidCancelSelection(_ amDatePicker: MIDatePicker)
     //func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int
     //func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int
     //func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String?
@@ -21,8 +21,8 @@ class MIDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
     // MARK: - Config
     struct Config {
         
-        private let contentHeight: CGFloat = 250
-        private let bouncingOffset: CGFloat = 20
+        fileprivate let contentHeight: CGFloat = 250
+        fileprivate let bouncingOffset: CGFloat = 20
         
         var times: [String] = ["4","8","12","24","48"]
         
@@ -31,14 +31,14 @@ class MIDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
         
         var headerHeight: CGFloat = 50
         
-        var animationDuration: NSTimeInterval = 0.3
+        var animationDuration: TimeInterval = 0.3
         
-        var contentBackgroundColor: UIColor = UIColor.whiteColor()
+        var contentBackgroundColor: UIColor = UIColor.white
         var headerBackgroundColor: UIColor = UIColor(red: 248/255, green: 248/255, blue: 248/255, alpha: 1)
         //var confirmButtonColor: UIColor = UIColor.blueColor()
         //var cancelButtonColor: UIColor = UIColor.blackColor()
         
-        var overlayBackgroundColor: UIColor = UIColor.blackColor().colorWithAlphaComponent(0.5)
+        var overlayBackgroundColor: UIColor = UIColor.black.withAlphaComponent(0.5)
         
         
     }
@@ -60,36 +60,36 @@ class MIDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
     
     // MARK: - Init
     
-    func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int {
+    func numberOfComponents(in pickerView: UIPickerView) -> Int {
         return 1
     }
-    func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
+    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
         return config.times.count
     }
-    func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
+    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
         return config.times[row]
     }
     
     static func getFromNib() -> MIDatePicker {
-        return UINib.init(nibName: String(self), bundle: nil).instantiateWithOwner(self, options: nil).last as! MIDatePicker
+        return UINib.init(nibName: String(describing: self), bundle: nil).instantiate(withOwner: self, options: nil).last as! MIDatePicker
     }
 
     // MARK: - IBAction
-    @IBAction func confirmButtonDidTapped(sender: AnyObject) {
+    @IBAction func confirmButtonDidTapped(_ sender: AnyObject) {
         //config.startDate = datePicker.date
         
         dismiss()
-        delegate?.miDatePicker(self, didSelect: (picker?.selectedRowInComponent(0))!)
+        delegate?.miDatePicker(self, didSelect: (picker?.selectedRow(inComponent: 0))!)
         //delegate?.miDatePicker(self, didSelect: datePicker.date)
         
     }
-    @IBAction func cancelButtonDidTapped(sender: AnyObject) {
+    @IBAction func cancelButtonDidTapped(_ sender: AnyObject) {
         dismiss()
         delegate?.miDatePickerDidCancelSelection(self)
     }
     
     // MARK: - Private
-    private func setup(parentVC: UIViewController) {
+    fileprivate func setup(_ parentVC: UIViewController) {
         
         // Loading configuration
         
@@ -102,8 +102,8 @@ class MIDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
         
         headerViewHeightConstraint.constant = config.headerHeight
         
-        confirmButton.setTitle(config.confirmButtonTitle, forState: .Normal)
-        cancelButton.setTitle(config.cancelButtonTitle, forState: .Normal)
+        confirmButton.setTitle(config.confirmButtonTitle, for: UIControlState())
+        cancelButton.setTitle(config.cancelButtonTitle, for: UIControlState())
         
         //confirmButton.setTitleColor(config.confirmButtonColor, forState: .Normal)
         //cancelButton.setTitleColor(config.cancelButtonColor, forState: .Normal)
@@ -113,42 +113,42 @@ class MIDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
         
         // Overlay view constraints setup
         
-        overlayButton = UIButton(frame: CGRect(x: 0, y: 0, width: UIScreen.mainScreen().bounds.width, height: UIScreen.mainScreen().bounds.height))
+        overlayButton = UIButton(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
         overlayButton.backgroundColor = config.overlayBackgroundColor
         overlayButton.alpha = 0
         
-        overlayButton.addTarget(self, action: #selector(cancelButtonDidTapped(_:)), forControlEvents: .TouchUpInside)
+        overlayButton.addTarget(self, action: #selector(cancelButtonDidTapped(_:)), for: .touchUpInside)
         
-        if !overlayButton.isDescendantOfView(parentVC.view) { parentVC.view.addSubview(overlayButton) }
+        if !overlayButton.isDescendant(of: parentVC.view) { parentVC.view.addSubview(overlayButton) }
         
         overlayButton.translatesAutoresizingMaskIntoConstraints = false
         
         parentVC.view.addConstraints([
-            NSLayoutConstraint(item: overlayButton, attribute: .Bottom, relatedBy: .Equal, toItem: parentVC.view, attribute: .Bottom, multiplier: 1, constant: 0),
-            NSLayoutConstraint(item: overlayButton, attribute: .Top, relatedBy: .Equal, toItem: parentVC.view, attribute: .Top, multiplier: 1, constant: 0),
-            NSLayoutConstraint(item: overlayButton, attribute: .Leading, relatedBy: .Equal, toItem: parentVC.view, attribute: .Leading, multiplier: 1, constant: 0),
-            NSLayoutConstraint(item: overlayButton, attribute: .Trailing, relatedBy: .Equal, toItem: parentVC.view, attribute: .Trailing, multiplier: 1, constant: 0)
+            NSLayoutConstraint(item: overlayButton, attribute: .bottom, relatedBy: .equal, toItem: parentVC.view, attribute: .bottom, multiplier: 1, constant: 0),
+            NSLayoutConstraint(item: overlayButton, attribute: .top, relatedBy: .equal, toItem: parentVC.view, attribute: .top, multiplier: 1, constant: 0),
+            NSLayoutConstraint(item: overlayButton, attribute: .leading, relatedBy: .equal, toItem: parentVC.view, attribute: .leading, multiplier: 1, constant: 0),
+            NSLayoutConstraint(item: overlayButton, attribute: .trailing, relatedBy: .equal, toItem: parentVC.view, attribute: .trailing, multiplier: 1, constant: 0)
             ]
         )
         
         // Setup picker constraints
         
-        frame = CGRect(x: 0, y: UIScreen.mainScreen().bounds.height, width: UIScreen.mainScreen().bounds.width, height: config.contentHeight + config.headerHeight)
+        frame = CGRect(x: 0, y: UIScreen.main.bounds.height, width: UIScreen.main.bounds.width, height: config.contentHeight + config.headerHeight)
         
         translatesAutoresizingMaskIntoConstraints = false
         
-        bottomConstraint = NSLayoutConstraint(item: self, attribute: .Bottom, relatedBy: .Equal, toItem: parentVC.view, attribute: .Bottom, multiplier: 1, constant: 0)
+        bottomConstraint = NSLayoutConstraint(item: self, attribute: .bottom, relatedBy: .equal, toItem: parentVC.view, attribute: .bottom, multiplier: 1, constant: 0)
         
-        if !isDescendantOfView(parentVC.view) { parentVC.view.addSubview(self) }
+        if !isDescendant(of: parentVC.view) { parentVC.view.addSubview(self) }
         
         parentVC.view.addConstraints([
             bottomConstraint,
-            NSLayoutConstraint(item: self, attribute: .Leading, relatedBy: .Equal, toItem: parentVC.view, attribute: .Leading, multiplier: 1, constant: 0),
-            NSLayoutConstraint(item: self, attribute: .Trailing, relatedBy: .Equal, toItem: parentVC.view, attribute: .Trailing, multiplier: 1, constant: 0)
+            NSLayoutConstraint(item: self, attribute: .leading, relatedBy: .equal, toItem: parentVC.view, attribute: .leading, multiplier: 1, constant: 0),
+            NSLayoutConstraint(item: self, attribute: .trailing, relatedBy: .equal, toItem: parentVC.view, attribute: .trailing, multiplier: 1, constant: 0)
             ]
         )
         addConstraint(
-            NSLayoutConstraint(item: self, attribute: .Height, relatedBy: .Equal, toItem: nil, attribute: .NotAnAttribute, multiplier: 1.0, constant: frame.height)
+            NSLayoutConstraint(item: self, attribute: .height, relatedBy: .equal, toItem: nil, attribute: .notAnAttribute, multiplier: 1.0, constant: frame.height)
         )
         
         move(false)
@@ -156,7 +156,7 @@ class MIDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
     }
     
     
-    private func move(goUp: Bool) {
+    fileprivate func move(_ goUp: Bool) {
         bottomConstraint.constant = goUp ? config.bouncingOffset : config.contentHeight + config.headerHeight
     }
     
@@ -168,8 +168,8 @@ class MIDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
         setup(parentVC)
         move(true)
         
-        UIView.animateWithDuration(
-            config.animationDuration, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 5, options: .CurveEaseIn, animations: {
+        UIView.animate(
+            withDuration: config.animationDuration, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 5, options: .curveEaseIn, animations: {
                 
                 parentVC.view.layoutIfNeeded()
                 self.overlayButton.alpha = 1
@@ -180,12 +180,12 @@ class MIDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
         )
         
     }
-    func dismiss(completion: (() -> ())? = nil) {
+    func dismiss(_ completion: (() -> ())? = nil) {
         
         move(false)
         
-        UIView.animateWithDuration(
-            config.animationDuration, animations: {
+        UIView.animate(
+            withDuration: config.animationDuration, animations: {
                 
                 self.layoutIfNeeded()
                 self.overlayButton.alpha = 0
