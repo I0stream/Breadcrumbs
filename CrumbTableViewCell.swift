@@ -23,14 +23,14 @@ class CrumbTableViewCell: UITableViewCell, UITextViewDelegate{
     
     @IBOutlet weak var ExitCrumbButton: UIButton!
     
+    @IBOutlet weak var VoteValueLabel: UILabel!
+    
+    @IBOutlet weak var VoteButton: UIButton!
     @IBOutlet weak var CreateCommentButton: UIButton!
     //@IBOutlet weak var LocationLabel: UILabel!
     //@IBOutlet weak var countdownLabel: UILabel!
     
     var viewbreadcrumb: CrumbMessage?
-    var counter: Int?
-    var hasVotedInScreen: Bool?
-    var theVoteValueToBeStored: Int?
     var timer = Timer()
     
     
@@ -61,9 +61,5 @@ class CrumbTableViewCell: UITableViewCell, UITextViewDelegate{
 
         // Configure the view for the selected state
     }
-    
-    @IBAction func VoteAction(_ sender: AnyObject) {
-//        counter = 1
-        
-    }
+
 }

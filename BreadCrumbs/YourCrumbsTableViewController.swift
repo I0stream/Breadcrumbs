@@ -11,7 +11,7 @@ import CoreLocation
 import CoreData //need to see those stored nsmanagedObjs yo
 import CloudKit
 
-class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate {
+class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, NewOthersCrumbsViewControllerDelegate {
 
     //MARK: Properties
     @IBOutlet weak var YourTableView: UITableView!
@@ -21,10 +21,14 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
     var crumbmessages = [CrumbMessage]()// later we will be able to access users current crumbs from the User class; making sure the msg is associated by it's uuid
     var dropped = [CrumbMessage]()
 
-    let managedObjectContext = (UIApplication.shared.delegate as! AppDelegate).managedObjectContext //yay
+    let managedObjectContext = AppDelegate().getContext() //broke
     let NSUserData = UserDefaults.standard
     var count: Int = 0
+    var inscreen: Bool = false
     
+    var cellHeights = [CGFloat?]()
+    let heightspacer: CGFloat = UIScreen.main.bounds.height * 0.35
+
     //@IBOutlet weak var CrumbCountBBI: UIBarButtonItem!
     
     override func viewDidLoad() {
@@ -42,19 +46,15 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         
         //NSTimer.scheduledTimerWithTimeInterval(60.0, target: self, selector: #selector(YourCrumbsTableViewController.crumbNumUpdater), userInfo: nil, repeats: true)//checks every 20 seconds
         
-        while count == 0{// almost made infinite loop; thanks count <3
-            loadSampleMessagesYours()
-            count += 1
-        }
+        
         //get ID
         self.getUserInfo()
         
         self.crumbmessages += helperFunctions.loadCoreDataMessage(true)!//true to load yours
         self.crumbmessages = self.crumbmessages.reversed()
         
+        YourTableView.estimatedRowHeight = 200
         YourTableView.rowHeight = UITableViewAutomaticDimension
-        YourTableView.estimatedRowHeight = 95
-        
     }
 
     //MARK: Get User Info
@@ -97,24 +97,29 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
     
     // prepare view with object data;
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if (segue.identifier == "yourMsgSegue") {
+        if (segue.identifier == "yourMsgSegue") && crumbmessages.count != 0 {
             let upcoming = segue.destination as! ViewCrumbViewController
             
             let indexPath = self.YourTableView.indexPathForSelectedRow!
             let crumbmsg = crumbmessages[indexPath.row]
             
             upcoming.viewbreadcrumb = crumbmsg
+            
+            let destVC = segue.destination as! ViewCrumbViewController
+            destVC.delegate = self
         }
         
     }
-    
-    //MARK: Load sample msg
-    func loadSampleMessagesYours() { //this method is more trouble than its worth >:(
-        let locationSample: CLLocation = type(of: CLLocation()).init(latitude: 61.2181, longitude: 149.9003)
-        let testMsg2 = CrumbMessage(text: "This traffic is terrible:(", senderName: NSUserData.string(forKey: "userName")!, location: locationSample, timeDropped: Date(), timeLimit: 4, senderuuid: NSUserData.string(forKey: "recordID")!, votes: 0)
-        crumbmessages += [testMsg2!]
+
+    //MARK: DELETE CRUMB
+    func tableView(_ tableView: UITableView, canEditRowAt indexPath: IndexPath) -> Bool {
+        if crumbmessages.count == 0{
+            return false
+        } else{
+            return true
+        }
     }
-    
+
     // MARK: - Table view data source
     
     func numberOfSections(in tableView: UITableView) -> Int {
@@ -122,78 +127,123 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
     }
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return crumbmessages.count
+        if crumbmessages.count == 0{
+            //print("no messages; do something")
+            return 1
+        } else{
+            return crumbmessages.count + 1
+        }
+    }
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        
+        if indexPath.row == crumbmessages.count && crumbmessages.count != 0 {// if last element of index
+            return heightspacer
+        }else if crumbmessages.count == 0{
+            return 100
+        }else if cellHeights.indices.contains(indexPath.row){//if we have a height for that indexpath
+            //print("known")
+            return cellHeights[indexPath.row]!
+        }else{
+
+            cellHeights.append(YourTableView.rowHeight)
+            return YourTableView.rowHeight
+        }
     }
     
-    //MARK: DELETE CRUMB
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if (editingStyle == UITableViewCellEditingStyle.delete) {
-            
+                
             let crumbmsg = crumbmessages[indexPath.row]
-            
+                
             let id = crumbmsg.uRecordID
             helperFunctions.coreDataDeleteCrumb(id!)//must use something other than urecordid
             crumbmessages.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
         }
-    }
-    
-    func tableView(_ tableView: UITableView, editingStyleForRowAt indexPath: IndexPath) -> UITableViewCellEditingStyle {
-        if (self.YourTableView.isEditing) {
-            return UITableViewCellEditingStyle.delete
-        }
-        return UITableViewCellEditingStyle.none
+        
+
     }
     
     // MARK: - Navigation
     
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
-        self.performSegue(withIdentifier: "yourMsgSegue", sender: self)
+        if crumbmessages.count != 0 && indexPath.row != crumbmessages.count{
+            self.performSegue(withIdentifier: "yourMsgSegue", sender: self)
+        }
     }
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         // Table view cells are reused and should be dequeued using a cell identifier.
+        //print("loading..")
         
-        let cell = tableView.dequeueReusableCell(withIdentifier: "YourMsgCell", for: indexPath) as! YourCrumbsTableViewCell
-        
-        
-        /*//TextView border
-        cell.TextViewCellOutlet.layer.borderWidth = 1.0;
-        cell.TextViewCellOutlet.layer.cornerRadius = 5.0;
-        cell.TextViewCellOutlet.layer.borderColor = UIColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 1.0).CGColor
-        */
-        
-        // Fetches the appropriate msg for the data source layout.
-        let crumbmsg = crumbmessages[indexPath.row]
-        
-        //sets the values for the labels in the cell, time value and location value
-        cell.TextViewCellOutlet.text = crumbmsg.text
-        cell.VoteValue.text = "\(crumbmsg.votes!) votes"
-        cell.YouTheUserLabel.text = crumbmsg.senderName
-        cell.YouTheUserLabel.font = UIFont.boldSystemFont(ofSize: 17)
-        cell.TimeRemainingValueLabel.text = crumbmsg.timeRelative()//time is how long ago it was posted, dont see the point to change var name to something more explanatory right now
-        if crumbmsg.calculate() > 0 {
-            let ref = Int(crumbmsg.calculate())
-            
-            if ref >= 1 {
-                cell.timeCountdown.text! = "\(ref)h left"//////////////////////////////////////////////////
-            }else {
-                 cell.timeCountdown.text! = "Nearly Done!"
-            }
-        } else{
-            cell.timeCountdown.text! = "Time's up!"
-        }
-        
-        /*if crumbmsg.addressStr != nil{
-            cell.LocationPosted.text = String("\(crumbmsg.addressStr!)")
+        if crumbmessages.count == 0{
+            let cell = tableView.dequeueReusableCell(withIdentifier: "NoCrumbMessageYours", for: indexPath)
+            return cell
+        }else if indexPath.row == (crumbmessages.count){
+            let cell = tableView.dequeueReusableCell(withIdentifier: "SpacerYour", for: indexPath)
+            cell.selectionStyle = UITableViewCellSelectionStyle.none
+            return cell
         }else {
-            cell.LocationPosted.text = "Address error"
-        }*/
-        cell.TextViewCellOutlet.font = UIFont.systemFont(ofSize: 16)
-        
-        return cell
-    }
+            let cell = tableView.dequeueReusableCell(withIdentifier: "YourMsgCell", for: indexPath) as! YourCrumbsTableViewCell
+            
+            // Fetches the appropriate msg for the data source layout.
+            let crumbmsg = crumbmessages[indexPath.row]
+            
+            //sets the values for the labels in the cell, time value and location value
+            cell.TextViewCellOutlet.text = crumbmsg.text
+            
+            let normalColor = UIColor(red: 245/255, green: 166/255, blue: 35/255, alpha: 1)
+            let bluecolor = UIColor(red: 64/255, green: 161/255, blue: 255/255, alpha: 1)
+            
+            //setColorVoteButton
+            if crumbmsg.hasVoted == 1{//user has voted
+                cell.VoteButton.setTitleColor(bluecolor, for: .normal)
+                //cell.VoteButton.setTitleColor(normalColor, for: .selected)
+            }else if crumbmsg.hasVoted == 0{
+                cell.VoteButton.setTitleColor(normalColor, for: .normal)
+                //cell.VoteButton.setTitleColor(bluecolor, for: .selected)
+            }
+            
+            //sets the values for the labels in the cell, time value and location value
+            if crumbmsg.votes != 1{
+                cell.VoteValue.text = "\(crumbmsg.votes!) votes"
+            } else {
+                cell.VoteValue.text = "\(crumbmsg.votes!) vote"
+            }
+            cell.YouTheUserLabel.text = crumbmsg.senderName
+            cell.YouTheUserLabel.font = UIFont.boldSystemFont(ofSize: 17)
+            cell.TimeRemainingValueLabel.text = crumbmsg.timeRelative()//time is how long ago it was posted, dont see the point to change var name to something more explanatory right now
+            if crumbmsg.calculate() > 0 {
+                let ref = Int(crumbmsg.calculate())
+                
+                //This is reused in others
+                cell.VoteButton.tag = indexPath.row
+                cell.VoteButton.addTarget(self, action: #selector(YourCrumbsTableViewController.Vote), for: .touchUpInside)
+                //indexPath
+                
+                if ref >= 1 {
+                    cell.timeCountdown.text! = "\(ref)h left"//////////////////////////////////////////////////
+                }else {
+                    cell.timeCountdown.text! = "Nearly Done!"
+                }
+            } else{
+                cell.timeCountdown.text! = "Time's up!"
+                cell.VoteButton.addTarget(self, action: #selector(YourCrumbsTableViewController.noVoteIndicator), for: .touchUpInside)
+
+            }
+            
+            /*if crumbmsg.addressStr != nil{
+             cell.LocationPosted.text = String("\(crumbmsg.addressStr!)")
+             }else {
+             cell.LocationPosted.text = "Address error"
+             }*/
+            cell.TextViewCellOutlet.font = UIFont.systemFont(ofSize: 16)
+            
+            return cell
+
+        }
+        }
     
     func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
         let lastLoadedElement = crumbmessages.count - 1
@@ -210,14 +260,55 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
             }//if zero do nothing
         }
     }
+    
+    func Vote(sender: UIButton){
+        let row = sender.tag
+        let indexPath = IndexPath(row: row, section: 1)
+        //is pressed
+        //let cell = YourTableView.dequeueReusableCell(withIdentifier: "YourMsgCell", for: indexPath) as! YourCrumbsTableViewCell
+        
+        let viewbreadcrumb = crumbmessages[indexPath.row]
+        
+        if viewbreadcrumb.calculate() > 0 { //alive
+            if viewbreadcrumb.hasVoted == 1 && inscreen == false{//has voted before setting vote to zero this is bad because of past structure
+                inscreen = true
+                viewbreadcrumb.hasVoted = 0
+                viewbreadcrumb.votes! = (viewbreadcrumb.votes)! - 1
+                
+            }else if viewbreadcrumb.hasVoted == 0 && inscreen == false{//has not voted before +1
+                inscreen = true
+                viewbreadcrumb.hasVoted = 1
+                viewbreadcrumb.votes!
+                    = (viewbreadcrumb.votes)! + 1
+            } else if viewbreadcrumb.hasVoted == 1 && inscreen == true{
+                viewbreadcrumb.hasVoted = 0
+                viewbreadcrumb.votes! = (viewbreadcrumb.votes)! - 1
+                
+            }else if viewbreadcrumb.hasVoted == 0 && inscreen == true{
+                viewbreadcrumb.hasVoted = 1
+                viewbreadcrumb.votes!
+                    = (viewbreadcrumb.votes)! + 1
+            }
+            
+            helperFunctions.crumbVote(viewbreadcrumb.hasVoted!, crumb: viewbreadcrumb )
+            DispatchQueue.main.async(execute: { () -> Void in
+                self.YourTableView.reloadData()
+            })
+        }else{ //if dead
+            noVoteIndicator()
+        }
 
+    }
+    
+
+    
     //******************************************** Will want to reload votes *****************************************************
     func loadList(_ notification: Notification){//yayay//This solves the others crumbs problem i think
         crumbmessages.removeAll()
         self.crumbmessages += limitTotalCrumbs(helperFunctions.loadCoreDataMessage(true)!)//true to load yours//is only loading one and not looping thorugh crumbs
         //self.crumbmessages)
         
-        print("loading in loadlist")
+        //print("loading in loadlist")
         //crumbNumUpdater()
         DispatchQueue.main.async(execute: { () -> Void in
             self.YourTableView.reloadData()
@@ -243,6 +334,20 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         }else{
             return crumbs.reversed()
         }
+    }
+    
+    func noVoteIndicator(){
+        let alertController = UIAlertController(title: "BreadCrumbs", message:
+            "You cannot vote on a dead crumb", preferredStyle: UIAlertControllerStyle.alert)
+        alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default,handler: nil))
+        
+        self.present(alertController, animated: true, completion: nil)
+    }
+    
+    func reloadTables(){
+        DispatchQueue.main.async(execute: { () -> Void in
+            self.YourTableView.reloadData()
+        })
     }
     
     @IBAction func PostButton(_ sender: AnyObject) {

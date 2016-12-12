@@ -17,19 +17,19 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     var comments = [CommentShort]()
     let helperFunctions = Helper()
     weak var delegate: NewOthersCrumbsViewControllerDelegate?
+    let NSUserData = UserDefaults.standard
     
     @IBOutlet weak var YourtableView: UITableView!
     @IBOutlet weak var mapView: MKMapView!
     
     //keeps track of votes in screen
-    var counter = 0
-    var hasVotedInScreen = false
-    var theVoteValueToBeStored: Int = 0
+    var inscreen = false
     
-    
-    
+    var crumbHeight: CGFloat?
     override func viewDidLoad() {
         super.viewDidLoad()
+        
+        if viewbreadcrumb?.hasVoted == nil { viewbreadcrumb?.hasVoted = 0}
         
         self.YourtableView.delegate = self
         self.YourtableView.dataSource = self
@@ -46,30 +46,29 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         mapView.camera.altitude = 1000
         
         YourtableView.rowHeight = UITableViewAutomaticDimension
-        YourtableView.estimatedRowHeight = 50
-        let now = Date()
+        YourtableView.estimatedRowHeight = 200
         
-        let new = CommentShort(username: "Don", text: "We won bigly and we will keep winning until you tire of winning!", timeSent: now)
-        comments += [new]
+
+        loadComments()
     }
     
     /*func viewdidAppear(animated: Bool) {
         let attributionLabel = mapView.subviews[1]
         attributionLabel.frame = CGRectMake(8, 20, attributionLabel.frame.size.width, attributionLabel.frame.size.height);
     }*/
-    override func viewWillDisappear(_ animated: Bool) {
+    /*override func viewWillDisappear(_ animated: Bool) {
         //send crumbvote here somehow
         if counter != 0 && hasVotedInScreen == true{
             print(theVoteValueToBeStored)
             crumbVote(theVoteValueToBeStored, counter: counter)
-            if let del = self.delegate {
+            /*if let del = self.delegate {
                 del.updateVoteSpecific(theVoteValueToBeStored, crumbUUID: (viewbreadcrumb?.uRecordID)!, hasVotedValue: counter)
-            }
+            }*/
         }
-    }
+    }*/
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let num = comments.count + 1
+        let num = comments.count + 2// +2 because of invisible spacer plus the crumb being displayed
         return num
     }
     
@@ -77,20 +76,57 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         return 1
     }
     
-    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {        
-        if indexPath.row == 0 {
-            
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        if indexPath.row == 0 {//spacer size
+            let screenSize: CGRect = UIScreen.main.bounds
+            let percentheight: CGFloat = screenSize.height * 0.5
+
+            let height: CGFloat = percentheight - 50.0
+            return height
+        }else if indexPath.row == 1{//crumb size
+            if crumbHeight != nil{
+                return crumbHeight!
+            }else {
+                crumbHeight = YourtableView.rowHeight
+                return YourtableView.rowHeight
+            }
+        }else{//comment size or whatever
+            return YourtableView.rowHeight
+        }
+    }
+    
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        if indexPath.row == 0{
+            let cell = tableView.dequeueReusableCell(withIdentifier: "Spacer", for: indexPath)
+            cell.selectionStyle = UITableViewCellSelectionStyle.none
+
+            return cell
+        } else if indexPath.row == 1 {
             let msgCell = tableView.dequeueReusableCell(withIdentifier: "YourMsgCell", for: indexPath) as! CrumbTableViewCell
             
-            msgCell.CreateCommentButton.addTarget(self, action: #selector(ViewCrumbViewController.commentSegue), for: .touchUpInside)
-            
+            if viewbreadcrumb!.calculate() > 0 {
+                msgCell.CreateCommentButton.addTarget(self, action: #selector(ViewCrumbViewController.commentSegue), for: .touchUpInside)
+                msgCell.VoteButton.addTarget(self, action: #selector(ViewCrumbViewController.Vote), for: .touchUpInside)
+
+            } else{
+                let color = UIColor(red: 146/255, green: 144/255, blue: 144/255, alpha: 1)//greay color
+                msgCell.CreateCommentButton.setTitleColor(color, for: .normal)
+                msgCell.CreateCommentButton.addTarget(self, action: #selector(ViewCrumbViewController.noCommentIndicator), for: .touchUpInside)
+                msgCell.VoteButton.addTarget(self, action: #selector(ViewCrumbViewController.noVoteIndicator), for: .touchUpInside)
+
+            }
             msgCell.ExitCrumbButton.addTarget(self, action: #selector(ViewCrumbViewController.exitCrumb), for: .touchUpInside)
             
+            
             //sets the values for the labels in the cell, time value and location value
+            if viewbreadcrumb?.votes != 1{
+                msgCell.VoteValueLabel.text = "\((viewbreadcrumb?.votes)!) votes"
+            } else {
+                msgCell.VoteValueLabel.text = "\((viewbreadcrumb?.votes)!) vote"
+            }
             msgCell.MsgTextView.text = viewbreadcrumb!.text
             msgCell.UserLabel.text = viewbreadcrumb!.senderName
             msgCell.TimeLabel.text = "\(viewbreadcrumb!.dateOrganizer())"
-            
             if viewbreadcrumb!.calculate() > 0 {
                 let ref = Int(viewbreadcrumb!.calculate())
                 
@@ -102,31 +138,38 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
             } else{
                 msgCell.TimeLeftLabel.text! = "Time's up!"
             }
-
             
-            msgCell.counter = counter
-            msgCell.hasVotedInScreen = hasVotedInScreen
-            msgCell.theVoteValueToBeStored = theVoteValueToBeStored
-            //    cell.button.addTarget(self, action: "someAction", forControlEvents: .TouchUpInside)
-
             
+            //setColorVoteButton
+            if viewbreadcrumb?.hasVoted == 1{//user has voted
+                let bluecolor = UIColor(red: 64/255, green: 161/255, blue: 255/255, alpha: 1)
+                msgCell.VoteButton.setTitleColor(bluecolor, for: .normal)
+            }else if viewbreadcrumb?.hasVoted == 0{
+                let normalColor = UIColor(red: 245/255, green: 166/255, blue: 35/255, alpha: 1)
+                msgCell.VoteButton.setTitleColor(normalColor, for: .normal)
+            }
             return msgCell
         }else {
             let commentCells = tableView.dequeueReusableCell(withIdentifier: "commentYours", for: indexPath) as! CommentCell
+            commentCells.selectionStyle = .none
             
-            let comment = comments[(indexPath.row - 1)]
+            let comment = comments[(indexPath.row - 2)]
             commentCells.CommentTextView.text = comment.text
             commentCells.usernameLabel.text = comment.username
+            commentCells.timeAgoLabel.text = comment.timeRelative()//time is how long ago it was posted, dont see the point to change var name to something more explanatory right now
+
             return commentCells
         }
     }
     // prepare view with object data;
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if (segue.identifier == "writeComment") {
+        if (segue.identifier == "writeComment") && viewbreadcrumb!.calculate() > 0 {
             let upcoming = segue.destination as! CreateCommentViewController
             upcoming.viewbreadcrumb = viewbreadcrumb
+            let destVC = segue.destination as! CreateCommentViewController
+            destVC.delegate = self
+
         }
-        
     }
     
 
@@ -136,69 +179,145 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         YourtableView.reloadData()
     }
     
-    func crumbVote(_ vote: Int, counter: Int) {//what happens when a vote conflicts between cd and ck?, this just does ck atm
-        let specificID = CKRecordID(recordName: (viewbreadcrumb?.uRecordID)!)
-        voteCKVote(specificID)
-        voteCoreDataVote((viewbreadcrumb?.uRecordID)!,counter: counter)
+    //Voting is now simply handled by one button
+    //therefore it can only vote and unvote(no negative votes)
+    //given that this is the same across the whole app; in view, others, and yours
+    //and they all use selectors, I can locate all the saving ck, cd, updating etc in helperfunctions
+    //i just need to do it in a way that disallows double voting and ensures proper saving/updating
+    
+    
+    
+    func loadComments(){
+        let fmcom = helperFunctions.loadComments(uniqueRecordID: (viewbreadcrumb?.uRecordID!)!)
+        comments.append(contentsOf: fmcom)
     }
     
-    //redo these to only update a value not add
-    func voteCKVote(_ recorduuid: CKRecordID){
-        
-        let container = CKContainer.default()
-        let publicData = container.publicCloudDatabase
-        
-        publicData.fetch(withRecordID: recorduuid, completionHandler: {record, error in
-            if error == nil{
-                let newvalue = self.theVoteValueToBeStored
-                
-                record!.setObject(newvalue as CKRecordValue?, forKey: "votes")
-                
-                publicData.save(record!, completionHandler: {theRecord, error in
-                    if error == nil{
-                        print("saved version")
-                    }else{
-                        print(error.debugDescription)
-                    }
-                })
-            }else{
-                print(error.debugDescription)
-            }
-        })
-    }
-    
-    //updates coredata with the new value
-    func voteCoreDataVote(_ cdrecorduuid: String, counter: Int){
-        
-        let predicate = NSPredicate(format: "recorduuid == %@", cdrecorduuid)
-        
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Message")
-        fetchRequest.predicate = predicate
-        
-        do {// change it, it not work y?
-            let fetchedMsgs = try helperFunctions.moc.fetch(fetchRequest) as! [Message]
-            
-            fetchedMsgs.first?.setValue(theVoteValueToBeStored, forKey: "votevalue")
-            fetchedMsgs.first?.setValue(counter, forKey: "hasVoted")
-            do {// save it!
-                try helperFunctions.moc.save()
-            } catch {
-                print(error)
-            }
-        } catch {
-            print(error)
-        }
-        
-    }
     func commentSegue(){
         performSegue(withIdentifier: "writeComment", sender: self)
     }//        performSegueWithIdentifier("writeComment", sender: sender)
 
     func exitCrumb(){
+        if inscreen == true{
+            delegate?.reloadTables()
+        }
         dismiss(animated: true, completion: nil)
     }
+    
+
+    
+    func Vote(){
+        
+        let indexPath = IndexPath(row: 1, section: 1)
+        let msgCell = YourtableView.dequeueReusableCell(withIdentifier: "YourMsgCell", for: indexPath) as! CrumbTableViewCell
+        
+        //voting
+        //sets a couple values according to past versions of thos values
+        if viewbreadcrumb?.hasVoted == 1 && inscreen == false{//has voted before setting vote to zero this is bad because of past structure
+            inscreen = true
+            viewbreadcrumb?.hasVoted = 0
+            viewbreadcrumb?.votes! = (viewbreadcrumb?.votes)! - 1
+            
+        }else if viewbreadcrumb?.hasVoted == 0 && inscreen == false{//has not voted before +1
+            inscreen = true
+            viewbreadcrumb?.hasVoted = 1
+            viewbreadcrumb?.votes!
+                = (viewbreadcrumb?.votes)! + 1
+        } else if viewbreadcrumb?.hasVoted == 1 && inscreen == true{
+            viewbreadcrumb?.hasVoted = 0
+            viewbreadcrumb?.votes! = (viewbreadcrumb?.votes)! - 1
+            
+        }else if viewbreadcrumb?.hasVoted == 0 && inscreen == true{
+            viewbreadcrumb?.hasVoted = 1
+            viewbreadcrumb?.votes!
+                = (viewbreadcrumb?.votes)! + 1
+        }
+        if viewbreadcrumb?.hasVoted == 1{//resets color
+            let bluecolor = UIColor(red: 64/255, green: 161/255, blue: 255/255, alpha: 1)
+            msgCell.VoteButton.setTitleColor(bluecolor, for: .normal)
+        }else if viewbreadcrumb?.hasVoted == 0{
+            let normalColor = UIColor(red: 245/255, green: 166/255, blue: 35/255, alpha: 1)
+            msgCell.VoteButton.setTitleColor(normalColor, for: .normal)
+        }
+        
+        //saves voting stuff
+        helperFunctions.crumbVote((viewbreadcrumb?.hasVoted!)!, crumb: viewbreadcrumb! )
+        //update table
+        DispatchQueue.main.async(execute: { () -> Void in
+            self.YourtableView.reloadData()
+        })
+    }
+    
+    
+
+    
+    //MARK: animatino
+    func noCommentIndicator(){
+        let alertController = UIAlertController(title: "BreadCrumbs", message:
+            "You cannot comment on a dead crumb", preferredStyle: UIAlertControllerStyle.alert)
+        alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default,handler: nil))
+        
+        self.present(alertController, animated: true, completion: nil)
+    }
+
+    func noVoteIndicator(){
+        let alertController = UIAlertController(title: "BreadCrumbs", message:
+            "You cannot vote on a dead crumb", preferredStyle: UIAlertControllerStyle.alert)
+        alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default,handler: nil))
+        
+        self.present(alertController, animated: true, completion: nil)
+    }
+    /*func loadCommetsCK(){
+        
+        //var recordToMatch = CKReference(recordID: employeeID, action: .None)
+        //var predicate = NSPredicate(format: "employee == %@", recordToMatch)
+        
+        let id = CKRecordID(recordName: (viewbreadcrumb?.uRecordID)!)
+        let ref = CKReference(recordID: id, action: CKReferenceAction.deleteSelf)
+        
+        let predicate = NSPredicate(format: "ownerReference == %@", ref)
+        let query = CKQuery(recordType: "Comment", predicate: predicate)
+        
+        let container = CKContainer.default()
+        let publicData = container.publicCloudDatabase
+        
+        publicData.perform(query, inZoneWith: nil) { results, error in
+            if error == nil{ // There is no error
+                for ckComment in results! {
+                    
+                    //print(ckComment)
+                    //let dbtext = ckComment["text"] as! String
+                    
+                    /*if (loadedMessage!.calculate() > 0) && testID{
+                     
+                     //TESTS IF LOADED MSG IS IN COREDATA IF NOT THEN STORES IT BRAH
+                     let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Message")
+                     let cdPredicate = NSPredicate(format: "recorduuid == %@", loadedMessage!.uRecordID!)
+                     fetchRequest.predicate = cdPredicate
+                     
+                     do {
+                     if let fetchResults = try self.moc.fetch(fetchRequest) as? [Message]{
+                     if fetchResults.isEmpty{
+                     
+                     
+                     //if UIApplication.shared.applicationState != UIApplicationState.active{
+                     self.notify()//if this is how we will do it, we must have a seen and unseen marker
+                     //}
+                     
+                     }
+                     }
+                     } catch{//there is an error
+                     let fetchError = error as NSError
+                     print(fetchError)
+                     }*/
+                }
+            } else {
+                print(error.debugDescription)//print error
+            }
+        }
+    }*/
+}
+//reloads table in yours or others in order to persist vote button colors colors
+protocol NewOthersCrumbsViewControllerDelegate: class {
+    func reloadTables()
 }
 
-/*protocol NewOthersCrumbsViewControllerDelegate: class {
- func updateVoteSpecific(NewVoteValue: Int, crumbUUID: String, hasVotedValue: Int)
- }*/

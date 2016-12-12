@@ -9,41 +9,45 @@
 import UIKit
 import CloudKit
 
-class SettingsViewController: UIViewController, ChangeUserNameViewControllerDelegate {
+class SettingsViewController: UIViewController{
 
     let NSUserData = AppDelegate().NSUserData
     var counter = 0
-    let locationManager: CLLocationManager = AppDelegate().locationManager
     var username: String { get {return NSUserData.string(forKey: "userName")!}}
     
     
-    @IBOutlet weak var usernameUILabel: UILabel!
-    
     override func viewDidLoad() {
         super.viewDidLoad()
-        //setName()
-        self.usernameUILabel.text = username
         
-        locationManager.requestAlwaysAuthorization()
     }
     
     
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {//navigate to settings controller
-        if segue.identifier == "settingId" {
-            if segue.destination is ChangeUserNameViewController {
-                let destVC = segue.destination as! ChangeUserNameViewController
-                destVC.delegate = self
-                //print(destVC.delegate.debugDescription)
-            }
+    @IBAction func changeUsername(_ sender: AnyObject) {
+        performSegue(withIdentifier: "changeUsername", sender: sender)
+    }
+    @IBAction func RateAppButton(_ sender: Any) {
+        print("does not work in sim")
+        let url = NSURL(string : "itms-apps://itunes.apple.com/app/id959379869")! as URL//change later
+        if #available(iOS 10.0, *) {
+            UIApplication.shared.open(url , options: ["yes" : "yes" as Any], completionHandler: { (true) in
+                print("sent to gmail")
+            })
+        }else{
+            UIApplication.shared.openURL(url)
         }
     }
-
-    @IBAction func settingsButton(_ sender: AnyObject) {
+    
+    @IBAction func customerSupportButton(_ sender: Any) {
+        print("does not work in sim")
+        let email = "breadcrumbs.company@gmail.com"
+        let url = NSURL(string: "mailto:\(email)")
+        if #available(iOS 10.0, *) {
+            UIApplication.shared.open(url as! URL, options: ["yes" : "yes" as Any], completionHandler: { (true) in
+                print("sent to gmail")
+            })
+        }else {
+            UIApplication.shared.openURL(url as! URL)
+        }
     }
     
-    func changedUsername(_ str: String){//updates username from settingscontroller with a delegate :D
-        DispatchQueue.main.async(execute: { () -> Void in
-            self.usernameUILabel.text = str
-        })
-    }
 }

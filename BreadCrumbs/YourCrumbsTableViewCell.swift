@@ -18,6 +18,8 @@ class YourCrumbsTableViewCell: UITableViewCell {
     @IBOutlet weak var VoteValue: UILabel!
     @IBOutlet weak var YouTheUserLabel: UILabel!
     @IBOutlet weak var timeCountdown: UILabel!
+    @IBOutlet weak var VoteButton: UIButton!
+    
     
     override func awakeFromNib() {
         super.awakeFromNib()
@@ -32,12 +34,6 @@ class YourCrumbsTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
 
-    @IBAction func editActionButton(_ sender: AnyObject) {//for deleting msgs only yours
-        print("pressed")//probably do this through delegation
-        //delegate button pressed
-        //cell index to open this cells editing
-        //press red button to delete
-    }
 
     //MARK: Actions
     

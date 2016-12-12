@@ -23,23 +23,20 @@
 		654C0B571CC4020200060E58 /* CoreLocation.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 654C0B561CC4020200060E58 /* CoreLocation.framework */; };
 		654C0B591CC565B200060E58 /* YourCrumbsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 654C0B581CC565B200060E58 /* YourCrumbsTableViewCell.swift */; };
 		654C0B5B1CC6AE4200060E58 /* YourCrumbsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 654C0B5A1CC6AE4200060E58 /* YourCrumbsTableViewController.swift */; };
-		656D65EC1CFA5E5F001F8950 /* Message+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 656D65EA1CFA5E5F001F8950 /* Message+CoreDataProperties.swift */; };
-		656D65ED1CFA5E5F001F8950 /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 656D65EB1CFA5E5F001F8950 /* Message.swift */; };
 		6576060E1DCD69D4006860C6 /* CrumbTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576060A1DCD69D4006860C6 /* CrumbTableViewCell.swift */; };
 		6576060F1DCD69D4006860C6 /* CommentCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576060B1DCD69D4006860C6 /* CommentCell.swift */; };
-		657606101DCD69D4006860C6 /* ViewCrumbs.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6576060C1DCD69D4006860C6 /* ViewCrumbs.swift */; };
 		657756B51DD93C8F00ABAFD7 /* MIDatePicker-master in Resources */ = {isa = PBXBuildFile; fileRef = 657756B41DD93C8F00ABAFD7 /* MIDatePicker-master */; };
 		657756B81DD9488D00ABAFD7 /* MIDatePicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657756B61DD9488D00ABAFD7 /* MIDatePicker.swift */; };
 		657756B91DD9488D00ABAFD7 /* MIDatePicker.xib in Resources */ = {isa = PBXBuildFile; fileRef = 657756B71DD9488D00ABAFD7 /* MIDatePicker.xib */; };
 		6577DCC81D3D6DBB00C25F52 /* UserInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6577DCC71D3D6DBB00C25F52 /* UserInfo.swift */; };
 		6578159F1D62BE0B004F4660 /* HelperFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6578159E1D62BE0B004F4660 /* HelperFunctions.swift */; };
-		657861F91DD829050027C5A0 /* Comment+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657861F71DD829050027C5A0 /* Comment+CoreDataClass.swift */; };
-		657861FA1DD829050027C5A0 /* Comment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657861F81DD829050027C5A0 /* Comment+CoreDataProperties.swift */; };
 		657861FC1DD877A40027C5A0 /* CreateCommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657861FB1DD877A40027C5A0 /* CreateCommentViewController.swift */; };
+		6578AF011DFE69F7009B6BCC /* Message+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6578AEFF1DFE69F7009B6BCC /* Message+CoreDataClass.swift */; };
+		6578AF021DFE69F7009B6BCC /* Message+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6578AF001DFE69F7009B6BCC /* Message+CoreDataProperties.swift */; };
+		6578AF041DFE6A09009B6BCC /* Comment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6578AF031DFE6A09009B6BCC /* Comment+CoreDataProperties.swift */; };
 		65866C0A1CD6466200038400 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65866C091CD6466200038400 /* SettingsViewController.swift */; };
 		65C659CD1D2C8CEA00E11210 /* ChangeUserNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C659CC1D2C8CEA00E11210 /* ChangeUserNameViewController.swift */; };
 		65CB617C1CD3EA4F002D6F9E /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65CB617B1CD3EA4F002D6F9E /* CloudKit.framework */; };
-		65CE77A41CD3A96000CDFC49 /* NewOthersCrumbsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65CE77A31CD3A96000CDFC49 /* NewOthersCrumbsViewController.swift */; };
 		65EF38A91D21D2B400161A3E /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65EF38A81D21D2B400161A3E /* SignInViewController.swift */; };
 		65F556BC1CD219030014AC30 /* OthersCrumbsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F556BB1CD219030014AC30 /* OthersCrumbsTableViewController.swift */; };
 		65F556BE1CD21D760014AC30 /* OthersCrumbsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F556BD1CD21D760014AC30 /* OthersCrumbsTableViewCell.swift */; };
@@ -76,25 +73,22 @@
 		654C0B561CC4020200060E58 /* CoreLocation.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreLocation.framework; path = System/Library/Frameworks/CoreLocation.framework; sourceTree = SDKROOT; };
 		654C0B581CC565B200060E58 /* YourCrumbsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YourCrumbsTableViewCell.swift; sourceTree = "<group>"; };
 		654C0B5A1CC6AE4200060E58 /* YourCrumbsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YourCrumbsTableViewController.swift; sourceTree = "<group>"; };
-		656D65EA1CFA5E5F001F8950 /* Message+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Message+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		656D65EB1CFA5E5F001F8950 /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
 		6576060A1DCD69D4006860C6 /* CrumbTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CrumbTableViewCell.swift; sourceTree = SOURCE_ROOT; };
 		6576060B1DCD69D4006860C6 /* CommentCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CommentCell.swift; sourceTree = SOURCE_ROOT; };
-		6576060C1DCD69D4006860C6 /* ViewCrumbs.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewCrumbs.swift; sourceTree = SOURCE_ROOT; };
 		657756B41DD93C8F00ABAFD7 /* MIDatePicker-master */ = {isa = PBXFileReference; lastKnownFileType = folder; path = "MIDatePicker-master"; sourceTree = SOURCE_ROOT; };
 		657756B61DD9488D00ABAFD7 /* MIDatePicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = MIDatePicker.swift; path = "../MIDatePicker-master/MIDatePicker/MIDatePicker.swift"; sourceTree = "<group>"; };
 		657756B71DD9488D00ABAFD7 /* MIDatePicker.xib */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.xib; name = MIDatePicker.xib; path = "../MIDatePicker-master/MIDatePicker/MIDatePicker.xib"; sourceTree = "<group>"; };
 		6577DCC71D3D6DBB00C25F52 /* UserInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserInfo.swift; sourceTree = "<group>"; };
 		6578159E1D62BE0B004F4660 /* HelperFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HelperFunctions.swift; sourceTree = "<group>"; };
-		657861F71DD829050027C5A0 /* Comment+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Comment+CoreDataClass.swift"; sourceTree = "<group>"; };
-		657861F81DD829050027C5A0 /* Comment+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Comment+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		657861FB1DD877A40027C5A0 /* CreateCommentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateCommentViewController.swift; sourceTree = "<group>"; };
+		6578AEFF1DFE69F7009B6BCC /* Message+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Message+CoreDataClass.swift"; sourceTree = "<group>"; };
+		6578AF001DFE69F7009B6BCC /* Message+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Message+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		6578AF031DFE6A09009B6BCC /* Comment+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Comment+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		65866C091CD6466200038400 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		65A5A2D61CF681B60019DB49 /* MessageDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MessageDataModel.xcdatamodel; sourceTree = "<group>"; };
 		65C659CC1D2C8CEA00E11210 /* ChangeUserNameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangeUserNameViewController.swift; sourceTree = "<group>"; };
 		65CB617A1CD3D175002D6F9E /* BreadCrumbs.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = BreadCrumbs.entitlements; sourceTree = "<group>"; };
 		65CB617B1CD3EA4F002D6F9E /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
-		65CE77A31CD3A96000CDFC49 /* NewOthersCrumbsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NewOthersCrumbsViewController.swift; sourceTree = "<group>"; };
 		65EF38A81D21D2B400161A3E /* SignInViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignInViewController.swift; sourceTree = "<group>"; };
 		65F556BB1CD219030014AC30 /* OthersCrumbsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OthersCrumbsTableViewController.swift; path = ../OthersCrumbsTableViewController.swift; sourceTree = "<group>"; };
 		65F556BD1CD21D760014AC30 /* OthersCrumbsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OthersCrumbsTableViewCell.swift; sourceTree = "<group>"; };
@@ -193,23 +187,21 @@
 		654B116D1CB9705800BD6313 /* BreadCrumbs */ = {
 			isa = PBXGroup;
 			children = (
+				654B11721CB9705800BD6313 /* Main.storyboard */,
 				65FCBCAD1DDBCAB4002D07BA /* CDItems */,
 				65B9FF031DCD79C900C09F85 /* Classes and helper */,
-				654B11721CB9705800BD6313 /* Main.storyboard */,
 				654B116E1CB9705800BD6313 /* AppDelegate.swift */,
 				650862A41CD507E400006DAD /* PageManagerViewController.swift */,
 				65EF38A81D21D2B400161A3E /* SignInViewController.swift */,
 				65219BB11DDBFF5D006765C3 /* create */,
 				657606111DCD69E1006860C6 /* cells */,
 				65219BAD1DDBFE11006765C3 /* mainViews */,
-				65CE77A31CD3A96000CDFC49 /* NewOthersCrumbsViewController.swift */,
-				6576060C1DCD69D4006860C6 /* ViewCrumbs.swift */,
 				65219BB21DDBFFA4006765C3 /* pickerView */,
-				654B11771CB9705800BD6313 /* LaunchScreen.storyboard */,
 				654B117A1CB9705800BD6313 /* Info.plist */,
 				6538741A1DD54FA9009ABDBF /* old code */,
 				654B11751CB9705800BD6313 /* Assets.xcassets */,
 				65CB617A1CD3D175002D6F9E /* BreadCrumbs.entitlements */,
+				654B11771CB9705800BD6313 /* LaunchScreen.storyboard */,
 			);
 			path = BreadCrumbs;
 			sourceTree = "<group>";
@@ -248,10 +240,9 @@
 		65FCBCAD1DDBCAB4002D07BA /* CDItems */ = {
 			isa = PBXGroup;
 			children = (
-				657861F71DD829050027C5A0 /* Comment+CoreDataClass.swift */,
-				657861F81DD829050027C5A0 /* Comment+CoreDataProperties.swift */,
-				656D65EB1CFA5E5F001F8950 /* Message.swift */,
-				656D65EA1CFA5E5F001F8950 /* Message+CoreDataProperties.swift */,
+				6578AF031DFE6A09009B6BCC /* Comment+CoreDataProperties.swift */,
+				6578AEFF1DFE69F7009B6BCC /* Message+CoreDataClass.swift */,
+				6578AF001DFE69F7009B6BCC /* Message+CoreDataProperties.swift */,
 			);
 			name = CDItems;
 			path = ..;
@@ -375,32 +366,29 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6578AF021DFE69F7009B6BCC /* Message+CoreDataProperties.swift in Sources */,
 				6576060E1DCD69D4006860C6 /* CrumbTableViewCell.swift in Sources */,
-				65CE77A41CD3A96000CDFC49 /* NewOthersCrumbsViewController.swift in Sources */,
 				6543DA511DC47CEA00197513 /* CommentShort.swift in Sources */,
 				65F556BC1CD219030014AC30 /* OthersCrumbsTableViewController.swift in Sources */,
 				654C0B5B1CC6AE4200060E58 /* YourCrumbsTableViewController.swift in Sources */,
-				657606101DCD69D4006860C6 /* ViewCrumbs.swift in Sources */,
 				657756B81DD9488D00ABAFD7 /* MIDatePicker.swift in Sources */,
 				6577DCC81D3D6DBB00C25F52 /* UserInfo.swift in Sources */,
+				6578AF011DFE69F7009B6BCC /* Message+CoreDataClass.swift in Sources */,
 				65F556BE1CD21D760014AC30 /* OthersCrumbsTableViewCell.swift in Sources */,
 				65FCBD681DDBF2B9002D07BA /* MessageDataModel.xcdatamodeld in Sources */,
 				65EF38A91D21D2B400161A3E /* SignInViewController.swift in Sources */,
+				6578AF041DFE6A09009B6BCC /* Comment+CoreDataProperties.swift in Sources */,
 				65866C0A1CD6466200038400 /* SettingsViewController.swift in Sources */,
 				657861FC1DD877A40027C5A0 /* CreateCommentViewController.swift in Sources */,
-				656D65EC1CFA5E5F001F8950 /* Message+CoreDataProperties.swift in Sources */,
 				6540B5311DD909E80014A0BC /* WriteCrumbViewController.swift in Sources */,
 				6515D12C1CC148EB00570205 /* CrumbMessage.swift in Sources */,
 				654B116F1CB9705800BD6313 /* AppDelegate.swift in Sources */,
 				65C659CD1D2C8CEA00E11210 /* ChangeUserNameViewController.swift in Sources */,
 				653BFF9C1CCA0BB7005923E9 /* ViewCrumbViewController.swift in Sources */,
 				6576060F1DCD69D4006860C6 /* CommentCell.swift in Sources */,
-				656D65ED1CFA5E5F001F8950 /* Message.swift in Sources */,
 				654C0B591CC565B200060E58 /* YourCrumbsTableViewCell.swift in Sources */,
-				657861F91DD829050027C5A0 /* Comment+CoreDataClass.swift in Sources */,
 				650862A51CD507E400006DAD /* PageManagerViewController.swift in Sources */,
 				6578159F1D62BE0B004F4660 /* HelperFunctions.swift in Sources */,
-				657861FA1DD829050027C5A0 /* Comment+CoreDataProperties.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -543,7 +531,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = PGCA3M66YM;
 				INFOPLIST_FILE = BreadCrumbs/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = SabreTechnologiesLLC.BreadCrumbs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -564,7 +552,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = PGCA3M66YM;
 				INFOPLIST_FILE = BreadCrumbs/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = SabreTechnologiesLLC.BreadCrumbs;
 				PRODUCT_NAME = "$(TARGET_NAME)";

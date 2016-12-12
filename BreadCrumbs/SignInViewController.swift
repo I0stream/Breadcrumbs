@@ -36,9 +36,9 @@ fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
 class SignInViewController: UIViewController, UITextFieldDelegate {
 
     let NSUserData = AppDelegate().NSUserData
-    
+    let locationManager: CLLocationManager = AppDelegate().locationManager
+
     @IBOutlet weak var setUserNameTextField: UITextField!
-    
     @IBOutlet weak var AView: UIView!
     @IBOutlet weak var signUpButton: UIButton!
     @IBOutlet weak var ErrorDisp: UILabel!
@@ -55,6 +55,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(SignInViewController.loadList(_:)),name:NSNotification.Name(rawValue: "ReloadSignIn"), object: nil)
         
         ErrorDisp.isHidden = true
+        locationManager.requestAlwaysAuthorization()
 
     }
     func loadList(_ notification: Notification){//yayay//This solves the others crumbs problem i think
@@ -115,6 +116,8 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
             NSUserData.setValue(setUserNameTextField.text, forKey: "userName")
             NSUserData.setValue(5, forKey: "crumbCount")// let cCount = NSUserData.integerForKey("crumbCount")
             
+            NSUserData.set(0, forKey: "ExplainerCrumb")
+            
             let time = Date()
             
             self.NSUserData.setValue(time, forKey: "SinceLastCheck")
@@ -135,6 +138,8 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
                     print("Fetched iCloudID was nil")
                 }
             }
+            
+            
             performSegue(withIdentifier: "SignInSegue", sender: sender)//presents weird and i also want user to be able to access this and sign out/in again. cant change username after picking though. may need more view controllers
         }
         else if setUserNameTextField.text?.characters.count < 0 || setUserNameTextField.text?.characters.count > 21{
@@ -167,6 +172,10 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         }
     }
     
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        self.view.endEditing(true)
+        return false
+    }
     /*
      // MARK: - Navigation
      

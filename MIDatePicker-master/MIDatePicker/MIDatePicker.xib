@@ -15,10 +15,10 @@
             <rect key="frame" x="0.0" y="0.0" width="408" height="287"/>
             <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
             <subviews>
-                <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="fJB-zB-EVb">
-                    <rect key="frame" x="0.0" y="57" width="408" height="230"/>
+                <view contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="fJB-zB-EVb">
+                    <rect key="frame" x="0.0" y="55" width="408" height="230"/>
                     <subviews>
-                        <pickerView contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="T2L-qm-MDI">
+                        <pickerView contentMode="scaleToFill" misplaced="YES" translatesAutoresizingMaskIntoConstraints="NO" id="T2L-qm-MDI">
                             <rect key="frame" x="0.0" y="0.0" width="408" height="230"/>
                             <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                         </pickerView>
@@ -32,16 +32,16 @@
                     </constraints>
                 </view>
                 <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="mGE-f5-kvA">
-                    <rect key="frame" x="0.0" y="0.0" width="408" height="57"/>
+                    <rect key="frame" x="0.0" y="0.0" width="408" height="55"/>
                     <subviews>
                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="vBH-7T-xMT">
-                            <rect key="frame" x="330" y="0.0" width="78" height="57"/>
+                            <rect key="frame" x="350" y="0.0" width="58" height="55"/>
                             <constraints>
                                 <constraint firstAttribute="width" constant="150" id="fZQ-wB-YiA"/>
                             </constraints>
                             <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="15"/>
                             <inset key="contentEdgeInsets" minX="0.0" minY="0.0" maxX="20" maxY="0.0"/>
-                            <state key="normal" title="Confirm">
+                            <state key="normal" title="Done">
                                 <color key="titleColor" red="0.96078431369999995" green="0.65098039220000004" blue="0.13725490200000001" alpha="1" colorSpace="calibratedRGB"/>
                             </state>
                             <variation key="default">
@@ -53,42 +53,44 @@
                                 <action selector="confirmButtonDidTapped:" destination="iN0-l3-epB" eventType="touchUpInside" id="i06-kP-iGE"/>
                             </connections>
                         </button>
-                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="left" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="GhZ-zS-Unc">
-                            <rect key="frame" x="0.0" y="0.0" width="70" height="57"/>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="FJm-0k-FMF">
+                            <rect key="frame" x="0.0" y="0.0" width="40" height="55"/>
                             <constraints>
-                                <constraint firstAttribute="width" constant="150" id="H7z-Jm-Tq5"/>
+                                <constraint firstAttribute="width" constant="40" id="1Lj-5g-zrn"/>
                             </constraints>
-                            <fontDescription key="fontDescription" type="system" weight="semibold" pointSize="15"/>
-                            <inset key="contentEdgeInsets" minX="20" minY="0.0" maxX="0.0" maxY="0.0"/>
-                            <state key="normal" title="Cancel">
-                                <color key="titleColor" red="0.96078431372549022" green="0.65098039215686276" blue="0.13725490196078433" alpha="1" colorSpace="calibratedRGB"/>
+                            <state key="normal" image="backbutton">
+                                <color key="titleColor" red="0.96078431369999995" green="0.65098039220000004" blue="0.13725490200000001" alpha="1" colorSpace="calibratedRGB"/>
                             </state>
-                            <variation key="default">
-                                <mask key="constraints">
-                                    <exclude reference="H7z-Jm-Tq5"/>
-                                </mask>
-                            </variation>
                             <connections>
-                                <action selector="cancelButtonDidTapped:" destination="iN0-l3-epB" eventType="touchUpInside" id="GrR-4S-MuE"/>
+                                <action selector="BackArrowTapped:" destination="iN0-l3-epB" eventType="touchUpInside" id="skf-Gr-zSY"/>
+                            </connections>
+                        </button>
+                        <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="1N3-sR-GhV">
+                            <rect key="frame" x="40" y="0.0" width="40" height="55"/>
+                            <constraints>
+                                <constraint firstAttribute="width" constant="40" id="CVc-aC-ctD"/>
+                            </constraints>
+                            <state key="normal" image="forwardbutton">
+                                <color key="titleColor" red="0.96078431369999995" green="0.65098039220000004" blue="0.13725490200000001" alpha="1" colorSpace="calibratedRGB"/>
+                            </state>
+                            <connections>
+                                <action selector="ForwardArrowTapped:" destination="iN0-l3-epB" eventType="touchUpInside" id="RjQ-lU-OIz"/>
                             </connections>
                         </button>
                     </subviews>
                     <color key="backgroundColor" red="0.95686274766921997" green="0.95686274766921997" blue="0.95686274766921997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                     <constraints>
+                        <constraint firstAttribute="bottom" secondItem="1N3-sR-GhV" secondAttribute="bottom" id="6Rd-Ve-WM3"/>
+                        <constraint firstItem="1N3-sR-GhV" firstAttribute="leading" secondItem="FJm-0k-FMF" secondAttribute="trailing" id="6va-rp-ngp"/>
+                        <constraint firstItem="FJm-0k-FMF" firstAttribute="leading" secondItem="mGE-f5-kvA" secondAttribute="leading" id="785-u9-uC7"/>
+                        <constraint firstAttribute="bottom" secondItem="FJm-0k-FMF" secondAttribute="bottom" id="D0I-50-z9i"/>
+                        <constraint firstItem="1N3-sR-GhV" firstAttribute="top" secondItem="mGE-f5-kvA" secondAttribute="top" id="Dkn-LS-EkP"/>
                         <constraint firstAttribute="bottom" secondItem="vBH-7T-xMT" secondAttribute="bottom" id="E1a-Yb-N4r"/>
                         <constraint firstItem="vBH-7T-xMT" firstAttribute="top" secondItem="mGE-f5-kvA" secondAttribute="top" id="IEz-Bc-WSG"/>
-                        <constraint firstItem="vBH-7T-xMT" firstAttribute="leading" secondItem="GhZ-zS-Unc" secondAttribute="trailing" constant="10" id="Yv8-Ie-MPf"/>
-                        <constraint firstAttribute="height" constant="57" id="f0u-b6-YoB"/>
-                        <constraint firstItem="GhZ-zS-Unc" firstAttribute="leading" secondItem="mGE-f5-kvA" secondAttribute="leading" id="mZV-uu-WBm"/>
-                        <constraint firstItem="GhZ-zS-Unc" firstAttribute="top" secondItem="mGE-f5-kvA" secondAttribute="top" id="rHE-Am-22S"/>
+                        <constraint firstAttribute="height" constant="55" id="f0u-b6-YoB"/>
+                        <constraint firstItem="FJm-0k-FMF" firstAttribute="top" secondItem="mGE-f5-kvA" secondAttribute="top" id="ldq-2w-zFN"/>
                         <constraint firstAttribute="trailing" secondItem="vBH-7T-xMT" secondAttribute="trailing" id="uDy-hu-t3y"/>
-                        <constraint firstAttribute="bottom" secondItem="GhZ-zS-Unc" secondAttribute="bottom" id="zlo-fz-XRU"/>
                     </constraints>
-                    <variation key="default">
-                        <mask key="constraints">
-                            <exclude reference="Yv8-Ie-MPf"/>
-                        </mask>
-                    </variation>
                 </view>
             </subviews>
             <color key="backgroundColor" red="1" green="1" blue="1" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -110,14 +112,19 @@
                 </mask>
             </variation>
             <connections>
+                <outlet property="BackArrowButton" destination="FJm-0k-FMF" id="mYs-Tc-VbU"/>
+                <outlet property="ForwardArrowButton" destination="1N3-sR-GhV" id="AbI-e8-3Pe"/>
                 <outlet property="backgroundView" destination="fJB-zB-EVb" id="t6z-kL-lMg"/>
-                <outlet property="cancelButton" destination="GhZ-zS-Unc" id="eK2-tz-sqP"/>
                 <outlet property="confirmButton" destination="vBH-7T-xMT" id="fZN-vr-dNt"/>
-                <outlet property="headerView" destination="mGE-f5-kvA" id="WFB-sh-FPh"/>
+                <outlet property="headerView" destination="mGE-f5-kvA" id="8Tr-6h-9J9"/>
                 <outlet property="headerViewHeightConstraint" destination="f0u-b6-YoB" id="I6o-Td-dOf"/>
                 <outlet property="picker" destination="T2L-qm-MDI" id="XcX-1x-y8y"/>
             </connections>
             <point key="canvasLocation" x="189" y="280.5"/>
         </view>
     </objects>
+    <resources>
+        <image name="backbutton" width="10" height="18"/>
+        <image name="forwardbutton" width="10" height="18"/>
+    </resources>
 </document>

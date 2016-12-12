@@ -23,9 +23,6 @@ class CommentShort {
         //time posted
     }
     
-    
-   
-    
     func dateToStringFormat() -> String{
         let calendar = Calendar.current
         let components = (calendar as NSCalendar).components([.day , .month , .year], from: timeSent)
@@ -127,11 +124,17 @@ class CommentShort {
         switch test {
         case 0 ..< 60://60 second
             newdate = "a few seconds ago"
-        case 60 ..< 3600://minutes
+        case 60 ..< 119://minute
+            
+            newdate = "\(-Int(timeSent.timeIntervalSinceNow/60)) minute ago"
+        case 120 ..< 3600://minutes
             
             newdate = "\(-Int(timeSent.timeIntervalSinceNow/60)) minutes ago"
             
-        case 3600 ..< 86400://hours
+        case 3600 ..< 7119://hour
+            newdate = "\(-Int(timeSent.timeIntervalSinceNow/3600)) hour ago"
+
+        case 7200 ..< 86400://hours
             newdate = "\(-Int(timeSent.timeIntervalSinceNow/3600)) hours ago"
             
         case 86400 ..< 31556900://days

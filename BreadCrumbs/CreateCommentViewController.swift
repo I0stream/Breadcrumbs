@@ -19,7 +19,7 @@ class CreateCommentViewController: UIViewController, UITextViewDelegate {
     
     var viewbreadcrumb: CrumbMessage?
     
-    let managedObjectContext = (UIApplication.shared.delegate as! AppDelegate).managedObjectContext //yay
+    let managedObjectContext = AppDelegate().getContext() //broke
 
     
     weak var delegate: CreateCommentDelegate?
@@ -34,24 +34,21 @@ class CreateCommentViewController: UIViewController, UITextViewDelegate {
         charCount.textColor = UIColor.lightGray
         
         submitView.isHidden = true
+        
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
+        self.hideKeyboardWhenTappedAround()
+        view.addGestureRecognizer(tap)
+
     }
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
         // Dispose of any resources that can be recreated.
     }
-    
-    @IBAction func CancelComment(_ sender: AnyObject) {
-        dismiss(animated: true, completion: nil)
-    }
 
-    
-    @IBAction func MakeComment(_ sender: AnyObject) {
-    }
-    
     //test msglength
     func msgLengthTest() -> Bool {
-        if WriteCommentTextView.text.characters.count >= 126 || WriteCommentTextView.text.characters.count < 1 || WriteCommentTextView.text == "What do you think?" {//fixed 256 off by one error; if want to shorten to 128 make sure to set as 129
+        if WriteCommentTextView.text.characters.count >= 126 || WriteCommentTextView.text.characters.count < 2 || WriteCommentTextView.text == "What do you think?" {//fixed 256 off by one error; if want to shorten to 128 make sure to set as 129
             //fails to send
             return false
         }
@@ -108,6 +105,7 @@ class CreateCommentViewController: UIViewController, UITextViewDelegate {
     //If user didn't edit field return to gray
     func textViewDidEndEditing(_ textView: UITextView) {
         if WriteCommentTextView.text.isEmpty{
+            submitView.isHidden = true
             WriteCommentTextView.text = "What do you think?"
             WriteCommentTextView.textColor = UIColor.lightGray
         }
@@ -121,11 +119,20 @@ class CreateCommentViewController: UIViewController, UITextViewDelegate {
         }
         return true
     }
+    func dismissKeyboard() {
+        //Causes the view (or one of its embedded text fields) to resign the first responder status.
+        view.endEditing(true)
+    }
+    func hideKeyboardWhenTappedAround() {
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(CreateCommentViewController.dismissKeyboard))
+        view.addGestureRecognizer(tap)
+    }
+    
     
     func AddComment(){
         let date = Date()
         let newComment = CommentShort(username: NSUserData.string(forKey: "userName")!, text: WriteCommentTextView.text, timeSent: date)
-        
+        delegate?.addNewComment(newComment)
         AddToCD(newComment)
         AddToCK(newComment)
     }
@@ -135,23 +142,32 @@ class CreateCommentViewController: UIViewController, UITextViewDelegate {
         let container = CKContainer.default()
         let publicData = container.publicCloudDatabase
         
-        let record = CKRecord(recordType: "Comment")
+        let commentRecord = CKRecord(recordType: "Comment")
         
-        record.setValue(comment.timeSent, forKey: "timeSent")
-        record.setValue(comment.username, forKey: "userName")
-        record.setValue(comment.text, forKey: "text")
+        commentRecord.setValue(comment.timeSent, forKey: "timeSent")
+        commentRecord.setValue(comment.username, forKey: "userName")
+        commentRecord.setValue(comment.text, forKey: "text")
+        
+        
+        //var ref = CKReference(record: listRecord, action: .DeleteSelf)
+        //itemRecord.setObject(ref, forKey: "owningList")
         
         let recordid = CKRecordID(recordName: (viewbreadcrumb?.uRecordID)!)
+        let reference = CKReference(recordID: recordid, action: CKReferenceAction.deleteSelf)
         
-        let ref = CKReference(recordID: recordid, action: .deleteSelf)
-        record.setValue(ref, forKey: "ownerReference")
-        publicData.save(record, completionHandler: { record, error in
+        commentRecord.setValue(reference, forKey: "ownerReference")//should be right but might not be
+        
+        //print("dis after zone")
+        //print(viewbreadcrumb?.uRecordID as Any)
+        
+        publicData.save(commentRecord, completionHandler: { record, error in
             if error != nil {
                 print(error.debugDescription)
                 print("ck error in create comment")
             }
         })
     }
+    
     func AddToCD(_ comment: CommentShort){// need to know relationship
         //create Message: NSManagedObject
         
@@ -164,18 +180,26 @@ class CreateCommentViewController: UIViewController, UITextViewDelegate {
             let fetchedMsgs = try managedObjectContext.fetch(fetchRequest) as! [Message]
             
             let ComMessage = fetchedMsgs[0]
-            commentMO.message = ComMessage
+            
+            //let newCommets:[Comment] = [ComMessage, commentMO]
+            //ComMessage.setValue(newCommets, forKey: "comments")
+            
+            //let addresses = newPerson.mutableSetValueForKey("addresses")
+            //addresses.addObject(otherAddress)
             
             commentMO.setValue(comment.text, forKey: "text")
             commentMO.setValue(comment.username, forKey: "username")
             commentMO.setValue(comment.timeSent, forKey: "timeSent")
+            
+            commentMO.message = ComMessage
+            
 
             do {
                 try commentMO.managedObjectContext?.save()
-                //print("saved to coredata")
+                //print("comment saved to coredata")
             } catch {
                 print(error)
-                print("cd error in write crumbs")
+                print("cd error in create crumbs")
                 
             }
         } catch {
@@ -184,8 +208,16 @@ class CreateCommentViewController: UIViewController, UITextViewDelegate {
 
     }
     
+    @IBAction func CancelComment(_ sender: AnyObject) {
+        dismiss(animated: true, completion: nil)
+    }
+    
     @IBAction func submitComment(_ sender: AnyObject) {
+        
         AddComment()
+        print("comment added to cd and ck")
+        dismiss(animated: true, completion: nil)
+        
     }
 }
 

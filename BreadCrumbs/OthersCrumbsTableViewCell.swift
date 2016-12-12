@@ -10,29 +10,29 @@ import UIKit
 
 class OthersCrumbsTableViewCell: UITableViewCell {
     
-    @IBOutlet weak var PosterUserNameLabel: UILabel!
-    @IBOutlet weak var othersMessageTextView: UITextView!
-    @IBOutlet weak var TimeAgoPosted: UILabel!
-    @IBOutlet weak var OthersVotesLabe: UILabel!
-    @IBOutlet weak var OthersAddress: UILabel!
-    @IBOutlet weak var TimeCountdown: UILabel!
-    @IBOutlet weak var IsViewedLabel: UILabel!
+    @IBOutlet weak var TimeRemainingValueLabel: UILabel!
+    //    @IBOutlet weak var LocationPosted: UILabel!
+    @IBOutlet weak var TextViewCellOutlet: UITextView!
+    @IBOutlet weak var VoteValue: UILabel!
+    @IBOutlet weak var YouTheUserLabel: UILabel!
+    @IBOutlet weak var timeCountdown: UILabel!
+    @IBOutlet weak var VoteButton: UIButton!
+    
 
-    
-    @IBOutlet weak var UpvoteOutlet: UIButton!
-    
-    @IBOutlet weak var DownvoteOutlet: UIButton!
     override func awakeFromNib() {
         super.awakeFromNib()
+        // Initialization code
     }
-
+    
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
+        
+        //NSTimer.scheduledTimerWithTimeInterval(1.0, target: self, selector: #selector(YourCrumbsTableViewCell().countinDown), userInfo: nil, repeats: true)
+        
+        // Configure the view for the selected state
     }
-    @IBAction func UpvoteAction(_ sender: AnyObject) {
-    }
-    @IBAction func DownvoteAction(_ sender: AnyObject) {
-    }
+    
+
     
 
 }

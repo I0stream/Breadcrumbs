@@ -10,19 +10,18 @@ import UIKit
 
 protocol MIDatePickerDelegate: class {
     func miDatePicker(_ amDatePicker: MIDatePicker, didSelect time: Int)
-    func miDatePickerDidCancelSelection(_ amDatePicker: MIDatePicker)
-    //func numberOfComponentsInPickerView(pickerView: UIPickerView) -> Int
-    //func pickerView(pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int
-    //func pickerView(pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String?
+    func miDatePicker(_ amDatePicker: MIDatePicker, moveSelect: Void)
 }
 
 class MIDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
     
+    
     // MARK: - Config
     struct Config {
         
-        fileprivate let contentHeight: CGFloat = 250
-        fileprivate let bouncingOffset: CGFloat = 20
+        fileprivate let contentHeight: CGFloat =  3*(UIScreen.main.bounds.height)/8
+        //200///changes height of box holding picker
+        fileprivate let bouncingOffset: CGFloat = 0
         
         var times: [String] = ["4","8","12","24","48"]
         
@@ -50,7 +49,10 @@ class MIDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
     // MARK: - IBOutlets
     @IBOutlet weak var picker: UIPickerView?
     @IBOutlet weak var confirmButton: UIButton!
-    @IBOutlet weak var cancelButton: UIButton!
+    
+    @IBOutlet weak var BackArrowButton: UIButton!
+    @IBOutlet weak var ForwardArrowButton: UIButton!
+
     @IBOutlet weak var headerView: UIView!
     @IBOutlet weak var backgroundView: UIView!
     @IBOutlet weak var headerViewHeightConstraint: NSLayoutConstraint!
@@ -83,10 +85,16 @@ class MIDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
         //delegate?.miDatePicker(self, didSelect: datePicker.date)
         
     }
-    @IBAction func cancelButtonDidTapped(_ sender: AnyObject) {
-        dismiss()
-        delegate?.miDatePickerDidCancelSelection(self)
+    
+    @IBAction func BackArrowTapped(_ sender: Any) {
+        delegate?.miDatePicker(self, moveSelect: (picker?.selectRow(((picker?.selectedRow(inComponent: 0))!-1), inComponent: 0, animated: true))!)
+
     }
+    @IBAction func ForwardArrowTapped(_ sender: Any) {
+            delegate?.miDatePicker(self, moveSelect: (picker?.selectRow(((picker?.selectedRow(inComponent: 0))!+1), inComponent: 0, animated: true))!)
+    }
+    
+
     
     // MARK: - Private
     fileprivate func setup(_ parentVC: UIViewController) {
@@ -102,8 +110,8 @@ class MIDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
         
         headerViewHeightConstraint.constant = config.headerHeight
         
+        
         confirmButton.setTitle(config.confirmButtonTitle, for: UIControlState())
-        cancelButton.setTitle(config.cancelButtonTitle, for: UIControlState())
         
         //confirmButton.setTitleColor(config.confirmButtonColor, forState: .Normal)
         //cancelButton.setTitleColor(config.cancelButtonColor, forState: .Normal)
@@ -116,9 +124,7 @@ class MIDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
         overlayButton = UIButton(frame: CGRect(x: 0, y: 0, width: UIScreen.main.bounds.width, height: UIScreen.main.bounds.height))
         overlayButton.backgroundColor = config.overlayBackgroundColor
         overlayButton.alpha = 0
-        
-        overlayButton.addTarget(self, action: #selector(cancelButtonDidTapped(_:)), for: .touchUpInside)
-        
+                
         if !overlayButton.isDescendant(of: parentVC.view) { parentVC.view.addSubview(overlayButton) }
         
         overlayButton.translatesAutoresizingMaskIntoConstraints = false
@@ -162,7 +168,8 @@ class MIDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
     
     // MARK: - Public
     func show(inVC parentVC: UIViewController, completion: (() -> ())? = nil) {
-        
+        //picker?.showsSelectionIndicator = true
+
         parentVC.view.endEditing(true)
         
         setup(parentVC)

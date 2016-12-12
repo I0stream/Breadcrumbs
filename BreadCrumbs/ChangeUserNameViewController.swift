@@ -33,18 +33,19 @@ fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
 }
 
 
-class ChangeUserNameViewController: SettingsViewController {
+class ChangeUserNameViewController: SettingsViewController, UITextFieldDelegate {
     
-    @IBOutlet weak var UserNameLabel: UILabel!
     @IBOutlet weak var ChangeNameField: UITextField!
     @IBOutlet weak var errorMessageLabel: UILabel!
-    
-    var delegate: ChangeUserNameViewControllerDelegate?
+    @IBOutlet weak var hiddenbuttonview: UIView!
     
     override func viewDidLoad() {
         //super.viewDidLoad()
-        self.UserNameLabel.text = username
-        // Do any additional setup after loading the view.
+
+        ChangeNameField.delegate = self
+        errorMessageLabel.text = ""
+        self.hideKeyboardWhenTappedAround()
+        hiddenbuttonview.isHidden = true
     }
 
     override func didReceiveMemoryWarning() {
@@ -52,6 +53,50 @@ class ChangeUserNameViewController: SettingsViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        self.view.endEditing(true)
+        hiddenbuttonview.isHidden = false
+        return false
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+
+        hiddenbuttonview.isHidden = false
+        //signUpButton.hidden = false
+        
+    }
+    
+    func hideKeyboardWhenTappedAround() {
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(ChangeUserNameViewController.dismissKeyboard))
+        view.addGestureRecognizer(tap)
+        hiddenbuttonview.isHidden = false
+
+    }
+    
+    func dismissKeyboard() {
+        view.endEditing(true)
+    }
+    
+    
+    
+    @IBAction func cancelChange(_ sender: Any) {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    
+    //the button action that changes the username
+    @IBAction func ChangeNameButton(_ sender: AnyObject) {
+        if ChangeNameField.text?.characters.count < 1 || ChangeNameField.text?.characters.count > 16{
+            errorMessageLabel.text = "enter a valid username"
+        }else{
+            
+            NSUserData.setValue(ChangeNameField.text, forKey: "userName")
+            changeNameCK(ChangeNameField.text!)
+            dismiss(animated: true, completion: nil)
+        }
+    }
+    
+    //changes username in userinfo/user whatever
     func changeNameCK(_ userInput: String){
         //take record id and use that and the new name to update ck
         let container = CKContainer.default()
@@ -66,10 +111,7 @@ class ChangeUserNameViewController: SettingsViewController {
                 
                 publicData.save(record!, completionHandler: {theRecord, error in
                     if error == nil{
-                        //print("successful update!")
-                        DispatchQueue.main.async {
-                            self.UserNameLabel.text = userInput
-                        }
+                        print("successful update!")
                     }else{
                         print(error.debugDescription)
                     }
@@ -79,21 +121,5 @@ class ChangeUserNameViewController: SettingsViewController {
             }
         })
     }
-    
-    //the button action that changes the username
-    @IBAction func ChangeNameButton(_ sender: AnyObject) {
-        if ChangeNameField.text?.characters.count < 1 || ChangeNameField.text?.characters.count > 16{
-            errorMessageLabel.text = "enter a valid username"
-        }else{
-            NSUserData.setValue(ChangeNameField.text, forKey: "userName")
-            changeNameCK(ChangeNameField.text!)
-            
-            if let del = self.delegate {
-                del.changedUsername(ChangeNameField.text!)
-            }
-        }
-    }
 }
-protocol ChangeUserNameViewControllerDelegate: class {
-    func changedUsername(_ str: String)
-}
+

@@ -5,7 +5,7 @@
 //  Created by Daniel Schliesing on 10/27/16.
 //  Copyright © 2016 Daniel Schliesing. All rights reserved.
 //
-
+/*
 import UIKit
 import MapKit
 import CloudKit
@@ -173,3 +173,4 @@ class ViewCrumbs: UIViewController, UITableViewDelegate, CreateCommentDelegate, 
 /*protocol NewOthersCrumbsViewControllerDelegate: class {
     func updateVoteSpecific(NewVoteValue: Int, crumbUUID: String, hasVotedValue: Int)
 }*/
+*/

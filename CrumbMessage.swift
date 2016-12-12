@@ -157,7 +157,7 @@ class CrumbMessage{
         default:
             StringDate = dateOrganizer()
         }
-        StringDate = StringDate + " \(day)"
+        StringDate = StringDate + " \(day!)"
         
         return StringDate
     }
@@ -170,11 +170,18 @@ class CrumbMessage{
         switch test {
         case 0 ..< 60://60 second
             newdate = "a few seconds ago"
-        case 60 ..< 3600://minutes
+            
+        case 60 ..< 119://minute
+            
+            newdate = "\(-Int(timeDropped.timeIntervalSinceNow/60)) minute ago"
+        case 120 ..< 3600://minutes
             
             newdate = "\(-Int(timeDropped.timeIntervalSinceNow/60)) minutes ago"
-        
-        case 3600 ..< 86400://hours
+            
+        case 3600 ..< 7119://hour
+            newdate = "\(-Int(timeDropped.timeIntervalSinceNow/3600)) hour ago"
+            
+        case 7200 ..< 86400://hours
             newdate = "\(-Int(timeDropped.timeIntervalSinceNow/3600)) hours ago"
             
         case 86400 ..< 31556900://days
@@ -187,7 +194,13 @@ class CrumbMessage{
         }
         return newdate
     }
-    
+    /*case 60 ..< 3600://minutes
+     
+     newdate = "\(-Int(timeDropped.timeIntervalSinceNow/60)) minutes ago"
+     
+     case 3600 ..< 86400://hours
+     newdate = "\(-Int(timeDropped.timeIntervalSinceNow/3600)) hours ago"
+     */
     
 }
 

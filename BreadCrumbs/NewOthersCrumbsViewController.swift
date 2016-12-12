@@ -5,7 +5,7 @@
 //  Created by Daniel Schliesing on 4/29/16.
 //  Copyright © 2016 Daniel Schliesing. All rights reserved.
 //
-
+/*
 import UIKit
 import CloudKit
 import CoreData
@@ -165,3 +165,4 @@ class NewOthersCrumbsViewController: UIViewController, UITextViewDelegate, MKMap
 protocol NewOthersCrumbsViewControllerDelegate: class {
     func updateVoteSpecific(_ NewVoteValue: Int, crumbUUID: String, hasVotedValue: Int)
 }
+*/
