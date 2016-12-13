@@ -45,7 +45,7 @@ import CoreLocation
 }*/
 
 // MARK: Generated accessors for comments
-extension Message {
+/*extension Message {
 
     func initFromLocation(_ location: CLLocation) {
         self.latitude           = location.coordinate.latitude as NSNumber?
@@ -117,4 +117,4 @@ extension Message {
     @objc(removeComments:)
     @NSManaged public func removeFromComments(_ values: NSSet)
 
-}
+}*/

@@ -55,6 +55,8 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         
         YourTableView.estimatedRowHeight = 200
         YourTableView.rowHeight = UITableViewAutomaticDimension
+        
+        AppDelegate().saveToCoreData()
     }
 
     //MARK: Get User Info

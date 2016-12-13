@@ -31,6 +31,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
 
     //how bout i test this fucker by putting a bullet in it
     
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
 
         self.NSUserData.setValue(0, forKey: "counterLoc")
@@ -58,7 +59,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             saveContext()
             //***********************************************************************************************************************//
 
-            
             
         } else {
             self.window = UIWindow(frame: UIScreen.main.bounds)
@@ -91,25 +91,43 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         return true
     }
     
-    /*func saveToCoreData(){
+    func saveToCoreData(){
         //create Message: NSManagedObject
         if #available(iOS 10.0, *) {
             
-            let entity = NSEntityDescription.entity(forEntityName: "Message", in: getContext())
-            let message = Message(entity: entity!, insertInto: getContext())
+            let moc = persistentContainer.viewContext
             
-            message.text = "test"
-
+            let entity = NSEntityDescription.entity(forEntityName: "Message", in: moc)
+            let message = Message(entity: entity!, insertInto: moc)
+            
+            /*message.setValue(crumbmessage.text, forKeyPath: "text")
+             message.setValue(crumbmessage.senderName, forKeyPath: "senderName")
+             message.setValue(crumbmessage.timeDropped, forKeyPath: "timeDropped")
+             message.setValue(crumbmessage.timeLimit as NSNumber?, forKey: "timeLimit")
+             message.
+             message.setValue(crumbmessage.senderuuid, forKeyPath: "senderuuid")
+             message.setValue(crumbmessage.votes as NSNumber?, forKeyPath: "votevalue")
+             message.setValue(crumbmessage.uRecordID, forKeyPath: "recorduuid")*/
+            let crumbmessage = CrumbMessage(text: "hello", senderName: "test", location: locationManager.location!, timeDropped: Date(), timeLimit: 48, senderuuid: "adsfasfzcxvkhlweqr", votes: 12)
+            
+            message.text = crumbmessage?.text
+            message.senderName = crumbmessage?.senderName
+            message.timeDropped = crumbmessage?.timeDropped
+            message.timeLimit = crumbmessage?.timeLimit as NSNumber?
+            message.initFromLocation((crumbmessage?.location)!)
+            message.senderuuid = crumbmessage?.senderuuid
+            message.votevalue = crumbmessage?.votes as NSNumber?
+            message.recorduuid = crumbmessage?.uRecordID
             do {
                 try message.managedObjectContext?.save()
-                print("saved to coredata")
+                //print("saved to coredata")
             } catch {
                 print(error)
                 print("cd error in write crumbs")
                 
             }
         }
-    }*/
+    }
     //MARK: Location Stuff
     //***********************************************************************************************************************//
     
