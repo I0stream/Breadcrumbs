@@ -24,7 +24,7 @@ class CrumbMessage{
     var viewedOther: Int?
     var hasVoted: Int?
     //var addressStr: String?
-    var commentsArr: [Comment]//array of comments
+    //var commentsArr: [Comment]//array of comments
     
     
     
@@ -38,7 +38,7 @@ class CrumbMessage{
         self.timeLimit = timeLimit
         self.senderuuid = senderuuid
         self.votes = votes
-        self.commentsArr = []
+        //self.commentsArr = []
         //test if empty; see if the message is only whitespace cause that would be annoying
         if text.isEmpty || senderName.isEmpty {
             return nil

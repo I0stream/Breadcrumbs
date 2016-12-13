@@ -15,6 +15,7 @@ import CloudKit
 import UIKit
 import CoreLocation
 import CoreData
+
 // FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
 // Consider refactoring the code to use the non-optional operators.
 fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
@@ -50,7 +51,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     let locationManager: CLLocationManager = AppDelegate().locationManager
     let helperfunctions = Helper()
     var crumbmessage: CrumbMessage?
-    let managedObjectContext = AppDelegate().getContext() //broke
+    //let managedObjectContext = AppDelegate().getContext() //broke
 
     var currentTime = 4
     
@@ -122,6 +123,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         }
         view.addGestureRecognizer(tap)
     }
+
     func miDatePicker(_ amDatePicker: MIDatePicker, didSelect time: Int) {
         // Do something when the user has confirmed a selected date
         currentTime = pickerTimeLimit[time]
@@ -297,18 +299,34 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     func saveToCoreData(_ crumbmessage: CrumbMessage){
         //create Message: NSManagedObject
         if #available(iOS 10.0, *) {
-            let desc = NSEntityDescription.entity(forEntityName: "Message", in: managedObjectContext)
+            
+            guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
+                return
+            }
+            
+            let moc = appDelegate.persistentContainer.viewContext
+            
+            let entity = NSEntityDescription.entity(forEntityName: "Message", in: moc)
+            let message = Message(entity: entity!, insertInto: moc)
+            
+            /*message.setValue(crumbmessage.text, forKeyPath: "text")
+            message.setValue(crumbmessage.senderName, forKeyPath: "senderName")
+            message.setValue(crumbmessage.timeDropped, forKeyPath: "timeDropped")
+            message.setValue(crumbmessage.timeLimit as NSNumber?, forKey: "timeLimit")
+            message.
+            message.setValue(crumbmessage.senderuuid, forKeyPath: "senderuuid")
+            message.setValue(crumbmessage.votes as NSNumber?, forKeyPath: "votevalue")
+            message.setValue(crumbmessage.uRecordID, forKeyPath: "recorduuid")*/
 
-            let message = Message(entity: desc!, insertInto: managedObjectContext)
+            
             message.text = crumbmessage.text
             message.senderName = crumbmessage.senderName
-            message.timeDropped = crumbmessage.timeDropped as NSDate?
+            message.timeDropped = crumbmessage.timeDropped
             message.timeLimit = crumbmessage.timeLimit as NSNumber?
             message.initFromLocation(crumbmessage.location)
             message.senderuuid = crumbmessage.senderuuid
             message.votevalue = crumbmessage.votes as NSNumber?
             message.recorduuid = crumbmessage.uRecordID
-        
             do {
                 try message.managedObjectContext?.save()
                 //print("saved to coredata")
@@ -318,7 +336,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
                 
             }
         }else{
-            let message = NSEntityDescription.insertNewObject(forEntityName: "Message", into: managedObjectContext) as! BreadCrumbs.Message
+            let message = NSEntityDescription.insertNewObject(forEntityName: "Message", into: AppDelegate().managedObjectContext) as! BreadCrumbs.Message
         
             message.setValue(crumbmessage.text, forKey: "text")
             message.setValue(crumbmessage.senderName, forKey: "senderName")

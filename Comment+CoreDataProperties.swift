@@ -8,11 +8,6 @@
 
 import Foundation
 import CoreData
-
-open class Comment: NSManagedObject {
-    
-}
-
 extension Comment {
 
     @nonobjc public class func fetchRequest() -> NSFetchRequest<Comment> {
@@ -22,6 +17,6 @@ extension Comment {
     @NSManaged public var text: String?
     @NSManaged public var timeSent: NSDate?
     @NSManaged public var username: String?
-    @NSManaged public var message: Message?
+    @NSManaged var message: Message?
 
 }

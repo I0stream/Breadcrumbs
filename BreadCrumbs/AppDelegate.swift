@@ -55,7 +55,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             
             self.timer1 = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(AppDelegate.loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 60 sec for a msg
             
-            
             saveContext()
             //***********************************************************************************************************************//
 
@@ -91,6 +90,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
         return true
     }
+    
+    /*func saveToCoreData(){
+        //create Message: NSManagedObject
+        if #available(iOS 10.0, *) {
+            
+            let entity = NSEntityDescription.entity(forEntityName: "Message", in: getContext())
+            let message = Message(entity: entity!, insertInto: getContext())
+            
+            message.text = "test"
+
+            do {
+                try message.managedObjectContext?.save()
+                print("saved to coredata")
+            } catch {
+                print(error)
+                print("cd error in write crumbs")
+                
+            }
+        }
+    }*/
     //MARK: Location Stuff
     //***********************************************************************************************************************//
     
@@ -275,16 +294,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     //***********************************************************************************************************************//
     @available(iOS 10.0, *)
     lazy var persistentContainer: NSPersistentContainer = {
-        let modelURL = Bundle.main.url(forResource: "MessageDataModel", withExtension: "momd")!
-        var managedModel = NSManagedObjectModel(contentsOf: modelURL)
+        //let modelURL = Bundle.main.url(forResource: "MessageDataModel", withExtension: "momd")!
+        //var managedModel = NSManagedObjectModel(contentsOf: modelURL)
         
-        let container = NSPersistentContainer(name: "MessageDataModelContainer", managedObjectModel: managedModel!)
+        let container = NSPersistentContainer(name: "MessageDataModel")
         
         container.loadPersistentStores(completionHandler: { (storeDescription, error) in
-            if let error = error {
+            if let error = error as NSError? {
                 
                 fatalError("Unresolved error \(error)")
-            }else{
             }
         })
         return container
@@ -334,11 +352,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     }()
     func getContext() -> NSManagedObjectContext{
         if #available(iOS 10.0, *) {
-            let context = (UIApplication.shared.delegate as! AppDelegate).persistentContainer.viewContext
+            let context = self.persistentContainer.viewContext
             return context
             
         } else {
-            let context = (UIApplication.shared.delegate as! AppDelegate).managedObjectContext
+            let context = self.managedObjectContext
             return context
         }
     }

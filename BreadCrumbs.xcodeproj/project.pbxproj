@@ -3,11 +3,15 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 48;
 	objects = {
 
 /* Begin PBXBuildFile section */
 		650862A51CD507E400006DAD /* PageManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650862A41CD507E400006DAD /* PageManagerViewController.swift */; };
+		651041941DFFC9BC008CF85F /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 651041921DFFC9BC008CF85F /* Message.swift */; };
+		651041951DFFC9BC008CF85F /* Message+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 651041931DFFC9BC008CF85F /* Message+CoreDataProperties.swift */; };
+		651041981DFFC9C7008CF85F /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 651041961DFFC9C7008CF85F /* Comment.swift */; };
+		651041991DFFC9C7008CF85F /* Comment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 651041971DFFC9C7008CF85F /* Comment+CoreDataProperties.swift */; };
 		6515D12C1CC148EB00570205 /* CrumbMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6515D12B1CC148EB00570205 /* CrumbMessage.swift */; };
 		6515D12D1CC148EB00570205 /* CrumbMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6515D12B1CC148EB00570205 /* CrumbMessage.swift */; };
 		6538741B1DD54FA9009ABDBF /* old code in Resources */ = {isa = PBXBuildFile; fileRef = 6538741A1DD54FA9009ABDBF /* old code */; };
@@ -31,12 +35,9 @@
 		6577DCC81D3D6DBB00C25F52 /* UserInfo.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6577DCC71D3D6DBB00C25F52 /* UserInfo.swift */; };
 		6578159F1D62BE0B004F4660 /* HelperFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6578159E1D62BE0B004F4660 /* HelperFunctions.swift */; };
 		657861FC1DD877A40027C5A0 /* CreateCommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657861FB1DD877A40027C5A0 /* CreateCommentViewController.swift */; };
-		6578AF011DFE69F7009B6BCC /* Message+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6578AEFF1DFE69F7009B6BCC /* Message+CoreDataClass.swift */; };
-		6578AF021DFE69F7009B6BCC /* Message+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6578AF001DFE69F7009B6BCC /* Message+CoreDataProperties.swift */; };
-		6578AF041DFE6A09009B6BCC /* Comment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6578AF031DFE6A09009B6BCC /* Comment+CoreDataProperties.swift */; };
 		65866C0A1CD6466200038400 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65866C091CD6466200038400 /* SettingsViewController.swift */; };
 		65C659CD1D2C8CEA00E11210 /* ChangeUserNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C659CC1D2C8CEA00E11210 /* ChangeUserNameViewController.swift */; };
-		65CB617C1CD3EA4F002D6F9E /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65CB617B1CD3EA4F002D6F9E /* CloudKit.framework */; };
+		65E47F231DFFD3780072996A /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65E47F221DFFD3780072996A /* CloudKit.framework */; };
 		65EF38A91D21D2B400161A3E /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65EF38A81D21D2B400161A3E /* SignInViewController.swift */; };
 		65F556BC1CD219030014AC30 /* OthersCrumbsTableViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F556BB1CD219030014AC30 /* OthersCrumbsTableViewController.swift */; };
 		65F556BE1CD21D760014AC30 /* OthersCrumbsTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65F556BD1CD21D760014AC30 /* OthersCrumbsTableViewCell.swift */; };
@@ -55,6 +56,10 @@
 
 /* Begin PBXFileReference section */
 		650862A41CD507E400006DAD /* PageManagerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = PageManagerViewController.swift; path = ../PageManagerViewController.swift; sourceTree = "<group>"; };
+		651041921DFFC9BC008CF85F /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Message.swift; sourceTree = "<group>"; };
+		651041931DFFC9BC008CF85F /* Message+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Message+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		651041961DFFC9C7008CF85F /* Comment.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = Comment.swift; sourceTree = "<group>"; };
+		651041971DFFC9C7008CF85F /* Comment+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Comment+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		6515D12B1CC148EB00570205 /* CrumbMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CrumbMessage.swift; path = ../CrumbMessage.swift; sourceTree = "<group>"; };
 		6538741A1DD54FA9009ABDBF /* old code */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; name = "old code"; path = "../old code"; sourceTree = "<group>"; };
 		6539C0F81CFBC7920072F1E3 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -81,14 +86,11 @@
 		6577DCC71D3D6DBB00C25F52 /* UserInfo.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = UserInfo.swift; sourceTree = "<group>"; };
 		6578159E1D62BE0B004F4660 /* HelperFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HelperFunctions.swift; sourceTree = "<group>"; };
 		657861FB1DD877A40027C5A0 /* CreateCommentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateCommentViewController.swift; sourceTree = "<group>"; };
-		6578AEFF1DFE69F7009B6BCC /* Message+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Message+CoreDataClass.swift"; sourceTree = "<group>"; };
-		6578AF001DFE69F7009B6BCC /* Message+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Message+CoreDataProperties.swift"; sourceTree = "<group>"; };
-		6578AF031DFE6A09009B6BCC /* Comment+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Comment+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		65866C091CD6466200038400 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
 		65A5A2D61CF681B60019DB49 /* MessageDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MessageDataModel.xcdatamodel; sourceTree = "<group>"; };
 		65C659CC1D2C8CEA00E11210 /* ChangeUserNameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangeUserNameViewController.swift; sourceTree = "<group>"; };
 		65CB617A1CD3D175002D6F9E /* BreadCrumbs.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = BreadCrumbs.entitlements; sourceTree = "<group>"; };
-		65CB617B1CD3EA4F002D6F9E /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
+		65E47F221DFFD3780072996A /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		65EF38A81D21D2B400161A3E /* SignInViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignInViewController.swift; sourceTree = "<group>"; };
 		65F556BB1CD219030014AC30 /* OthersCrumbsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = OthersCrumbsTableViewController.swift; path = ../OthersCrumbsTableViewController.swift; sourceTree = "<group>"; };
 		65F556BD1CD21D760014AC30 /* OthersCrumbsTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = OthersCrumbsTableViewCell.swift; sourceTree = "<group>"; };
@@ -99,9 +101,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				65E47F231DFFD3780072996A /* CloudKit.framework in Frameworks */,
 				6539C0F91CFBC7920072F1E3 /* CoreData.framework in Frameworks */,
 				654C0B571CC4020200060E58 /* CoreLocation.framework in Frameworks */,
-				65CB617C1CD3EA4F002D6F9E /* CloudKit.framework in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -168,10 +170,10 @@
 				65A5A2D51CF681B60019DB49 /* MessageDataModel.xcdatamodeld */,
 				654B116D1CB9705800BD6313 /* BreadCrumbs */,
 				6539C0F81CFBC7920072F1E3 /* CoreData.framework */,
-				65CB617B1CD3EA4F002D6F9E /* CloudKit.framework */,
 				654C0B561CC4020200060E58 /* CoreLocation.framework */,
 				654B11821CB9705800BD6313 /* BreadCrumbsTests */,
 				654B116C1CB9705800BD6313 /* Products */,
+				65E47F211DFFD3780072996A /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -237,12 +239,21 @@
 			name = "Classes and helper";
 			sourceTree = "<group>";
 		};
+		65E47F211DFFD3780072996A /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				65E47F221DFFD3780072996A /* CloudKit.framework */,
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 		65FCBCAD1DDBCAB4002D07BA /* CDItems */ = {
 			isa = PBXGroup;
 			children = (
-				6578AF031DFE6A09009B6BCC /* Comment+CoreDataProperties.swift */,
-				6578AEFF1DFE69F7009B6BCC /* Message+CoreDataClass.swift */,
-				6578AF001DFE69F7009B6BCC /* Message+CoreDataProperties.swift */,
+				651041961DFFC9C7008CF85F /* Comment.swift */,
+				651041971DFFC9C7008CF85F /* Comment+CoreDataProperties.swift */,
+				651041921DFFC9BC008CF85F /* Message.swift */,
+				651041931DFFC9BC008CF85F /* Message+CoreDataProperties.swift */,
 			);
 			name = CDItems;
 			path = ..;
@@ -320,7 +331,7 @@
 				};
 			};
 			buildConfigurationList = 654B11661CB9705800BD6313 /* Build configuration list for PBXProject "BreadCrumbs" */;
-			compatibilityVersion = "Xcode 3.2";
+			compatibilityVersion = "Xcode 8.0";
 			developmentRegion = English;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -366,18 +377,19 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6578AF021DFE69F7009B6BCC /* Message+CoreDataProperties.swift in Sources */,
+				65FCBD681DDBF2B9002D07BA /* MessageDataModel.xcdatamodeld in Sources */,
+				651041951DFFC9BC008CF85F /* Message+CoreDataProperties.swift in Sources */,
+				651041991DFFC9C7008CF85F /* Comment+CoreDataProperties.swift in Sources */,
+				651041981DFFC9C7008CF85F /* Comment.swift in Sources */,
+				651041941DFFC9BC008CF85F /* Message.swift in Sources */,
 				6576060E1DCD69D4006860C6 /* CrumbTableViewCell.swift in Sources */,
 				6543DA511DC47CEA00197513 /* CommentShort.swift in Sources */,
 				65F556BC1CD219030014AC30 /* OthersCrumbsTableViewController.swift in Sources */,
 				654C0B5B1CC6AE4200060E58 /* YourCrumbsTableViewController.swift in Sources */,
 				657756B81DD9488D00ABAFD7 /* MIDatePicker.swift in Sources */,
 				6577DCC81D3D6DBB00C25F52 /* UserInfo.swift in Sources */,
-				6578AF011DFE69F7009B6BCC /* Message+CoreDataClass.swift in Sources */,
 				65F556BE1CD21D760014AC30 /* OthersCrumbsTableViewCell.swift in Sources */,
-				65FCBD681DDBF2B9002D07BA /* MessageDataModel.xcdatamodeld in Sources */,
 				65EF38A91D21D2B400161A3E /* SignInViewController.swift in Sources */,
-				6578AF041DFE6A09009B6BCC /* Comment+CoreDataProperties.swift in Sources */,
 				65866C0A1CD6466200038400 /* SettingsViewController.swift in Sources */,
 				657861FC1DD877A40027C5A0 /* CreateCommentViewController.swift in Sources */,
 				6540B5311DD909E80014A0BC /* WriteCrumbViewController.swift in Sources */,
@@ -470,7 +482,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -512,7 +524,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
@@ -531,7 +543,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = PGCA3M66YM;
 				INFOPLIST_FILE = BreadCrumbs/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = SabreTechnologiesLLC.BreadCrumbs;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -552,7 +564,7 @@
 				"CODE_SIGN_IDENTITY[sdk=iphoneos*]" = "iPhone Developer";
 				DEVELOPMENT_TEAM = PGCA3M66YM;
 				INFOPLIST_FILE = BreadCrumbs/Info.plist;
-				IPHONEOS_DEPLOYMENT_TARGET = 10.1;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = SabreTechnologiesLLC.BreadCrumbs;
 				PRODUCT_NAME = "$(TARGET_NAME)";

@@ -53,11 +53,6 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
         self.OthersTableView.addSubview(OthersTableView.refreshControl!)*/
 
 
-        //load samplemsgs
-        /*if count == 0{// almost made infinite loop; thanks count <3
-            loadSampleMessagesYours()
-            count += 1
-        }*/
         if locationManager.location != nil {
             if #available(iOS 10.0, *) {
                 UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) {
