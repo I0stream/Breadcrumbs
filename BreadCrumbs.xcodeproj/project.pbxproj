@@ -7,10 +7,11 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		65031FCD1E009B4900038348 /* Comment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65031FCC1E009B4900038348 /* Comment.swift */; };
+		65031FD51E00A4AB00038348 /* Message+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65031FD11E00A4AB00038348 /* Message+CoreDataClass.swift */; };
+		65031FD61E00A4AB00038348 /* Message+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65031FD21E00A4AB00038348 /* Message+CoreDataProperties.swift */; };
+		65031FD71E00A4AB00038348 /* Comment+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65031FD31E00A4AB00038348 /* Comment+CoreDataClass.swift */; };
+		65031FD81E00A4AB00038348 /* Comment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65031FD41E00A4AB00038348 /* Comment+CoreDataProperties.swift */; };
 		650862A51CD507E400006DAD /* PageManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650862A41CD507E400006DAD /* PageManagerViewController.swift */; };
-		651041941DFFC9BC008CF85F /* Message.swift in Sources */ = {isa = PBXBuildFile; fileRef = 651041921DFFC9BC008CF85F /* Message.swift */; };
-		651041951DFFC9BC008CF85F /* Message+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 651041931DFFC9BC008CF85F /* Message+CoreDataProperties.swift */; };
 		6515D12C1CC148EB00570205 /* CrumbMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6515D12B1CC148EB00570205 /* CrumbMessage.swift */; };
 		6515D12D1CC148EB00570205 /* CrumbMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6515D12B1CC148EB00570205 /* CrumbMessage.swift */; };
 		6538741B1DD54FA9009ABDBF /* old code in Resources */ = {isa = PBXBuildFile; fileRef = 6538741A1DD54FA9009ABDBF /* old code */; };
@@ -54,10 +55,11 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		65031FCC1E009B4900038348 /* Comment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Comment.swift; path = BreadCrumbs/Comment.swift; sourceTree = "<group>"; };
+		65031FD11E00A4AB00038348 /* Message+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Message+CoreDataClass.swift"; path = "BreadCrumbs/Message+CoreDataClass.swift"; sourceTree = "<group>"; };
+		65031FD21E00A4AB00038348 /* Message+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Message+CoreDataProperties.swift"; path = "BreadCrumbs/Message+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		65031FD31E00A4AB00038348 /* Comment+CoreDataClass.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Comment+CoreDataClass.swift"; path = "BreadCrumbs/Comment+CoreDataClass.swift"; sourceTree = "<group>"; };
+		65031FD41E00A4AB00038348 /* Comment+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Comment+CoreDataProperties.swift"; path = "BreadCrumbs/Comment+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		650862A41CD507E400006DAD /* PageManagerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageManagerViewController.swift; sourceTree = "<group>"; };
-		651041921DFFC9BC008CF85F /* Message.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = Message.swift; path = BreadCrumbs/Message.swift; sourceTree = "<group>"; };
-		651041931DFFC9BC008CF85F /* Message+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Message+CoreDataProperties.swift"; path = "BreadCrumbs/Message+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		6515D12B1CC148EB00570205 /* CrumbMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CrumbMessage.swift; sourceTree = "<group>"; };
 		6538741A1DD54FA9009ABDBF /* old code */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "old code"; sourceTree = "<group>"; };
 		6539C0F81CFBC7920072F1E3 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -248,9 +250,10 @@
 		65FCBCAD1DDBCAB4002D07BA /* CDItems */ = {
 			isa = PBXGroup;
 			children = (
-				651041921DFFC9BC008CF85F /* Message.swift */,
-				651041931DFFC9BC008CF85F /* Message+CoreDataProperties.swift */,
-				65031FCC1E009B4900038348 /* Comment.swift */,
+				65031FD11E00A4AB00038348 /* Message+CoreDataClass.swift */,
+				65031FD21E00A4AB00038348 /* Message+CoreDataProperties.swift */,
+				65031FD31E00A4AB00038348 /* Comment+CoreDataClass.swift */,
+				65031FD41E00A4AB00038348 /* Comment+CoreDataProperties.swift */,
 			);
 			name = CDItems;
 			path = ..;
@@ -374,20 +377,21 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				651041951DFFC9BC008CF85F /* Message+CoreDataProperties.swift in Sources */,
-				651041941DFFC9BC008CF85F /* Message.swift in Sources */,
-				65031FCD1E009B4900038348 /* Comment.swift in Sources */,
+				65031FD61E00A4AB00038348 /* Message+CoreDataProperties.swift in Sources */,
 				65FCBD681DDBF2B9002D07BA /* MessageDataModel.xcdatamodeld in Sources */,
 				6576060E1DCD69D4006860C6 /* CrumbTableViewCell.swift in Sources */,
 				6543DA511DC47CEA00197513 /* CommentShort.swift in Sources */,
 				65F556BC1CD219030014AC30 /* OthersCrumbsTableViewController.swift in Sources */,
 				654C0B5B1CC6AE4200060E58 /* YourCrumbsTableViewController.swift in Sources */,
 				657756B81DD9488D00ABAFD7 /* MIDatePicker.swift in Sources */,
+				65031FD51E00A4AB00038348 /* Message+CoreDataClass.swift in Sources */,
 				6577DCC81D3D6DBB00C25F52 /* UserInfo.swift in Sources */,
 				65F556BE1CD21D760014AC30 /* OthersCrumbsTableViewCell.swift in Sources */,
+				65031FD81E00A4AB00038348 /* Comment+CoreDataProperties.swift in Sources */,
 				65EF38A91D21D2B400161A3E /* SignInViewController.swift in Sources */,
 				65866C0A1CD6466200038400 /* SettingsViewController.swift in Sources */,
 				657861FC1DD877A40027C5A0 /* CreateCommentViewController.swift in Sources */,
+				65031FD71E00A4AB00038348 /* Comment+CoreDataClass.swift in Sources */,
 				6540B5311DD909E80014A0BC /* WriteCrumbViewController.swift in Sources */,
 				6515D12C1CC148EB00570205 /* CrumbMessage.swift in Sources */,
 				654B116F1CB9705800BD6313 /* AppDelegate.swift in Sources */,

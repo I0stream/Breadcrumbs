@@ -2,7 +2,7 @@
 //  Message+CoreDataProperties.swift
 //  BreadCrumbs
 //
-//  Created by Daniel Schliesing on 12/11/16.
+//  Created by Daniel Schliesing on 12/13/16.
 //  Copyright © 2016 Daniel Schliesing. All rights reserved.
 //
 
@@ -10,7 +10,7 @@ import Foundation
 import CoreData
 import CoreLocation
 
-/*extension Message {
+extension Message {
 
     @nonobjc public class func fetchRequest() -> NSFetchRequest<Message> {
         return NSFetchRequest<Message>(entityName: "Message");
@@ -39,14 +39,13 @@ import CoreLocation
     @NSManaged var addressStr: String?//stores an address like this "\(locality!), \(thoroughfare!), \(country!)"
     //@NSManaged var creatorUniqueID: String //used to test messages against each other, allows multiple people to have the same name
     @NSManaged var comments: [Comment]?
-    
-    //@NSManaged public var comments: NSSet?
 
-}*/
+
+}
 
 // MARK: Generated accessors for comments
-/*extension Message {
-
+extension Message {
+    
     func initFromLocation(_ location: CLLocation) {
         self.latitude           = location.coordinate.latitude as NSNumber?
         self.longitude          = location.coordinate.longitude as NSNumber?
@@ -103,8 +102,7 @@ import CoreLocation
             return false// tis is dead rip in pease
         }
     }
-    
-    
+
     @objc(addCommentsObject:)
     @NSManaged public func addToComments(_ value: Comment)
 
@@ -117,4 +115,4 @@ import CoreLocation
     @objc(removeComments:)
     @NSManaged public func removeFromComments(_ values: NSSet)
 
-}*/
+}
