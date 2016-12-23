@@ -16,27 +16,25 @@ import UserNotifications
 class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate, UNUserNotificationCenterDelegate{
 
     var window: UIWindow?
-    var locationManager = CLLocationManager()
+    
+    var locationManager = CLLocationManager()//location stuff
     var seenError : Bool = false
     var locationFixAchieved : Bool = false
     var locationStatus : NSString = "Not Started"
-    let NSUserData = UserDefaults.standard
-    let helperfunctions = Helper()
     
-    weak var timer1 = Timer()
+    let NSUserData = UserDefaults.standard//for storing states and numbers
+    let helperfunctions = Helper()//contains various cd and ck functions
+    var bestEffortAtLocation: CLLocation!//see didupdatelocation or whatever
     
-    var backgroundLocationTask: UIBackgroundTaskIdentifier?
-    
-    //var myGroup = dispatch_group_create()
-
-    //how bout i test this fucker by putting a bullet in it
-    
+    var bestCurrent: CLLocation?
+    weak var timer1 = Timer()//for keeping track of load and store
+    lazy var CDStack = CoreDataStack()//cd req functions
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
 
-        self.NSUserData.setValue(0, forKey: "counterLoc")
-        
-        if isICloudContainerAvailable() && NSUserData.string(forKey: "userName") != nil && NSUserData.string(forKey: "recordID") != nil{
+//        self.NSUserData.setValue(0, forKey: "counterLoc")
+        accountStatus()
+        if isICloudContainerAvailable() && NSUserData.string(forKey: "userName") != nil && NSUserData.string(forKey: "recordID") != nil && NSUserData.bool(forKey: "ckAccountStatus"){
             self.window = UIWindow(frame: UIScreen.main.bounds)
             
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -48,21 +46,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             self.window?.makeKeyAndVisible()
             
             initLocationManager()
-            
-            
-            //***********************************************************************************************************************//
-            
+
             AppDelegate().NSUserData.setValue(0, forKey: "limitArea")
             
             self.timer1 = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(AppDelegate.loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 60 sec for a msg
             
-            saveContext()
-            //***********************************************************************************************************************//
+            CDStack.saveContext()
 
-            
         } else {
             self.window = UIWindow(frame: UIScreen.main.bounds)
-            
             
             //gets and sets userrecordID
             if NSUserData.string(forKey: "recordID") == nil/*|| user != signedIn*/{
@@ -90,90 +82,100 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
         return true
     }
-    
-    func saveToCoreData(){
-        //create Message: NSManagedObject
-        if #available(iOS 10.0, *) {
-            
-            let moc = persistentContainer.viewContext
-            
-            let entity = NSEntityDescription.entity(forEntityName: "Message", in: moc)
-            let message = Message(entity: entity!, insertInto: moc)
-            
-            /*message.setValue(crumbmessage.text, forKeyPath: "text")
-             message.setValue(crumbmessage.senderName, forKeyPath: "senderName")
-             message.setValue(crumbmessage.timeDropped, forKeyPath: "timeDropped")
-             message.setValue(crumbmessage.timeLimit as NSNumber?, forKey: "timeLimit")
-             message.
-             message.setValue(crumbmessage.senderuuid, forKeyPath: "senderuuid")
-             message.setValue(crumbmessage.votes as NSNumber?, forKeyPath: "votevalue")
-             message.setValue(crumbmessage.uRecordID, forKeyPath: "recorduuid")*/
-            let crumbmessage = CrumbMessage(text: "hello", senderName: "test", location: locationManager.location!, timeDropped: Date(), timeLimit: 48, senderuuid: "adsfasfzcxvkhlweqr", votes: 12)
-            
-            message.text = crumbmessage?.text
-            message.senderName = crumbmessage?.senderName
-            message.timeDropped = crumbmessage?.timeDropped
-            message.timeLimit = crumbmessage?.timeLimit as NSNumber?
-            message.initFromLocation((crumbmessage?.location)!)
-            message.senderuuid = crumbmessage?.senderuuid
-            message.votevalue = crumbmessage?.votes as NSNumber?
-            message.recorduuid = crumbmessage?.uRecordID
-            do {
-                try message.managedObjectContext?.save()
-                //print("saved to coredata")
-            } catch {
-                print(error)
-                print("cd error in write crumbs")
-                
+    func accountStatus(){
+        let container = CKContainer.default()
+        container.accountStatus { (status, error) in
+            switch status.rawValue {
+            case 1 ://available
+                print(1)
+                self.NSUserData.setValue(true, forKey: "ckAccountStatus")
+            default:
+                self.NSUserData.setValue(false, forKey: "ckAccountStatus")
             }
         }
     }
+    //MARK: save icloud msgs to coreData
+    //constant checking for new msgs
+    
+    //this is the heart of the app
+    func loadAndStoreiCloudMsgsBasedOnLoc(){// load icloud msgs; need to check if msg is already loaded & store loaded msgs to persist between views and app instances
+        locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation//I need to wait before running this stuff get better accuracy data ->
+        
+        var currentUserLoc = bestCurrent
+        if currentUserLoc == nil{
+            currentUserLoc = locationManager.location
+        }
+        
+        if currentUserLoc != nil && (Double((currentUserLoc?.timestamp.timeIntervalSinceNow)!) < 5.0 ){
+            //30.0 / 1000.0//100 ft in km
+            let radiusKm = 20 / 1000.0//65.6 ft in km
+            
+            let predicate: NSPredicate = NSPredicate(format: "distanceToLocation:fromLocation:(%K, %@) < %f", "location", currentUserLoc!, radiusKm)
+                
+            let query = CKQuery(recordType: "CrumbMessage", predicate: predicate)
+                
+            helperfunctions.loadIcloudMessageToCoreData(query)
+            print("load and store has run")
+            locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
+        }
+    }
+    
     //MARK: Location Stuff
-    //***********************************************************************************************************************//
     
     
     func initLocationManager() {
         DispatchQueue.main.async(execute: { () -> Void in
-
             self.seenError = false
             self.locationFixAchieved = false
             self.locationManager = CLLocationManager()
             self.locationManager.delegate = self
             self.locationManager.requestAlwaysAuthorization()
-            self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
+            self.locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
             self.locationManager.allowsBackgroundLocationUpdates = true
         })
     }
     
-
     
-    //MARK: save icloud msgs to coreData
-    //***********************************************************************************************************************//
-    //constant checking for new msgs
-    
-    func loadAndStoreiCloudMsgsBasedOnLoc(){// load icloud msgs; need to check if msg is already loaded & store loaded msgs to persist between views and app instances
-        locationManager.desiredAccuracy = kCLLocationAccuracyBest
-        //my error handling is top notch
-        let currentUserLoc = locationManager.location // if location changes bad things happen D:
-        if currentUserLoc != nil {
-            let radius = 20 //for now we use this but hopefully in the future we can multiply this by the votevalue metes
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+        let newloc = locations.last
+        
+        let locationAge = newloc?.timestamp.timeIntervalSinceNow
+        if Double(locationAge!) > 5.0 {return}// if old as fuck try again
+        
+        if Double((newloc?.horizontalAccuracy)!) < 0 {return}// error value
+        
+        if bestEffortAtLocation == nil || (bestEffortAtLocation.horizontalAccuracy > (newloc?.horizontalAccuracy)!) {
+            // store the location as the "best effort"
+            self.bestEffortAtLocation = newloc
             
-            let predicate: NSPredicate = NSPredicate(format: "distanceToLocation:fromLocation:(location, %@)< %f", currentUserLoc!, radius)
+            // test the measurement to see if it meets the desired accuracy
+            //
+            // IMPORTANT!!! kCLLocationAccuracyBest should not be used for comparison with location coordinate or altitidue
+            // accuracy because it is a negative value. Instead, compare against some predetermined "real" measure of
+            // acceptable accuracy, or depend on the timeout to stop updating. This sample depends on the timeout.
+            //
+            if (newloc?.horizontalAccuracy)! <= locationManager.desiredAccuracy {
+                // we have a measurement that meets our requirements, so we can stop updating the location
+                //
+                // IMPORTANT!!! Minimize power usage by stopping the location manager as soon as possible.
+                //
+                print(newloc?.horizontalAccuracy)
+                bestCurrent = newloc
+            }
             
-            let query = CKQuery(recordType: "CrumbMessage", predicate: predicate)
-            
-            helperfunctions.loadIcloudMessageToCoreData(query)
-            print("load and store has run")
-            locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
-
         }
     }
-
     
+    func checkLocation() -> Bool{
+        if locationManager.location != nil{
+            return true
+        } else{
+            return false
+        }
+    }
     //***********************************************************************************************************************//
-
-
-    //mine inits
+    
+    //MARK: Further cloudkit functions
     func isICloudContainerAvailable()->Bool {
         if FileManager.default.ubiquityIdentityToken != nil {
             return true
@@ -183,8 +185,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         }
     }
     
-    //MARK: Further cloudkit functions
-    //***********************************************************************************************************************//
     func iCloudUserIDAsync(_ complete: @escaping (_ instance: CKRecordID?, _ error: NSError?) -> ()) {
         let container = CKContainer.default()
         container.fetchUserRecordID() {
@@ -279,9 +279,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         print(error)
     }
     
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
-    }
-    
+
     func locationManager(_ manager: CLLocationManager,
                          didChangeAuthorization status: CLAuthorizationStatus) {
         var shouldIAllow = false
@@ -306,92 +304,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             NSLog("Denied access: \(locationStatus)")
         }
     }
-    
-    
-    // MARK: - Core Data stack?
-    //***********************************************************************************************************************//
-    @available(iOS 10.0, *)
-    lazy var persistentContainer: NSPersistentContainer = {
-        //let modelURL = Bundle.main.url(forResource: "MessageDataModel", withExtension: "momd")!
-        //var managedModel = NSManagedObjectModel(contentsOf: modelURL)
-        
-        let container = NSPersistentContainer(name: "MessageDataModel")
-        
-        container.loadPersistentStores(completionHandler: { (storeDescription, error) in
-            if let error = error as NSError? {
-                
-                fatalError("Unresolved error \(error)")
-            }
-        })
-        return container
-    }()
-    
-    //for older versions probably
-    @available(iOS 9.3, *)
-    lazy var managedObjectContext: NSManagedObjectContext = {
-        // Returns the managed object context for the application (which is already bound to the persistent store coordinator for the application.) This property is optional since there are legitimate error conditions that could cause the creation of the context to fail.
-        let coordinator = self.persistentStoreCoordinator
-        var managedObjectContext = NSManagedObjectContext(concurrencyType: .mainQueueConcurrencyType)
-        managedObjectContext.persistentStoreCoordinator = coordinator
-        return managedObjectContext
-    }()
-    @available(iOS 9.3, *)
-    lazy var applicationDocumentsDirectory: URL = {
-        let urls = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask)
-        return urls[urls.count-1]
-    }()
-    @available(iOS 9.3, *)
-    lazy var managedObjectModel: NSManagedObjectModel = {
-        let modelURL = Bundle.main.url(forResource: "MessageDataModel", withExtension: "momd")!
-        return NSManagedObjectModel(contentsOf: modelURL)!
-    }()
-    @available(iOS 9.3, *)
-    lazy var persistentStoreCoordinator: NSPersistentStoreCoordinator = {
-        let coordinator = NSPersistentStoreCoordinator(managedObjectModel: self.managedObjectModel)
-        let url = self.applicationDocumentsDirectory.appendingPathComponent("BreadCrumbs.sqlite")
-        var failureReason = "There was an error creating or loading the application's saved data."
-        do {
-            try coordinator.addPersistentStore(ofType: NSSQLiteStoreType, configurationName: nil, at: url, options: nil)
-        } catch {
-            // Report any error we got.
-            var dict = [String: AnyObject]()
-            dict[NSLocalizedDescriptionKey] = "Failed to initialize the application's saved data" as AnyObject?
-            dict[NSLocalizedFailureReasonErrorKey] = failureReason as AnyObject?
-            
-            dict[NSUnderlyingErrorKey] = error as NSError
-            let wrappedError = NSError(domain: "YOUR_ERROR_DOMAIN", code: 9999, userInfo: dict)
-            // Replace this with code to handle the error appropriately.
-            // abort() causes the application to generate a crash log and terminate. You should not use this function in a shipping application, although it may be useful during development.
-            NSLog("Unresolved error \(wrappedError), \(wrappedError.userInfo)")
-            abort()
-        }
-        
-        return coordinator
-    }()
-    func getContext() -> NSManagedObjectContext{
-        if #available(iOS 10.0, *) {
-            let context = self.persistentContainer.viewContext
-            return context
-            
-        } else {
-            let context = self.managedObjectContext
-            return context
-        }
-    }
-    
-    //Core Data Saving support
-    func saveContext () {
-        if getContext().hasChanges {
-            do {
-                try getContext().save()
-            } catch {
 
-                let nserror = error as NSError
-                NSLog("Unresolved error \(nserror), \(nserror.userInfo)")
-                abort()
-            }
-        }
-    }
 
     //MARK: misc stack
     //***********************************************************************************************************************//
@@ -407,8 +320,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
         self.NSUserData.setValue(0, forKey: "counterLoc")
         AddCrumbCount()
-        self.saveContext()
-        
+        CDStack.saveContext()
     }
     
     func applicationWillEnterForeground(_ application: UIApplication) {
@@ -422,9 +334,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             loadAndStoreiCloudMsgsBasedOnLoc()//not this
             //UPDATE VOTES HERE
             
+            //start load and store if not already
+            if !(AppDelegate().timer1 == nil) && !(checkLocation()) {
+                print("running in write")
+                self.timer1 = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 30 sec for a msg
+            }
+            
             helperfunctions.updateTableViewVoteValues()//updates all votes
             
-            //helperfunctions.updateTableViewcomments()//this fucks my shit up so hard
+            
+            /*no let us sit down and I shall tell ye a story. As I was writing updatetableviewcomments something strange happened. The entire app broke. Somehow, I had failed to notice that the update to ios 10 and swift 3 made inert my coredata code and brought to light some threading issues I had programmed. I am indeed an inexperienced ios programmer. I went from lead to lead, breaking the app one way and another trying to figure out the why and the what that caused my app to fail. Initially i thought it was my datamodel, and/or that my nsobject classes were getting confused with older versions of themselves. then after that debaucle I started reading about managed object contexts and how they work, after fucking with that thinking it was the core problem(it was really just a symptom) I discovered threads, and after learning how they worked; I could see that lots of my coredata code was sitting in completion handlers which run in a thread other than the main one. from there debuging all my poorly written code has been relatively easy. */
+            helperfunctions.updateTableViewcomments()//this fucks my shit up so hard
             
             //should use delegation or something
             NotificationCenter.default.post(name: Notification.Name(rawValue: "load"), object: nil)//reloads crmessages from cd everywhere
@@ -452,15 +372,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     func applicationWillTerminate(_ application: UIApplication) {//when app terminates terminate timers and look for large loc changes
         // Called when the application is about to terminate. Save data if appropriate. See also applicationDidEnterBackground:
         
-        self.saveContext()
+        CDStack.saveContext()
+        //self.saveContext()
     }
-    func checkLocation() -> Bool{
-        if locationManager.location != nil{
-            return true
-        } else{
-            return false
-        }
-    }
+
     //MARK: Notification
     
     //Notification function for load and store
@@ -510,3 +425,5 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         }
     }
 }
+
+

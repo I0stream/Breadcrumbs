@@ -19,6 +19,7 @@ extension Comment {
     @NSManaged public var text: String?
     @NSManaged public var timeSent: NSDate?
     @NSManaged public var username: String?
+    @NSManaged public var recorduuid: String?
     @NSManaged public var message: Message?
 
 }

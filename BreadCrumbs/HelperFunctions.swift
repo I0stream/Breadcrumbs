@@ -14,8 +14,15 @@ import CloudKit
 class Helper{
     
     let NSUserData = UserDefaults.standard
-    lazy var moc = AppDelegate().getContext()
+    
+    func getmoc() -> NSManagedObjectContext{
+        let appDelegate = UIApplication.shared.delegate as? AppDelegate
+        let moc = appDelegate?.CDStack.mainContext
 
+        
+        //let moc = (UIApplication.shared.delegate as! AppDelegate).CDStack.mainContext
+        return moc!
+    }
     //MARK: LOAD
     func loadIcloudMessageToCoreData(_ query: CKQuery) {// used in appdelegate and signinviewcontroller
         //get public database object
@@ -54,15 +61,17 @@ class Helper{
                     
                     if (loadedMessage!.calculate() > 0) && testID{
                         
-                        //TESTS IF LOADED MSG IS IN COREDATA IF NOT THEN STORES IT BRAH
-                        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Message")
-                        let cdPredicate = NSPredicate(format: "recorduuid == %@", loadedMessage!.uRecordID!)
-                        fetchRequest.predicate = cdPredicate
-                        
-                        do {
-                            if let fetchResults = try self.moc.fetch(fetchRequest) as? [Message]{
-                                if fetchResults.isEmpty{//keep reading tuts man your having mucho trouble-o
-                                    //loadedMessage!.convertCoordinatesToAddress((loadedMessage!.location), completion: { (answer) in
+                        DispatchQueue.main.async(execute: { () -> Void in
+
+                            //TESTS IF LOADED MSG IS IN COREDATA IF NOT THEN STORES IT BRAH
+                            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Message")
+                            let cdPredicate = NSPredicate(format: "recorduuid == %@", loadedMessage!.uRecordID!)
+                            fetchRequest.predicate = cdPredicate
+                            
+                            do {
+                                if let fetchResults = try self.getmoc().fetch(fetchRequest) as? [Message]{
+                                    if fetchResults.isEmpty{//keep reading tuts man your having mucho trouble-o
+                                        //loadedMessage!.convertCoordinatesToAddress((loadedMessage!.location), completion: { (answer) in
                                         
                                         //loadedMessage!.addressStr = answer!
                                         
@@ -72,18 +81,20 @@ class Helper{
                                         }
                                         
                                         
-                                   // })
-                                    
-                                    //set value to limit crumbs in area like let newvalue =  NSUserData.IntForKey("limitarea")! + 1
-                                    // self.NSUserData.setValue(, forKey: "limitArea")
-                                    //test in write crumb message
-                                    //reset in appdelegates
+                                        // })
+                                        
+                                        //set value to limit crumbs in area like let newvalue =  NSUserData.IntForKey("limitarea")! + 1
+                                        // self.NSUserData.setValue(, forKey: "limitArea")
+                                        //test in write crumb message
+                                        //reset in appdelegates
+                                    }
                                 }
+                            } catch{//there is an error
+                                let fetchError = error as NSError
+                                print(fetchError)
                             }
-                        } catch{//there is an error
-                            let fetchError = error as NSError
-                            print(fetchError)
-                        }
+                        
+                        })
                     }
                     else if loadedMessage!.calculate() <= 0//if message is past due delete the ckufer
                     {
@@ -92,7 +103,7 @@ class Helper{
                         print(loadedMessage!)
                         
                         let yum = CKRecordID(recordName: (loadedMessage?.uRecordID)!)
-                        //self.cloudKitDeleteCrumb(yum)
+                        self.cloudKitDeleteCrumb(yum)
                         
                         print("Finished request delete \(cmsg)")
                     }else{break}
@@ -109,12 +120,12 @@ class Helper{
              var crumbmessagestotest = [Int]()
         
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>()
-        let entityDescription = NSEntityDescription.entity(forEntityName: "Message", in: moc)
+        let entityDescription = NSEntityDescription.entity(forEntityName: "Message", in: getmoc())
         
         fetchRequest.entity = entityDescription
         
         do {
-            let fetchedmsgsCD = try moc.fetch(fetchRequest) as! [Message]
+            let fetchedmsgsCD = try getmoc().fetch(fetchRequest) as! [Message]
             
             var i = 0
             while  i <= (fetchedmsgsCD.count - 1){//loops through all of coredata store
@@ -147,23 +158,19 @@ class Helper{
     //used in yourTableView and othersTableView
     //If true load myUsers, if false loadOthers also remember to add to crumbmessages[]
     func loadCoreDataMessage(_ typeOfCrumbLoading:Bool) -> [CrumbMessage]? {
-             var crumbmessagestoload = [CrumbMessage]()
+    
+        var crumbmessagestoload = [CrumbMessage]()
         
-        var fetchRequest: NSFetchRequest<Message>
-        if #available(iOS 10.0, OSX 10.12, *) {
-            //let fetchRequest: NSFetchRequest<NSFetchRequestResult> = NSFetchRequest(entityName: "Flights")
-            fetchRequest = Message.fetchRequest()
-        } else {
-            fetchRequest = NSFetchRequest(entityName: "Message")
-        }
+        let fetchRequest: NSFetchRequest<Message> = Message.fetchRequest()
+
         
         //let fetchRequest = NSFetchRequest<NSFetchRequestResult>()
-        let entityDescription = NSEntityDescription.entity(forEntityName: "Message", in: moc)
+        let entityDescription = NSEntityDescription.entity(forEntityName: "Message", in: getmoc())
         
         fetchRequest.entity = entityDescription
         
         do {
-            let fetchedmsgsCD = try moc.fetch(fetchRequest) 
+            let fetchedmsgsCD = try getmoc().fetch(fetchRequest)
             let Usersendername = NSUserData.string(forKey: "recordID")!//user user unique id
             
             var i = 0
@@ -226,104 +233,14 @@ class Helper{
         return crumbmessagestoload
     }
     
-    //MARK: UPDATE
     
-    
-    //used in appdelegate in application did become active /IS UNTESTED/
-    func updateTableViewVoteValues(){//checks for all msgs, need to do it only for alive msgs
-             //grab all crumbs within cd that are alive
-        // ******************************************
-        var RecordIDsToTest = [String]()//takes ids of stored alive crumbs
-        
-        let entityDescription = NSEntityDescription.entity(forEntityName: "Message", in: moc)
-        
-        
-        var fetchRequest: NSFetchRequest<Message>
-        if #available(iOS 10.0, OSX 10.12, *) {
-            fetchRequest = Message.fetchRequest()
-        } else {
-            fetchRequest = NSFetchRequest(entityName: "Message")
-        }
-        
-        fetchRequest.entity = entityDescription
-        
-        do {
-            let fetchedmsgsCD = try moc.fetch(fetchRequest)
-            var i = 0
-            
-            while  i <= (fetchedmsgsCD.count - 1){//loops through all of coredata store
-                if fetchedmsgsCD[i].calculate() == true {//compares sendername of user's to msgs and returns user's msgs
-                    let msgToUpdateRecordID = fetchedmsgsCD[i].recorduuid! as String
-
-                    RecordIDsToTest += [msgToUpdateRecordID]
-                    
-                }
-                i += 1
-            }
-        }catch {
-            let fetchError = error as NSError
-            print(fetchError)
-        }
-
-        //take alive crumbs and make an updater call to ck, update votevalue in alive crumbs
-        // ****************************************** //
-        
-        let container = CKContainer.default()
-        let publicData = container.publicCloudDatabase
-        
-        for id in RecordIDsToTest{
-            let ckidToTest = CKRecordID(recordName: id)//the message record id to fetch from cloudkit
-            
-            publicData.fetch(withRecordID: ckidToTest, completionHandler: {record, error in
-                if error == nil{
-                    let newvalue = record!.object(forKey: "votes") as! Int
-                    
-                    //update cd with new vote values
-                    // *******************************************/
-                    self.updateCdVote(id, voteValue: newvalue)
-                }else{
-                    print(error.debugDescription)
-                }
-            })
-        }
-    }
-    
-    //used above, takes id and new vote value and updates the alive message. I think
-    func updateCdVote(_ cdrecorduuid: String, voteValue: Int){
-     
-        let predicate = NSPredicate(format: "recorduuid == %@", cdrecorduuid)
-        
-        var fetchRequest: NSFetchRequest<Message>
-        
-        if #available(iOS 10.0, OSX 10.12, *) {
-            fetchRequest = Message.fetchRequest()
-        } else {
-            fetchRequest = NSFetchRequest(entityName: "Message")
-        }
-        fetchRequest.predicate = predicate
-        
-        do {// change it, it not work y?
-            let fetchedMsgs = try moc.fetch(fetchRequest)
-            fetchedMsgs.first?.setValue(voteValue, forKey: "votevalue")
-            
-            do {// save it!
-                try moc.save()
-                print("did save")
-                
-            } catch {
-                print(error)
-            }
-        } catch {
-            print(error)
-        }
-    }
     
     
     
     //MARK: SAVE
     func saveToCoreData(_ crumbmessage: CrumbMessage){
         //create Message: NSManagedObject
-             let messageMO = NSEntityDescription.insertNewObject(forEntityName: "Message", into: moc) as! BreadCrumbs.Message
+        let messageMO = NSEntityDescription.insertNewObject(forEntityName: "Message", into: getmoc()) as! BreadCrumbs.Message
         
         messageMO.setValue(crumbmessage.text, forKey: "text")
         messageMO.setValue(crumbmessage.senderName, forKey: "senderName")
@@ -354,7 +271,7 @@ class Helper{
     
     
     //MARK: DELETE
-    @objc func cloudKitDeleteCrumb(_ currentRecordID: CKRecordID){//should only be used by timelimit checkers/load and store
+    func cloudKitDeleteCrumb(_ currentRecordID: CKRecordID){//should only be used by timelimit checkers/load and store
         
         let container = CKContainer.default()
         let publicData = container.publicCloudDatabase
@@ -373,10 +290,10 @@ class Helper{
         //save?
     }
     
-    func coreDataDeleteCrumb(_ cdrecorduuid: String){
-             let cdPredicate = NSPredicate(format: "recorduuid == %@", cdrecorduuid)
+    func coreDataDeleteCrumb(_ cdrecorduuid: String, manx: NSManagedObjectContext){
+        let cdPredicate = NSPredicate(format: "recorduuid == %@", cdrecorduuid)
 
-        
+    
         var fetchRequest: NSFetchRequest<Message>
         
         if #available(iOS 10.0, OSX 10.12, *) {
@@ -386,9 +303,9 @@ class Helper{
         }
         fetchRequest.predicate = cdPredicate
         do {
-            let fetchedEntities = try moc.fetch(fetchRequest) 
+            let fetchedEntities = try manx.fetch(fetchRequest)
             if let entityToDelete = fetchedEntities.first {
-                moc.delete(entityToDelete)
+                manx.delete(entityToDelete)
                 print("record is deleted from coredata")
             }
         } catch {
@@ -397,7 +314,7 @@ class Helper{
             print(error)
         }
         do {
-            try moc.save()
+            try manx.save()
         } catch {
             print(error)
             // Do something in response to error condition
@@ -413,9 +330,9 @@ class Helper{
     
     //Core Data Saving support
     func saveContext () {
-             if moc.hasChanges {
+             if getmoc().hasChanges {
             do {
-                try moc.save()
+                try getmoc().save()
             } catch {
                 
                 let nserror = error as NSError
@@ -426,7 +343,7 @@ class Helper{
     }
     
     
-    func loadComments(uniqueRecordID: String) -> [CommentShort]{
+    func loadComments(uniqueRecordID: String) -> [CommentShort]{//loads from coredata
              
         var commentsToLoad = [CommentShort]()
         
@@ -437,12 +354,12 @@ class Helper{
         } else {
             fetchRequest = NSFetchRequest(entityName: "Comment")
         }
-        let entityDescription = NSEntityDescription.entity(forEntityName: "Comment", in: moc)
+        let entityDescription = NSEntityDescription.entity(forEntityName: "Comment", in: getmoc())
         
         fetchRequest.entity = entityDescription
         
         do {
-            let fmComment = try moc.fetch(fetchRequest) 
+            let fmComment = try getmoc().fetch(fetchRequest) 
             //commentsToLoad
             var i = 0
             while  i <= (fmComment.count - 1){//loops through all of coredata store
@@ -465,6 +382,87 @@ class Helper{
         }
         return commentsToLoad
     }
+    //MARK: updating
+    
+    
+    //used in appdelegate in application did become active /IS UNTESTED/
+    func updateTableViewVoteValues(){//checks for all msgs, need to do it only for alive msgs
+        
+        //grab all crumbs within cd that are alive
+        // ******************************************
+        var RecordIDsToTest = [String]()//takes ids of stored alive crumbs
+        
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>()
+        let entityDescription = NSEntityDescription.entity(forEntityName: "Message", in: getmoc())
+        
+        fetchRequest.entity = entityDescription
+        
+        do {
+            let fetchedmsgsCD = try getmoc().fetch(fetchRequest) as! [Message]
+            var i = 0
+            
+            while  i <= (fetchedmsgsCD.count - 1){//loops through all of coredata store
+                if fetchedmsgsCD[i].calculate() == true {//compares sendername of user's to msgs and returns user's msgs
+                    let msgToUpdateRecordID = fetchedmsgsCD[i].recorduuid! as String
+                    
+                    RecordIDsToTest += [msgToUpdateRecordID]
+                    
+                }
+                i += 1
+            }
+        }catch {
+            let fetchError = error as NSError
+            print(fetchError)
+        }
+        
+        //take alive crumbs and make an updater call to ck, update votevalue in alive crumbs
+        // ****************************************** //
+        
+        let container = CKContainer.default()
+        let publicData = container.publicCloudDatabase
+        
+        for id in RecordIDsToTest{
+            let ckidToTest = CKRecordID(recordName: id)//the message record id to fetch from cloudkit
+            
+            publicData.fetch(withRecordID: ckidToTest, completionHandler: {record, error in
+                if error == nil{
+                    let newvalue = record!.object(forKey: "votes") as! Int
+                    
+                    //update cd with new vote values
+                    // *******************************************/
+                    DispatchQueue.main.async(execute: { () -> Void in
+                        self.updateCdVote(id, voteValue: newvalue)
+                    })
+                }else{
+                    print(error.debugDescription)
+                }
+            })
+        }
+    }
+    
+    //used above, takes id and new vote value and updates the alive message. I think
+    func updateCdVote(_ cdrecorduuid: String, voteValue: Int){
+        let predicate = NSPredicate(format: "recorduuid == %@", cdrecorduuid)
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Message")
+        fetchRequest.predicate = predicate
+        
+        do {// change it, it not work y?
+            let fetchedMsgs = try getmoc().fetch(fetchRequest) as! [Message]
+            
+            fetchedMsgs.first?.setValue(voteValue, forKey: "votevalue")
+            
+            do {// save it!
+                try getmoc().save()
+                print("did save cd vote")
+                
+            } catch {
+                print(error)
+            }
+        } catch {
+            print(error)
+        }
+    }
+    
     
     func updateTableViewcomments(){
              //grab all crumbs within cd that are alive
@@ -479,12 +477,11 @@ class Helper{
             fetchRequest = NSFetchRequest(entityName: "Message")
         }
         
-        let entityDescription = NSEntityDescription.entity(forEntityName: "Message", in: moc)
-        
+        let entityDescription = NSEntityDescription.entity(forEntityName: "Message", in: getmoc())
         fetchRequest.entity = entityDescription
         
         do {
-            let fetchedmsgsCD = try moc.fetch(fetchRequest)
+            let fetchedmsgsCD = try getmoc().fetch(fetchRequest)//load alive messages from cd
             var i = 0
             
             while  i <= (fetchedmsgsCD.count - 1){//loops through all of coredata store
@@ -499,17 +496,14 @@ class Helper{
             print(error.localizedDescription)
         }
         
-        //take alive crumbs and make an updater call to ck, update votevalue in alive crumbs
-        print(RecordIDsToTest)
-        //let id = CKRecordID(recordName: (viewbreadcrumb?.uRecordID)!)
+        //take alive crumbs and make an updater call to ck
         
-        
-        for id in RecordIDsToTest{//takes ids and tests them in cloudkit
+        for id in RecordIDsToTest{//takes ids and loads comments from ck
             let ckidToTest = CKRecordID(recordName: id)//the message record id to fetch from cloudkit
             
             let ref = CKReference(recordID: ckidToTest, action: CKReferenceAction.deleteSelf)
             
-            let predicate = NSPredicate(format: "ownerReference == %@", ref)
+            let predicate = NSPredicate(format: "ownerReference == %@", ref)//fetches all comments associated with this msg
             let query = CKQuery(recordType: "Comment", predicate: predicate)
             
             let container = CKContainer.default()
@@ -517,35 +511,32 @@ class Helper{
             
             publicData.perform(query, inZoneWith: nil) { results, error in//querys to database for matching comments
                 if error == nil{ // There is no error
-                    for ckComment in results! {
-                        
-                        //print(ckComment)
-                        //let dbtext = ckComment["text"] as! String
-                        
+                    for ckComment in results! {//make comment
                         let user = ckComment.value(forKey: "userName") as! String
                         let text = ckComment.value(forKey: "text") as! String
                         let time = ckComment.value(forKey: "timeSent") as! Date
-                        
+                        let recorduuid = ckComment.recordID.recordName
                         let com = CommentShort(username: user, text: text, timeSent: time)
+                        com.recorduuid = recorduuid
                         
-                        print(com)
-                        //TESTS IF LOADED MSG IS IN COREDATA IF NOT THEN STORES IT BRAH
-                        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Comment")
-                        let cdPredicate = NSPredicate(format: "recorduuid == %@", ckidToTest.recordName)
-                        fetchRequest.predicate = cdPredicate
-                        
-                        do {//Saves to coredata
-                            if let fetchResults = try self.moc.fetch(fetchRequest) as? [Comment]{
-                                if fetchResults.isEmpty{
-                                    //save comments to cd
-                                    self.saveCommentToCD(comment: com)
-                                    print(com)
+                        DispatchQueue.main.async(execute: { () -> Void in//test to see if msg is in core data
+                            
+                            //TESTS IF LOADED comment IS IN COREDATA IF NOT THEN STORES IT BRAH
+                            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Comment")
+                            let cdPredicate = NSPredicate(format: "recorduuid == %@", recorduuid)
+                            fetchRequest.predicate = cdPredicate
+                            do {
+                                if let fetchResults = try self.getmoc().fetch(fetchRequest) as? [Comment]{
+                                    if fetchResults.isEmpty{
+                                        //save comments to cd
+                                        self.saveCommentToCD(comment: com, recordID: id)//Saves to coredata
+                                    }
                                 }
+                            } catch{//there is an error
+                                let fetchError = error as NSError
+                                print(fetchError.localizedDescription)
                             }
-                        } catch{//there is an error
-                            let fetchError = error as NSError
-                            print(fetchError.localizedDescription)
-                        }
+                        })
                     }
                 } else {
                     print(error.debugDescription)//print error
@@ -554,119 +545,40 @@ class Helper{
         }
     }
     
-    func saveCommentToCD(comment: CommentShort){
-             let commentMO = NSEntityDescription.insertNewObject(forEntityName: "Comment", into: moc) as! BreadCrumbs.Comment
+    func saveCommentToCD(comment: CommentShort, recordID: String){
         
-        commentMO.setValue(comment.text, forKey: "text")
-        commentMO.setValue(comment.timeSent, forKey: "timeSent")
-        commentMO.setValue(comment.username, forKey: "username")
-
-        //messageMO.setValue(crumbmessage.addressStr, forKey: "addressStr")
+        let commentMO = NSEntityDescription.insertNewObject(forEntityName: "Comment", into: getmoc()) as! BreadCrumbs.Comment
         
-        do {
-            try commentMO.managedObjectContext?.save()
-            print("a comment has been loaded and stored into coredata")
-        } catch {
-            print(error)
-        }
-    }
-    /*func loadCommetsCK(){
-        
-        //var recordToMatch = CKReference(recordID: employeeID, action: .None)
-        //var predicate = NSPredicate(format: "employee == %@", recordToMatch)
-        
-        let id = CKRecordID(recordName: (viewbreadcrumb?.uRecordID)!)
-        let ref = CKReference(recordID: id, action: CKReferenceAction.deleteSelf)
-        
-        let predicate = NSPredicate(format: "ownerReference == %@", ref)
-        let query = CKQuery(recordType: "Comment", predicate: predicate)
-        
-        let container = CKContainer.default()
-        let publicData = container.publicCloudDatabase
-        
-        publicData.perform(query, inZoneWith: nil) { results, error in
-            if error == nil{ // There is no error
-                for ckComment in results! {
-                    
-                    //print(ckComment)
-                    //let dbtext = ckComment["text"] as! String
-                    
-                    /*if (loadedMessage!.calculate() > 0) && testID{
-                     
-                     //TESTS IF LOADED MSG IS IN COREDATA IF NOT THEN STORES IT BRAH
-                     let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Message")
-                     let cdPredicate = NSPredicate(format: "recorduuid == %@", loadedMessage!.uRecordID!)
-                     fetchRequest.predicate = cdPredicate
-                     
-                     do {
-                     if let fetchResults = try self.moc.fetch(fetchRequest) as? [Message]{
-                     if fetchResults.isEmpty{
-                     
-                     
-                     //if UIApplication.shared.applicationState != UIApplicationState.active{
-                     self.notify()//if this is how we will do it, we must have a seen and unseen marker
-                     //}
-                     
-                     }
-                     }
-                     } catch{//there is an error
-                     let fetchError = error as NSError
-                     print(fetchError)
-                     }*/
-                }
-            } else {
-                print(error.debugDescription)//print error
-            }
-        }
-    }*/
-    /*func deleteComments(uniqueRecordID: String){
-     
-    }
-    
-    //MARK: DELETE
-    @objc func cloudKitDeleteCrumb(_ currentRecordID: CKRecordID){//should only be used by timelimit checkers/load and store
-     
-        let container = CKContainer.default()
-        let publicData = container.publicCloudDatabase
-     
-        publicData.delete(withRecordID: currentRecordID, completionHandler: { (record, error) in
-            if error == nil{
-                print("record is deleted from cloudkit")
-            }else{
-                print("error in cloudkitdeletecrumb in helperfunctions")
-                print(error.debugDescription)
-     
-                //alert user delete failed
-            }
-        })
-        
-        //save?
-    }
-    
-    func coreDataDeleteCrumb(_ cdrecorduuid: String){
-        let cdPredicate = NSPredicate(format: "recorduuid == %@", cdrecorduuid)
-        
+        let predicate = NSPredicate(format: "recorduuid == %@", recordID)
         let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Message")
-        fetchRequest.predicate = cdPredicate
-        
-        do {
-            let fetchedEntities = try moc.fetch(fetchRequest) as! [Message]
-            if let entityToDelete = fetchedEntities.first {
-                moc.delete(entityToDelete)
-                print("record is deleted from coredata")
+        fetchRequest.predicate = predicate
+        do {// change it, it not work y?
+            let fetchedMsgs = try getmoc().fetch(fetchRequest) as! [Message]
+            
+            let ComMessage = fetchedMsgs[0]
+            
+            commentMO.setValue(comment.text, forKey: "text")
+            commentMO.setValue(comment.username, forKey: "username")
+            commentMO.setValue(comment.timeSent, forKey: "timeSent")
+            //recorduuid
+            commentMO.setValue(comment.recorduuid, forKey: "recorduuid")
+            commentMO.message = ComMessage
+            
+            
+            do {
+                try commentMO.managedObjectContext?.save()
+                print("new comment saved to coredata")
+            } catch {
+                print(error)
+                print("cd error in create crumbs")
+                
             }
         } catch {
-            // Do something in response to error condition
-            print("something went wrong")
             print(error)
         }
-        do {
-            try moc.save()
-        } catch {
-            print(error)
-            // Do something in response to error condition
-        }
-    }*/
+        
+    }
+    
     func crumbVote(_ hasvoted: Int, crumb: CrumbMessage) {//what happens when a vote conflicts between cd and ck?, this just does ck atm
         voteCKVote(crumb)
         voteCoreDataVote(hasvoted, crumb: crumb)
@@ -719,12 +631,12 @@ class Helper{
         fetchRequest.predicate = predicate
         
         do {// change it, it not work y?
-            let fetchedMsgs = try moc.fetch(fetchRequest)
+            let fetchedMsgs = try getmoc().fetch(fetchRequest)
             
             fetchedMsgs.first?.setValue((crumb.votes!), forKey: "votevalue")
             fetchedMsgs.first?.setValue(hasvoted, forKey: "hasVoted")
             do {// save it!
-                try moc.save()
+                try getmoc().save()
             } catch {
                 print(error)
             }
@@ -767,12 +679,12 @@ class Helper{
         fetchRequest.predicate = predicate
         
         do {// change it, it not work y?
-            let fetchedMsgs = try helperFunctions.moc.fetch(fetchRequest) as! [Message]
+            let fetchedMsgs = try helperFunctions.getmoc().fetch(fetchRequest) as! [Message]
             
             fetchedMsgs.first?.setValue(theVoteValueToBeStored, forKey: "votevalue")
             fetchedMsgs.first?.setValue(counter, forKey: "hasVoted")
             do {// save it!
-                try helperFunctions.moc.save()
+                try helperFunctions.getmoc().save()
             } catch {
                 print(error)
             }

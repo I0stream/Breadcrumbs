@@ -15,6 +15,7 @@ class CommentShort {
     let username: String
     let text: String
     let timeSent: Date
+    var recorduuid: String?
     
     init(username: String, text: String, timeSent: Date) {
         self.username = username

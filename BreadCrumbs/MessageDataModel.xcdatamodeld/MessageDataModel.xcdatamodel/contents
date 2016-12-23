@@ -1,12 +1,13 @@
 <?xml version="1.0" encoding="UTF-8" standalone="yes"?>
 <model type="com.apple.IDECoreDataModeler.DataModel" documentVersion="1.0" lastSavedToolsVersion="11542" systemVersion="15G1108" minimumToolsVersion="Automatic" sourceLanguage="Swift" userDefinedModelVersionIdentifier="">
-    <entity name="Comment" representedClassName="Comment" syncable="YES">
+    <entity name="Comment" representedClassName=".Comment" syncable="YES">
+        <attribute name="recorduuid" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="text" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="timeSent" optional="YES" attributeType="Date" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="username" optional="YES" attributeType="String" syncable="YES"/>
         <relationship name="message" maxCount="1" deletionRule="Nullify" destinationEntity="Message" inverseName="comments" inverseEntity="Message" syncable="YES"/>
     </entity>
-    <entity name="Message" representedClassName="Message" syncable="YES">
+    <entity name="Message" representedClassName=".Message" syncable="YES">
         <attribute name="addressStr" optional="YES" attributeType="String" syncable="YES"/>
         <attribute name="altitude" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
         <attribute name="course" optional="YES" attributeType="Double" defaultValueString="0.0" usesScalarValueType="NO" syncable="YES"/>
@@ -28,7 +29,7 @@
         <relationship name="comments" optional="YES" toMany="YES" deletionRule="Cascade" destinationEntity="Comment" inverseName="message" inverseEntity="Comment" syncable="YES"/>
     </entity>
     <elements>
-        <element name="Comment" positionX="214" positionY="113" width="128" height="105"/>
+        <element name="Comment" positionX="214" positionY="113" width="128" height="120"/>
         <element name="Message" positionX="-54" positionY="36" width="126" height="330"/>
     </elements>
 </model>

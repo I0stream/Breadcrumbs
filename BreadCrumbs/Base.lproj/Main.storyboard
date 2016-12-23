@@ -40,8 +40,8 @@
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="469"/>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Breadcrumbs is a social app were you can leave short messages where ever you are " lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fhV-kZ-5JJ">
-                                <rect key="frame" x="50" y="509" width="314" height="86"/>
-                                <fontDescription key="fontDescription" type="system" weight="light" pointSize="24"/>
+                                <rect key="frame" x="50" y="508.99999999999994" width="314" height="82.666666666666572"/>
+                                <fontDescription key="fontDescription" type="system" weight="light" pointSize="23"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -572,8 +572,8 @@
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="469"/>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Users nearby will receive your messages and you will receive theirs too!" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="weQ-Hn-2wU">
-                                <rect key="frame" x="50" y="509" width="314" height="86"/>
-                                <fontDescription key="fontDescription" type="system" weight="light" pointSize="24"/>
+                                <rect key="frame" x="50" y="508.99999999999994" width="314" height="82.666666666666572"/>
+                                <fontDescription key="fontDescription" type="system" weight="light" pointSize="23"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -622,8 +622,8 @@
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="469"/>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="It uses both the phones location and notification services to bring you closer to your community" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TXd-lX-7zK">
-                                <rect key="frame" x="50" y="508.99999999999994" width="314" height="114.66666666666657"/>
-                                <fontDescription key="fontDescription" type="system" weight="light" pointSize="24"/>
+                                <rect key="frame" x="50" y="509" width="314" height="110"/>
+                                <fontDescription key="fontDescription" type="system" weight="light" pointSize="23"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -679,10 +679,10 @@
                                             <action selector="CancelPost:" destination="he1-fY-bVj" eventType="touchUpInside" id="TsK-2c-OPc"/>
                                         </connections>
                                     </button>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="7/7 crumbs" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="s5x-JR-Pj7">
-                                        <rect key="frame" x="25" y="78" width="75" height="14"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="7/7 crumbs" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="s5x-JR-Pj7">
+                                        <rect key="frame" x="25" y="78" width="100" height="14"/>
                                         <constraints>
-                                            <constraint firstAttribute="width" constant="75" id="qQg-E6-Kpe"/>
+                                            <constraint firstAttribute="width" constant="100" id="qQg-E6-Kpe"/>
                                             <constraint firstAttribute="height" constant="14" id="sIf-Vp-0jJ"/>
                                         </constraints>
                                         <fontDescription key="fontDescription" type="system" pointSize="14"/>
@@ -790,7 +790,7 @@
                                     <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="60" id="ya1-68-NmD"/>
                                 </constraints>
                             </view>
-                            <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LGj-9D-Ocv">
+                            <view hidden="YES" tag="26" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="LGj-9D-Ocv">
                                 <rect key="frame" x="67" y="360" width="280" height="72"/>
                                 <subviews>
                                     <label opaque="NO" userInteractionEnabled="NO" tag="34" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Crumbs are restored every hour, so do not be afraid to post lots!" textAlignment="center" lineBreakMode="wordWrap" numberOfLines="2" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="SmX-hE-SbX">

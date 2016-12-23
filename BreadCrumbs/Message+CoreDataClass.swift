@@ -9,7 +9,7 @@
 import Foundation
 import CoreData
 
-@objc(Message)
+//@objc(Message)
 public class Message: NSManagedObject {
 
 }

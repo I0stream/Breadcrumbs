@@ -19,9 +19,6 @@ class CreateCommentViewController: UIViewController, UITextViewDelegate {
     
     var viewbreadcrumb: CrumbMessage?
     
-    let managedObjectContext = AppDelegate().getContext() //broke
-
-    
     weak var delegate: CreateCommentDelegate?
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -133,10 +130,10 @@ class CreateCommentViewController: UIViewController, UITextViewDelegate {
         let date = Date()
         let newComment = CommentShort(username: NSUserData.string(forKey: "userName")!, text: WriteCommentTextView.text, timeSent: date)
         delegate?.addNewComment(newComment)
-        AddToCD(newComment)
-        AddToCK(newComment)
+        //AddToCD(newComment)
+        AddToCKThenCD(newComment)
     }
-    func AddToCK(_ comment: CommentShort){//need to know reference of crumb
+    func AddToCKThenCD(_ comment: CommentShort){//need to know reference of crumb
         //upload to iCloud
         
         let container = CKContainer.default()
@@ -161,51 +158,60 @@ class CreateCommentViewController: UIViewController, UITextViewDelegate {
         //print(viewbreadcrumb?.uRecordID as Any)
         
         publicData.save(commentRecord, completionHandler: { record, error in
-            if error != nil {
+            if error == nil {
+                self.AddToCD(comment, recorduuid: commentRecord
+                    .recordID.recordName)
+            }else if error != nil {
                 print(error.debugDescription)
                 print("ck error in create comment")
             }
         })
     }
     
-    func AddToCD(_ comment: CommentShort){// need to know relationship
+    func AddToCD(_ comment: CommentShort, recorduuid: String){// need to know relationship
         //create Message: NSManagedObject
-        
-        let commentMO = NSEntityDescription.insertNewObject(forEntityName: "Comment", into: self.managedObjectContext) as! BreadCrumbs.Comment
-        
-        let predicate = NSPredicate(format: "recorduuid == %@", (viewbreadcrumb?.uRecordID!)!)
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Message")
-        fetchRequest.predicate = predicate
-        do {// change it, it not work y?
-            let fetchedMsgs = try managedObjectContext.fetch(fetchRequest) as! [Message]
+        DispatchQueue.main.async(execute: { () -> Void in
             
-            let ComMessage = fetchedMsgs[0]
+            //let appDelegate = UIApplication.shared.delegate as? AppDelegate
+            //let moc = (appDelegate?.persistentContainer.viewContext)!
+            let moc = AppDelegate().CDStack.mainContext
             
-            //let newCommets:[Comment] = [ComMessage, commentMO]
-            //ComMessage.setValue(newCommets, forKey: "comments")
+            let commentMO = NSEntityDescription.insertNewObject(forEntityName: "Comment", into: moc) as! BreadCrumbs.Comment
             
-            //let addresses = newPerson.mutableSetValueForKey("addresses")
-            //addresses.addObject(otherAddress)
-            
-            commentMO.setValue(comment.text, forKey: "text")
-            commentMO.setValue(comment.username, forKey: "username")
-            commentMO.setValue(comment.timeSent, forKey: "timeSent")
-            
-            commentMO.message = ComMessage
-            
-
-            do {
-                try commentMO.managedObjectContext?.save()
-                //print("comment saved to coredata")
+            let predicate = NSPredicate(format: "recorduuid == %@", (self.viewbreadcrumb?.uRecordID!)!)
+            let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Message")
+            fetchRequest.predicate = predicate
+            do {// change it, it not work y?
+                let fetchedMsgs = try moc.fetch(fetchRequest) as! [Message]
+                
+                let ComMessage = fetchedMsgs[0]
+                
+                //let newCommets:[Comment] = [ComMessage, commentMO]
+                //ComMessage.setValue(newCommets, forKey: "comments")
+                
+                //let addresses = newPerson.mutableSetValueForKey("addresses")
+                //addresses.addObject(otherAddress)
+                
+                commentMO.setValue(comment.text, forKey: "text")
+                commentMO.setValue(comment.username, forKey: "username")
+                commentMO.setValue(comment.timeSent, forKey: "timeSent")
+                //recorduuid
+                commentMO.setValue(recorduuid, forKey: "recorduuid")
+                commentMO.message = ComMessage
+                
+                
+                do {
+                    try commentMO.managedObjectContext?.save()
+                    //print("comment saved to coredata")
+                } catch {
+                    print(error)
+                    print("cd error in create crumbs")
+                    
+                }
             } catch {
                 print(error)
-                print("cd error in create crumbs")
-                
             }
-        } catch {
-            print(error)
-        }
-
+        })
     }
     
     @IBAction func CancelComment(_ sender: AnyObject) {

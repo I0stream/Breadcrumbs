@@ -15,7 +15,9 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     //MARK: Variables
     var viewbreadcrumb: CrumbMessage?
     var comments = [CommentShort]()
-    let helperFunctions = Helper()
+    
+    let helperFunctions = AppDelegate().helperfunctions
+    //let helperFunctions = Helper()
     weak var delegate: NewOthersCrumbsViewControllerDelegate?
     let NSUserData = UserDefaults.standard
     
@@ -200,6 +202,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         if inscreen == true{
             delegate?.reloadTables()
         }
+        //
         dismiss(animated: true, completion: nil)
     }
     

@@ -11,17 +11,18 @@ import CoreLocation
 import CoreData //need to see those stored nsmanagedObjs yo
 import CloudKit
 
-class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, NewOthersCrumbsViewControllerDelegate {
+class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, NewOthersCrumbsViewControllerDelegate, updateViewDelegate {
 
     //MARK: Properties
     @IBOutlet weak var YourTableView: UITableView!
-    
+
     let locationManager: CLLocationManager = AppDelegate().locationManager
-    let helperFunctions = Helper()
+    //let helperFunctions = Helper()
+    let helperFunctions = AppDelegate().helperfunctions
     var crumbmessages = [CrumbMessage]()// later we will be able to access users current crumbs from the User class; making sure the msg is associated by it's uuid
     var dropped = [CrumbMessage]()
 
-    let managedObjectContext = AppDelegate().getContext() //broke
+    //let managedObjectContext = AppDelegate().getContext() //broke
     let NSUserData = UserDefaults.standard
     var count: Int = 0
     var inscreen: Bool = false
@@ -39,6 +40,8 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         
         NotificationCenter.default.addObserver(self, selector: #selector(YourCrumbsTableViewController.loadList(_:)),name:NSNotification.Name(rawValue: "load"), object: nil)
         
+        NSUserData.setValue(true, forKey: "testmessage")
+
         
         //navigationItem.leftBarButtonItem = editButtonItem()//will need to update icloud and coredata of delete
         
@@ -55,10 +58,20 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         
         YourTableView.estimatedRowHeight = 200
         YourTableView.rowHeight = UITableViewAutomaticDimension
-        
-        AppDelegate().saveToCoreData()
+        //tutorialCrumb()
     }
-
+    
+    
+    /*func tutorialCrumb(){
+        let loc = CLLocation(latitude: CLLocationDegrees(exactly: 61.218056)!, longitude: CLLocationDegrees(-149.900278))
+        let tutcrumb = CrumbMessage(text: "This is a BreadCrumb. I you tap me, you will see where I was left, you can comment on me, and vote on me", senderName: "Sabre", location: loc, timeDropped: Date(), timeLimit: 4, senderuuid: "dfsajdzvcpoy290ureowiourq", votes: 7)
+        if NSUserData.bool(forKey: "testmessage"){
+            print("run")
+            crumbmessages.insert(tutcrumb!, at: 0)
+            NSUserData.setValue(false, forKey: "testmessage")
+        }
+    }*/
+    
     //MARK: Get User Info
     
     //check out fetchrecordwithid and maybe use the value stored in nsuserdefaults"recordID"
@@ -109,6 +122,9 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
             
             let destVC = segue.destination as! ViewCrumbViewController
             destVC.delegate = self
+        } else if (segue.identifier == "PostButton"){
+            let destVC = segue.destination as! WriteCrumbViewController
+            destVC.delegate = self
         }
         
     }
@@ -158,7 +174,9 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
             let crumbmsg = crumbmessages[indexPath.row]
                 
             let id = crumbmsg.uRecordID
-            helperFunctions.coreDataDeleteCrumb(id!)//must use something other than urecordid
+            
+            self.helperFunctions.coreDataDeleteCrumb(id!, manx: AppDelegate().CDStack.mainContext)   //must use something other than urecordid
+                
             crumbmessages.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
         }
@@ -216,14 +234,12 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
             cell.YouTheUserLabel.text = crumbmsg.senderName
             cell.YouTheUserLabel.font = UIFont.boldSystemFont(ofSize: 17)
             cell.TimeRemainingValueLabel.text = crumbmsg.timeRelative()//time is how long ago it was posted, dont see the point to change var name to something more explanatory right now
+            
+            cell.VoteButton.tag = indexPath.row
+            cell.VoteButton.addTarget(self, action: #selector(YourCrumbsTableViewController.buttonActions), for: .touchUpInside)
+            
             if crumbmsg.calculate() > 0 {
                 let ref = Int(crumbmsg.calculate())
-                
-                //This is reused in others
-                cell.VoteButton.tag = indexPath.row
-                cell.VoteButton.addTarget(self, action: #selector(YourCrumbsTableViewController.Vote), for: .touchUpInside)
-                //indexPath
-                
                 if ref >= 1 {
                     cell.timeCountdown.text! = "\(ref)h left"//////////////////////////////////////////////////
                 }else {
@@ -231,7 +247,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
                 }
             } else{
                 cell.timeCountdown.text! = "Time's up!"
-                cell.VoteButton.addTarget(self, action: #selector(YourCrumbsTableViewController.noVoteIndicator), for: .touchUpInside)
+
 
             }
             
@@ -260,6 +276,18 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
                 
                 dropped = [CrumbMessage]()
             }//if zero do nothing
+        }
+    }
+    
+    func buttonActions(sender: UIButton){
+        let row = sender.tag
+        let indexPath = IndexPath(row: row, section: 1)
+        let crumb = crumbmessages[indexPath.row]
+        
+        if crumb.calculate() > 0{
+           Vote(sender: sender)
+        }else{
+            noVoteIndicator()
         }
     }
     
@@ -292,8 +320,9 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
                     = (viewbreadcrumb.votes)! + 1
             }
             
-            helperFunctions.crumbVote(viewbreadcrumb.hasVoted!, crumb: viewbreadcrumb )
+            
             DispatchQueue.main.async(execute: { () -> Void in
+                self.helperFunctions.crumbVote(viewbreadcrumb.hasVoted!, crumb: viewbreadcrumb )//has voted nil when just loaded
                 self.YourTableView.reloadData()
             })
         }else{ //if dead
@@ -305,6 +334,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
 
     
     //******************************************** Will want to reload votes *****************************************************
+
     func loadList(_ notification: Notification){//yayay//This solves the others crumbs problem i think
         crumbmessages.removeAll()
         self.crumbmessages += limitTotalCrumbs(helperFunctions.loadCoreDataMessage(true)!)//true to load yours//is only loading one and not looping thorugh crumbs
@@ -351,8 +381,14 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
             self.YourTableView.reloadData()
         })
     }
+    func addNewMessage(_ newCrumb: CrumbMessage) {
+        
+        crumbmessages.insert(newCrumb, at: 0)
+        reloadTables()
+    }
     
     @IBAction func PostButton(_ sender: AnyObject) {
+        
         self.performSegue(withIdentifier: "PostButton", sender: self)
     }
     
