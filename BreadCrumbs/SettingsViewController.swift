@@ -26,11 +26,11 @@ class SettingsViewController: UIViewController{
         performSegue(withIdentifier: "changeUsername", sender: sender)
     }
     @IBAction func RateAppButton(_ sender: Any) {
-        print("does not work in sim")
-        let url = NSURL(string : "itms-apps://itunes.apple.com/app/id959379869")! as URL//change later
+        //print("does not work in sim")
+        let url = NSURL(string : "itms-apps://itunes.apple.com/app/id1191632460")! as URL//change later
         if #available(iOS 10.0, *) {
             UIApplication.shared.open(url , options: ["yes" : "yes" as Any], completionHandler: { (true) in
-                print("sent to gmail")
+                //print("sent to gmail")
             })
         }else{
             UIApplication.shared.openURL(url)
@@ -38,12 +38,12 @@ class SettingsViewController: UIViewController{
     }
     
     @IBAction func customerSupportButton(_ sender: Any) {
-        print("does not work in sim")
+        //print("does not work in sim")
         let email = "breadcrumbs.company@gmail.com"
         let url = NSURL(string: "mailto:\(email)")
         if #available(iOS 10.0, *) {
             UIApplication.shared.open(url as! URL, options: ["yes" : "yes" as Any], completionHandler: { (true) in
-                print("sent to gmail")
+                //print("sent to gmail")
             })
         }else {
             UIApplication.shared.openURL(url as! URL)

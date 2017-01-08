@@ -76,15 +76,18 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         super.viewDidLoad()
         
         datePicker.delegate = self
+        
         // Handle the text field’s user input through delegate callbacks.
         self.crumbMessageTextView.delegate = self
         textViewDidChange(crumbMessageTextView)
+        
         //msgView(textView) placeholder text
         crumbMessageTextView.text = "What do you think?"
         crumbMessageTextView.textColor = UIColor.lightGray
 
         //crumbcount value
         CrumbcounterLabel.text = "\(NSUserData.string(forKey: "crumbCount")!)/7 crumbs"
+        
         
         submitView.isHidden = true
         
@@ -99,8 +102,11 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
                 (granted, error) in
                 //Parse errors and track state
             }
+            UIApplication.shared.registerForRemoteNotifications()
         }else{
             UIApplication.shared.registerUserNotificationSettings(UIUserNotificationSettings(types: [.alert, .badge, .sound], categories: nil))
+            UIApplication.shared.registerForRemoteNotifications()
+
         }
         
         
@@ -248,7 +254,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     
     func UpdateCrumbCount(_ cCount: Int){
         
-        let recordID = NSUserData.string(forKey: "recordID")!
+        let recordID = NSUserData.string(forKey: "recordID")!//keychain
         
         let specificID = CKRecordID(recordName: "\(recordID)")
         
@@ -299,9 +305,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
             }else{
                 crumbmessage?.uRecordID = record?.recordID.recordName
                 self.saveToCoreDataWrite(crumbmessage!)
-                //NotificationCenter.default.post(name: Notification.Name(rawValue: "load"), object: nil)
-                self.delegate?.addNewMessage(crumbmessage!)
-                self.dismiss(animated: true, completion: nil)
+                
             }
         })
     }
@@ -331,6 +335,9 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
                 message.recorduuid = crumbmessage.uRecordID
                 do {
                     try message.managedObjectContext?.save()
+                    NotificationCenter.default.post(name: Notification.Name(rawValue: "load"), object: nil)//reloads crmessages from cd everywhere
+                    self.delegate?.addNewMessage(crumbmessage)
+                    self.dismiss(animated: true, completion: nil)
                 } catch {
                     print(error)
                     print("cd error in write crumbs")
@@ -377,11 +384,16 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
                 
                 let senderUser = NSUserData.string(forKey: "userName")!
                 let date = Date()
-
+                
+                let curLoc = locationManager.location!
+                let locAge = curLoc.timestamp.timeIntervalSinceNow
+                
+                print("hori acc \(curLoc.horizontalAccuracy)")
+                print("age \(-locAge)")
                 
                 //create crumbMessage object
-                crumbmessage = CrumbMessage(text: crumbMessageTextView.text, senderName: senderUser, location: locationManager.location!, timeDropped: date, timeLimit: currentTime, senderuuid: NSUserData.string(forKey: "recordID")!, votes: 0)
-                crumbmessage?.hasVoted = 0
+                crumbmessage = CrumbMessage(text: crumbMessageTextView.text, senderName: senderUser, location: curLoc, timeDropped: date, timeLimit: currentTime, senderuuid: NSUserData.string(forKey: "recordID")!, votes: 0)
+                crumbmessage?.hasVoted = 0//keychain
                 
                 self.saveToCloudThenCD(self.crumbmessage)//saves both cd and ck
                 
@@ -530,11 +542,6 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         postButtonOutlet.isEnabled = false
         locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
     }
-    //Make CrumbMessage and push to iCloud
-    /*    @IBAction func postBarButton(sender: AnyObject) {
-     
-     }
-     */
 }
 protocol updateViewDelegate: class{
     func addNewMessage(_ newCrumb: CrumbMessage)

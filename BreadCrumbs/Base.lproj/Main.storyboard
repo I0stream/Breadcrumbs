@@ -40,8 +40,8 @@
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="469"/>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Breadcrumbs is a social app were you can leave short messages where ever you are " lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fhV-kZ-5JJ">
-                                <rect key="frame" x="50" y="508.99999999999994" width="314" height="82.666666666666572"/>
-                                <fontDescription key="fontDescription" type="system" weight="light" pointSize="23"/>
+                                <rect key="frame" x="50" y="508.99999999999994" width="314" height="71.666666666666572"/>
+                                <fontDescription key="fontDescription" type="system" weight="light" pointSize="20"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -49,14 +49,14 @@
                         <color key="backgroundColor" red="0.97254901960784312" green="0.97254901960784312" blue="0.97254901960784312" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="8xp-3r-vvo" firstAttribute="top" secondItem="rW9-Vn-VFN" secondAttribute="bottom" constant="267" id="9oG-lC-byN"/>
-                            <constraint firstItem="fhV-kZ-5JJ" firstAttribute="leading" secondItem="k0I-kQ-ZXr" secondAttribute="leadingMargin" constant="11" id="BMg-df-UBf">
+                            <constraint firstItem="fhV-kZ-5JJ" firstAttribute="leading" secondItem="k0I-kQ-ZXr" secondAttribute="leadingMargin" constant="8" id="BMg-df-UBf">
                                 <variation key="heightClass=regular-widthClass=compact" constant="30"/>
                             </constraint>
                             <constraint firstItem="PyO-4f-wz7" firstAttribute="centerX" secondItem="k0I-kQ-ZXr" secondAttribute="centerX" id="DiH-Qo-DcN"/>
                             <constraint firstItem="fhV-kZ-5JJ" firstAttribute="top" secondItem="rW9-Vn-VFN" secondAttribute="bottom" constant="40" id="NTS-RP-2RF"/>
                             <constraint firstItem="rW9-Vn-VFN" firstAttribute="leading" secondItem="k0I-kQ-ZXr" secondAttribute="leading" id="QBy-mz-fos"/>
                             <constraint firstAttribute="trailing" secondItem="rW9-Vn-VFN" secondAttribute="trailing" id="YUH-og-oAb"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="fhV-kZ-5JJ" secondAttribute="trailing" constant="11" id="iIk-51-yAg">
+                            <constraint firstAttribute="trailingMargin" secondItem="fhV-kZ-5JJ" secondAttribute="trailing" constant="8" id="iIk-51-yAg">
                                 <variation key="heightClass=regular-widthClass=compact" constant="30"/>
                             </constraint>
                             <constraint firstItem="rW9-Vn-VFN" firstAttribute="top" secondItem="k0I-kQ-ZXr" secondAttribute="top" id="m5r-CL-ndp"/>
@@ -572,8 +572,8 @@
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="469"/>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Users nearby will receive your messages and you will receive theirs too!" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="weQ-Hn-2wU">
-                                <rect key="frame" x="50" y="508.99999999999994" width="314" height="82.666666666666572"/>
-                                <fontDescription key="fontDescription" type="system" weight="light" pointSize="23"/>
+                                <rect key="frame" x="50" y="508.99999999999994" width="314" height="71.666666666666572"/>
+                                <fontDescription key="fontDescription" type="system" weight="light" pointSize="20"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -583,10 +583,10 @@
                             <constraint firstItem="b0h-fl-5Fd" firstAttribute="top" secondItem="0ga-ZH-Wsi" secondAttribute="bottom" constant="8" id="1yi-La-9Bu"/>
                             <constraint firstItem="Zai-9v-20B" firstAttribute="top" secondItem="MUx-Fa-VHA" secondAttribute="top" id="Iru-wm-DJc"/>
                             <constraint firstItem="weQ-Hn-2wU" firstAttribute="centerX" secondItem="MUx-Fa-VHA" secondAttribute="centerX" id="L98-4V-uto"/>
-                            <constraint firstItem="weQ-Hn-2wU" firstAttribute="leading" secondItem="MUx-Fa-VHA" secondAttribute="leadingMargin" constant="11" id="PJ4-jS-q0x">
+                            <constraint firstItem="weQ-Hn-2wU" firstAttribute="leading" secondItem="MUx-Fa-VHA" secondAttribute="leadingMargin" constant="8" id="PJ4-jS-q0x">
                                 <variation key="heightClass=regular-widthClass=compact" constant="30"/>
                             </constraint>
-                            <constraint firstAttribute="trailingMargin" secondItem="weQ-Hn-2wU" secondAttribute="trailing" constant="11" id="QqG-6b-xm0">
+                            <constraint firstAttribute="trailingMargin" secondItem="weQ-Hn-2wU" secondAttribute="trailing" constant="8" id="QqG-6b-xm0">
                                 <variation key="heightClass=regular-widthClass=compact" constant="30"/>
                             </constraint>
                             <constraint firstItem="weQ-Hn-2wU" firstAttribute="top" secondItem="Zai-9v-20B" secondAttribute="bottom" constant="40" id="cPN-AU-cKd"/>
@@ -622,8 +622,8 @@
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="469"/>
                             </imageView>
                             <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="It uses both the phones location and notification services to bring you closer to your community" lineBreakMode="tailTruncation" numberOfLines="4" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="TXd-lX-7zK">
-                                <rect key="frame" x="50" y="509" width="314" height="110"/>
-                                <fontDescription key="fontDescription" type="system" weight="light" pointSize="23"/>
+                                <rect key="frame" x="50" y="508.99999999999994" width="314" height="71.666666666666572"/>
+                                <fontDescription key="fontDescription" type="system" weight="light" pointSize="20"/>
                                 <nil key="textColor"/>
                                 <nil key="highlightedColor"/>
                             </label>
@@ -634,14 +634,14 @@
                             <constraint firstItem="NVI-Z4-RvP" firstAttribute="top" secondItem="l1j-yB-ggr" secondAttribute="top" id="NDb-Ru-xac"/>
                             <constraint firstItem="3Rg-HU-FvY" firstAttribute="top" secondItem="Bap-8k-ftz" secondAttribute="bottom" constant="8" id="O3s-J6-fkt"/>
                             <constraint firstItem="TXd-lX-7zK" firstAttribute="centerX" secondItem="l1j-yB-ggr" secondAttribute="centerX" id="OjM-Ta-x85"/>
-                            <constraint firstItem="TXd-lX-7zK" firstAttribute="leading" secondItem="l1j-yB-ggr" secondAttribute="leadingMargin" constant="11" id="TI1-rY-ZK0">
+                            <constraint firstItem="TXd-lX-7zK" firstAttribute="leading" secondItem="l1j-yB-ggr" secondAttribute="leadingMargin" constant="8" id="TI1-rY-ZK0">
                                 <variation key="heightClass=regular-widthClass=compact" constant="30"/>
                             </constraint>
                             <constraint firstAttribute="trailing" secondItem="NVI-Z4-RvP" secondAttribute="trailing" id="Tjf-wK-kT7"/>
                             <constraint firstItem="TXd-lX-7zK" firstAttribute="top" secondItem="NVI-Z4-RvP" secondAttribute="bottom" constant="40" id="WT3-eC-xSf"/>
                             <constraint firstItem="3Rg-HU-FvY" firstAttribute="top" secondItem="NVI-Z4-RvP" secondAttribute="bottom" constant="267" id="ZR6-l4-4ua"/>
                             <constraint firstItem="NVI-Z4-RvP" firstAttribute="leading" secondItem="l1j-yB-ggr" secondAttribute="leading" id="gxp-eb-eca"/>
-                            <constraint firstAttribute="trailingMargin" secondItem="TXd-lX-7zK" secondAttribute="trailing" constant="11" id="ntI-fU-aG8">
+                            <constraint firstAttribute="trailingMargin" secondItem="TXd-lX-7zK" secondAttribute="trailing" constant="8" id="ntI-fU-aG8">
                                 <variation key="heightClass=regular-widthClass=compact" constant="30"/>
                             </constraint>
                         </constraints>
@@ -1597,8 +1597,8 @@
         <image name="you" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="SqE-w9-VHj"/>
-        <segue reference="Hxq-ak-7Ch"/>
+        <segue reference="OWZ-9w-7Zi"/>
+        <segue reference="Z5g-uf-dNi"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.3529411764705882" green="0.68235294117647061" blue="1" alpha="1" colorSpace="calibratedRGB"/>
 </document>

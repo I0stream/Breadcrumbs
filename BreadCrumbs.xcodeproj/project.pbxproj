@@ -15,6 +15,7 @@
 		650B2B981E0228F200A05372 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650B2B971E0228F200A05372 /* CoreDataStack.swift */; };
 		6515D12C1CC148EB00570205 /* CrumbMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6515D12B1CC148EB00570205 /* CrumbMessage.swift */; };
 		6515D12D1CC148EB00570205 /* CrumbMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6515D12B1CC148EB00570205 /* CrumbMessage.swift */; };
+		651CFD711E1DDD7A0007D5C4 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 651CFD701E1DDD7A0007D5C4 /* UserNotifications.framework */; };
 		6538741B1DD54FA9009ABDBF /* old code in Resources */ = {isa = PBXBuildFile; fileRef = 6538741A1DD54FA9009ABDBF /* old code */; };
 		6539C0F91CFBC7920072F1E3 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6539C0F81CFBC7920072F1E3 /* CoreData.framework */; };
 		653BFF9C1CCA0BB7005923E9 /* ViewCrumbViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 653BFF9B1CCA0BB7005923E9 /* ViewCrumbViewController.swift */; };
@@ -63,6 +64,7 @@
 		650862A41CD507E400006DAD /* PageManagerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageManagerViewController.swift; sourceTree = "<group>"; };
 		650B2B971E0228F200A05372 /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		6515D12B1CC148EB00570205 /* CrumbMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CrumbMessage.swift; sourceTree = "<group>"; };
+		651CFD701E1DDD7A0007D5C4 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		6538741A1DD54FA9009ABDBF /* old code */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "old code"; sourceTree = "<group>"; };
 		6539C0F81CFBC7920072F1E3 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		653BFF9B1CCA0BB7005923E9 /* ViewCrumbViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewCrumbViewController.swift; sourceTree = "<group>"; };
@@ -103,6 +105,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				651CFD711E1DDD7A0007D5C4 /* UserNotifications.framework in Frameworks */,
 				65E47F231DFFD3780072996A /* CloudKit.framework in Frameworks */,
 				6539C0F91CFBC7920072F1E3 /* CoreData.framework in Frameworks */,
 				654C0B571CC4020200060E58 /* CoreLocation.framework in Frameworks */,
@@ -245,6 +248,7 @@
 		65E47F211DFFD3780072996A /* Frameworks */ = {
 			isa = PBXGroup;
 			children = (
+				651CFD701E1DDD7A0007D5C4 /* UserNotifications.framework */,
 				65E47F221DFFD3780072996A /* CloudKit.framework */,
 			);
 			name = Frameworks;
@@ -316,6 +320,9 @@
 						SystemCapabilities = {
 							com.apple.BackgroundModes = {
 								enabled = 1;
+							};
+							com.apple.DataProtection = {
+								enabled = 0;
 							};
 							com.apple.Push = {
 								enabled = 1;

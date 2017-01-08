@@ -102,7 +102,7 @@ class ChangeUserNameViewController: SettingsViewController, UITextFieldDelegate 
         let container = CKContainer.default()
         let publicData = container.publicCloudDatabase
         
-        let recordID = CKRecordID(recordName: NSUserData.string(forKey: "recordID")!)
+        let recordID = CKRecordID(recordName: NSUserData.string(forKey: "recordID")!)//keychain
         
         publicData.fetch(withRecordID: recordID, completionHandler: {record, error in
             if error == nil{

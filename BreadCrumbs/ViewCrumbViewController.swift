@@ -21,6 +21,13 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     weak var delegate: NewOthersCrumbsViewControllerDelegate?
     let NSUserData = UserDefaults.standard
     
+    lazy var refreshControl: UIRefreshControl = {
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(ViewCrumbViewController.handleRefresh(_:)), for: UIControlEvents.valueChanged)
+        
+        return refreshControl
+    }()
+    
     @IBOutlet weak var YourtableView: UITableView!
     @IBOutlet weak var mapView: MKMapView!
     
@@ -50,7 +57,8 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         YourtableView.rowHeight = UITableViewAutomaticDimension
         YourtableView.estimatedRowHeight = 200
         
-
+        self.YourtableView.addSubview(self.refreshControl)
+        
         loadComments()
     }
     
@@ -139,6 +147,11 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
             } else{
                 msgCell.TimeLeftLabel.text! = "Time's up!"
+                
+                //Time's up indication Red Color
+                let uicolor = UIColor(red: 225/255, green: 0/255, blue: 0/255, alpha: 1)
+                msgCell.TimeLeftLabel.textColor = uicolor
+                //
             }
             
             
@@ -269,55 +282,24 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         
         self.present(alertController, animated: true, completion: nil)
     }
-    /*func loadCommetsCK(){
-        
-        //var recordToMatch = CKReference(recordID: employeeID, action: .None)
-        //var predicate = NSPredicate(format: "employee == %@", recordToMatch)
-        
-        let id = CKRecordID(recordName: (viewbreadcrumb?.uRecordID)!)
-        let ref = CKReference(recordID: id, action: CKReferenceAction.deleteSelf)
-        
-        let predicate = NSPredicate(format: "ownerReference == %@", ref)
-        let query = CKQuery(recordType: "Comment", predicate: predicate)
-        
-        let container = CKContainer.default()
-        let publicData = container.publicCloudDatabase
-        
-        publicData.perform(query, inZoneWith: nil) { results, error in
-            if error == nil{ // There is no error
-                for ckComment in results! {
-                    
-                    //print(ckComment)
-                    //let dbtext = ckComment["text"] as! String
-                    
-                    /*if (loadedMessage!.calculate() > 0) && testID{
-                     
-                     //TESTS IF LOADED MSG IS IN COREDATA IF NOT THEN STORES IT BRAH
-                     let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Message")
-                     let cdPredicate = NSPredicate(format: "recorduuid == %@", loadedMessage!.uRecordID!)
-                     fetchRequest.predicate = cdPredicate
-                     
-                     do {
-                     if let fetchResults = try self.moc.fetch(fetchRequest) as? [Message]{
-                     if fetchResults.isEmpty{
-                     
-                     
-                     //if UIApplication.shared.applicationState != UIApplicationState.active{
-                     self.notify()//if this is how we will do it, we must have a seen and unseen marker
-                     //}
-                     
-                     }
-                     }
-                     } catch{//there is an error
-                     let fetchError = error as NSError
-                     print(fetchError)
-                     }*/
-                }
-            } else {
-                print(error.debugDescription)//print error
-            }
-        }
-    }*/
+    
+    //MARK: refresh
+    
+    func handleRefresh(_ refreshControl: UIRefreshControl) {
+        DispatchQueue.main.async(execute: { () -> Void in
+            
+            //self.crumbmessages = self.helperFunctions.loadCoreDataMessage(true)!
+            self.viewbreadcrumb = self.helperFunctions.updateself(recorduuid: (self.viewbreadcrumb?.uRecordID)!)
+            
+            self.comments.removeAll()
+            self.loadComments()
+            
+            self.YourtableView.reloadData()
+        })
+        refreshControl.endRefreshing()
+    }
+    
+    
 }
 //reloads table in yours or others in order to persist vote button colors colors
 protocol NewOthersCrumbsViewControllerDelegate: class {

@@ -37,7 +37,8 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
 
     let NSUserData = AppDelegate().NSUserData
     let locationManager: CLLocationManager = AppDelegate().locationManager
-
+    let helperFunctions = Helper()//contains various cd and ck functions
+    
     @IBOutlet weak var setUserNameTextField: UITextField!
     @IBOutlet weak var AView: UIView!
     @IBOutlet weak var signUpButton: UIButton!
@@ -51,9 +52,6 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         
         accountStatus()//ckstatus
         checkUserStatus()
-        // Do any additional setup after loading the view.
-        
-        
         
         NotificationCenter.default.addObserver(self, selector: #selector(SignInViewController.loadList(_:)),name:NSNotification.Name(rawValue: "ReloadSignIn"), object: nil)
         
@@ -92,7 +90,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
                 if let userID = recordID?.recordName {
                     print("received iCloudID \(userID)")
                     //checks crumbcount and populates it, populates premium with most recent value,
-                    self.NSUserData.setValue(userID, forKey: "recordID")
+                    self.NSUserData.setValue(userID, forKey: "recordID")//keychain
                 } else {
                     print("Fetched iCloudID was nil")
                 }
@@ -103,14 +101,16 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
                 Timer.scheduledTimer(timeInterval: 60.0, target: AppDelegate(), selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 30 sec for a msg
             }
             
+            helperFunctions.cloudkitSub()
+            
             performSegue(withIdentifier: "SignInSegue", sender: sender)//presents weird and i also want user to be able to access this and sign out/in again. cant change username after picking though. may need more view controllers
         }
-        else if setUserNameTextField.text?.characters.count < 0 || setUserNameTextField.text?.characters.count > 21{
+        else if setUserNameTextField.text?.characters.count < 1 || setUserNameTextField.text?.characters.count > 21{
             ErrorDisp.text = "enter a valid length username"
             ErrorDisp.isHidden = false
             signUpButton.isEnabled = false
         }else if isICloudContainerAvailable() == false || NSUserData.bool(forKey: "ckAccountStatus"){
-            ErrorDisp.text! = "Please sign into icloud and enable icloud drive"
+            ErrorDisp.text = "Please sign into icloud and enable icloud drive"
             ErrorDisp.isHidden = false
             signUpButton.isEnabled = false
             
@@ -150,7 +150,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
             //print("a user is signed into icloud")
             signUpButton.isEnabled = true
             ErrorDisp.isHidden = true
-        }else if isICloudContainerAvailable() == false {
+        }else if isICloudContainerAvailable() == false && NSUserData.bool(forKey: "ckAccountStatus") {
             ErrorDisp.text! = "Please sign into icloud and enable icloud drive"
             ErrorDisp.isHidden = false
             signUpButton.isEnabled = false
@@ -180,7 +180,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
             return false
         }
     }
-    
+    //accountStatus
     func accountStatus(){
         let container = CKContainer.default()
         container.accountStatus { (status, error) in

@@ -31,10 +31,18 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     lazy var CDStack = CoreDataStack()//cd req functions
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+        
+        // Register with APNs
+        application.registerForRemoteNotifications()
+        
+        accountStatus()// is icloud drive available?
+        
+        //application.applicationIconBadgeNumber = 0
 
-//        self.NSUserData.setValue(0, forKey: "counterLoc")
-        accountStatus()
-        if isICloudContainerAvailable() && NSUserData.string(forKey: "userName") != nil && NSUserData.string(forKey: "recordID") != nil && NSUserData.bool(forKey: "ckAccountStatus"){
+        //is icloud available? is icloud drive available? does he have a username? does user have a stored user id?
+        //if so go to app
+        if isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && NSUserData.string(forKey: "userName") != nil && NSUserData.string(forKey: "recordID") != nil{//keychain
+            
             self.window = UIWindow(frame: UIScreen.main.bounds)
             
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -49,20 +57,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
 
             AppDelegate().NSUserData.setValue(0, forKey: "limitArea")
             
+            //60
             self.timer1 = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(AppDelegate.loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 60 sec for a msg
             
             CDStack.saveContext()
+            
 
-        } else {
-            self.window = UIWindow(frame: UIScreen.main.bounds)
+
+        } else {//if not go to sign in
             
             //gets and sets userrecordID
-            if NSUserData.string(forKey: "recordID") == nil/*|| user != signedIn*/{
+            if NSUserData.string(forKey: "recordID") == nil/*|| user != signedIn*/{//keychain
                 iCloudUserIDAsync() {
                     recordID, error in
                     if let userID = recordID?.recordName {
                         print("received iCloudID \(userID)")
-                        self.NSUserData.setValue(userID, forKey: "recordID")
+                        self.NSUserData.setValue(userID, forKey: "recordID")//switch to keychain?
                         self.getUserInfo()
                         //checks crumbcount and populates it, populates premium with most recent value
                     } else {
@@ -70,11 +80,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                     }
                 }
             }
+            self.window = UIWindow(frame: UIScreen.main.bounds)
             
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             
             let initialViewController = storyboard.instantiateViewController(withIdentifier: "pgManager") as! PageManagerViewController
-            //let initialViewController = storyboard.instantiateViewControllerWithIdentifier("IntroShill")
             
             self.window?.rootViewController = initialViewController
             self.window?.makeKeyAndVisible()
@@ -82,12 +92,37 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
         return true
     }
+
+    
+    //this func it pretty dumb, so I get a notif when a any breadcrumb changes(it includes the recordid)
+    //but it does not tell me what specific value has changed
+    //so i just update the only two that can, comment and vote
+    //at least to my knowledge this is how it works
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        
+        let cloudKitNotification = CKNotification.init(fromRemoteNotificationDictionary: userInfo as! [String : NSObject])
+        
+        //let alertBody = cloudKitNotification.alertBody//123
+        //print(alertBody!)
+        
+        if cloudKitNotification.notificationType == .query {
+            let recordID = (cloudKitNotification as! CKQueryNotification).recordID
+            let voteValue = (cloudKitNotification as! CKQueryNotification).recordFields?.first?.value as? Int
+            
+            helperfunctions.updateCrumbFromSub(recorduuid: recordID!, NewVote: voteValue)
+            
+            //update record with id
+            completionHandler(.newData)
+        }
+        
+    }
+
+    
     func accountStatus(){
         let container = CKContainer.default()
         container.accountStatus { (status, error) in
             switch status.rawValue {
             case 1 ://available
-                print(1)
                 self.NSUserData.setValue(true, forKey: "ckAccountStatus")
             default:
                 self.NSUserData.setValue(false, forKey: "ckAccountStatus")
@@ -99,24 +134,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     
     //this is the heart of the app
     func loadAndStoreiCloudMsgsBasedOnLoc(){// load icloud msgs; need to check if msg is already loaded & store loaded msgs to persist between views and app instances
-        locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation//I need to wait before running this stuff get better accuracy data ->
+        //I need to wait before running this stuff get better accuracy data ->
         
-        var currentUserLoc = bestCurrent
-        if currentUserLoc == nil{
-            currentUserLoc = locationManager.location
+        let currentUserLoc = bestCurrent
+        var locAge = 31.0
+
+        if currentUserLoc != nil{
+            locAge = Double((currentUserLoc?.timestamp.timeIntervalSinceNow)!)
         }
         
-        if currentUserLoc != nil && (Double((currentUserLoc?.timestamp.timeIntervalSinceNow)!) < 5.0 ){
+        if currentUserLoc != nil && ((locAge) < 30.0 ){
             //30.0 / 1000.0//100 ft in km
+
             let radiusKm = 20 / 1000.0//65.6 ft in km
-            
             let predicate: NSPredicate = NSPredicate(format: "distanceToLocation:fromLocation:(%K, %@) < %f", "location", currentUserLoc!, radiusKm)
-                
             let query = CKQuery(recordType: "CrumbMessage", predicate: predicate)
-                
             helperfunctions.loadIcloudMessageToCoreData(query)
+            
+            helperfunctions.testStoredMsgsInArea(currentUserLoc!)
+            
             print("load and store has run")
-            locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
+            return
+            
+        }else if currentUserLoc == nil{
+            return
+        }else{
+            loadAndStoreiCloudMsgsBasedOnLoc()
         }
     }
     
@@ -124,43 +167,53 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     
     
     func initLocationManager() {
-        DispatchQueue.main.async(execute: { () -> Void in
+        //DispatchQueue.main.async(execute: { () -> Void in
             self.seenError = false
             self.locationFixAchieved = false
             self.locationManager = CLLocationManager()
             self.locationManager.delegate = self
             self.locationManager.requestAlwaysAuthorization()
-            self.locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
+            self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
             self.locationManager.allowsBackgroundLocationUpdates = true
-        })
+        //})
     }
     
-    
-    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {
+    func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {//this was hard to make
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
+        
         let newloc = locations.last
+        let locationAge = -((newloc?.timestamp.timeIntervalSinceNow)!)
         
-        let locationAge = newloc?.timestamp.timeIntervalSinceNow
-        if Double(locationAge!) > 5.0 {return}// if old as fuck try again
-        
+        if Double(locationAge) > 5.0 {return}//if old try again with newest variable
         if Double((newloc?.horizontalAccuracy)!) < 0 {return}// error value
-        
-        if bestEffortAtLocation == nil || (bestEffortAtLocation.horizontalAccuracy > (newloc?.horizontalAccuracy)!) {
-            // store the location as the "best effort"
-            self.bestEffortAtLocation = newloc
+
+        var bestCurrentTime = 0.0
+        if bestCurrent != nil{
+            bestCurrentTime = -Double((bestCurrent?.timestamp.timeIntervalSinceNow)!)
+            if bestCurrentTime < 30.0{
+                return
+            }
+        }
+        if bestEffortAtLocation == nil || (bestEffortAtLocation.horizontalAccuracy > (newloc?.horizontalAccuracy)!) || bestCurrentTime > 31.0{
             
+            //if best is empty 
+            //if new value is more accurate
+            //if bestcurrent is old as fuck
+            
+            // store new value
+            self.bestEffortAtLocation = newloc
+            /*var bestCurrentTime = 0.0
+            if bestCurrent != nil{
+                bestCurrentTime = Double((bestCurrent?.timestamp.timeIntervalSinceNow)!)
+            }*/
             // test the measurement to see if it meets the desired accuracy
-            //
-            // IMPORTANT!!! kCLLocationAccuracyBest should not be used for comparison with location coordinate or altitidue
-            // accuracy because it is a negative value. Instead, compare against some predetermined "real" measure of
-            // acceptable accuracy, or depend on the timeout to stop updating. This sample depends on the timeout.
-            //
-            if (newloc?.horizontalAccuracy)! <= locationManager.desiredAccuracy {
+            if ((bestEffortAtLocation?.horizontalAccuracy)! <= 10.0) || (bestCurrentTime > 60.0){
                 // we have a measurement that meets our requirements, so we can stop updating the location
                 //
                 // IMPORTANT!!! Minimize power usage by stopping the location manager as soon as possible.
                 //
-                print(newloc?.horizontalAccuracy)
-                bestCurrent = newloc
+                bestCurrent = bestEffortAtLocation
+                self.locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
             }
             
         }
@@ -201,7 +254,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     func getUserInfo(){
         let container = CKContainer.default()
         let publicData = container.publicCloudDatabase
-        let CKuserID: CKRecordID = CKRecordID(recordName: NSUserData.string(forKey: "recordID")!)
+        let CKuserID: CKRecordID = CKRecordID(recordName: NSUserData.string(forKey: "recordID")!)//keychain
         
         let query = CKQuery(recordType: "UserInfo", predicate: NSPredicate(format: "%K == %@", "creatorUserRecordID" ,CKReference(recordID: CKuserID, action: CKReferenceAction.none)))
         
@@ -329,8 +382,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
+        accountStatus()
         
-        if isICloudContainerAvailable() && NSUserData.string(forKey: "userName") != nil{
+        if isICloudContainerAvailable() && NSUserData.string(forKey: "userName") != nil && NSUserData.bool(forKey: "ckAccountStatus"){
             loadAndStoreiCloudMsgsBasedOnLoc()//not this
             //UPDATE VOTES HERE
             
@@ -341,9 +395,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             }
             
             helperfunctions.updateTableViewVoteValues()//updates all votes
-            
+            helperfunctions.checkMarkedForDeleteCD()//deletes old markeds
             
             /*no let us sit down and I shall tell ye a story. As I was writing updatetableviewcomments something strange happened. The entire app broke. Somehow, I had failed to notice that the update to ios 10 and swift 3 made inert my coredata code and brought to light some threading issues I had programmed. I am indeed an inexperienced ios programmer. I went from lead to lead, breaking the app one way and another trying to figure out the why and the what that caused my app to fail. Initially i thought it was my datamodel, and/or that my nsobject classes were getting confused with older versions of themselves. then after that debaucle I started reading about managed object contexts and how they work, after fucking with that thinking it was the core problem(it was really just a symptom) I discovered threads, and after learning how they worked; I could see that lots of my coredata code was sitting in completion handlers which run in a thread other than the main one. from there debuging all my poorly written code has been relatively easy. */
+            
+            //if i figure out subscriptions, this will be unnecessary
             helperfunctions.updateTableViewcomments()//this fucks my shit up so hard
             
             //should use delegation or something
@@ -353,7 +409,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                 
             }*/
             
+        //isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && NSUserData.string(forKey: "userName") != nil && NSUserData.string(forKey: "recordID") != nil
+        //is icloud enabled, is username set
         }else if isICloudContainerAvailable() && NSUserData.string(forKey: "userName") == nil{
+            
             NotificationCenter.default.post(name: Notification.Name(rawValue: "ReloadSignIn"), object: nil)
             
             self.window = UIWindow(frame: UIScreen.main.bounds)
@@ -376,20 +435,29 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         //self.saveContext()
     }
 
-    //MARK: Notification
+    //MARK: User Notifications
     
-    //Notification function for load and store
+    //remote Notification funcs for subscriptions
     
-    func notify() {//used in load and store
+    
+    //user Notification funcs function for load and store
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        
+        
+    }
+    
+    func notify(title: String ,body: String/*, crumbID: String*/) {//used in load and store
         let requestIdentifier = "SampleRequest" //identifier is to cancel the notification request
 
+        //use crumbid to know which viewcrumb to open
         if #available(iOS 10.0, *) {
             
             let content = UNMutableNotificationContent()
-            content.title = "Intro to Notifications"
-            content.subtitle = "Lets code,Talk is cheap"
-            content.body = "New Breadcrumbs! come check'em out!"
+            content.title = title
+            content.body = body
             content.sound = UNNotificationSound.default()
+            
             
             // Deliver the notification in five seconds.
             let trigger = UNTimeIntervalNotificationTrigger.init(timeInterval: 5.0, repeats: false)
@@ -403,7 +471,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                     print(error?.localizedDescription ?? "error in notify")
                 }
             }
-        } else {
+        } /*else {
             guard let settings = UIApplication.shared.currentUserNotificationSettings else { return }
             
             if settings.types == UIUserNotificationType() {
@@ -414,16 +482,38 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             
             let notification = UILocalNotification()
             notification.fireDate = Date(timeIntervalSinceNow: 5)
-            notification.alertBody = "New Breadcrumbs! come check'em out!"
+            notification.alertBody = body
             notification.alertAction = "Confirm"
             notification.soundName = UILocalNotificationDefaultSoundName
-            notification.userInfo = ["CustomField1": "w00t"]
+            //notification.userInfo = ["CustomField1": "w00t"]
             UIApplication.shared.scheduleLocalNotification(notification)
             
-            print("ping notif: new Breadcrumb!")//ping notif
+            print("ping notif")//ping notif
             NotificationCenter.default.post(name: Notification.Name(rawValue: "loadOthers"), object: nil)//loads new msgs from cd
-        }
+        }*/
     }
 }
 
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+    switch (lhs, rhs) {
+    case let (l?, r?):
+        return l < r
+    case (nil, _?):
+        return true
+    default:
+        return false
+    }
+}
 
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+    switch (lhs, rhs) {
+    case let (l?, r?):
+        return l > r
+    default:
+        return rhs < lhs
+    }
+}

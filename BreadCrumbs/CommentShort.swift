@@ -61,7 +61,7 @@ class CommentShort {
         default:
             StringDate = dateOrganizer()
         }
-        StringDate = StringDate + " \(day)"
+        StringDate = StringDate + " \(day!)"
         
         return StringDate
     }

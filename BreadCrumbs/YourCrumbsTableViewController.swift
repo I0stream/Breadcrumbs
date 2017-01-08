@@ -30,6 +30,14 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
     var cellHeights = [CGFloat?]()
     let heightspacer: CGFloat = UIScreen.main.bounds.height * 0.35
 
+
+    lazy var refreshControl: UIRefreshControl = {
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(YourCrumbsTableViewController.handleRefresh(_:)), for: UIControlEvents.valueChanged)
+        
+        return refreshControl
+    }()
+    
     //@IBOutlet weak var CrumbCountBBI: UIBarButtonItem!
     
     override func viewDidLoad() {
@@ -39,22 +47,19 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         self.YourTableView.dataSource = self
         
         NotificationCenter.default.addObserver(self, selector: #selector(YourCrumbsTableViewController.loadList(_:)),name:NSNotification.Name(rawValue: "load"), object: nil)
-        
-        NSUserData.setValue(true, forKey: "testmessage")
 
-        
-        //navigationItem.leftBarButtonItem = editButtonItem()//will need to update icloud and coredata of delete
-        
-        //self.CrumbCountBBI.title = "\(String(NSUserData.stringForKey("crumbCount")!))/5"
-        
-        //NSTimer.scheduledTimerWithTimeInterval(60.0, target: self, selector: #selector(YourCrumbsTableViewController.crumbNumUpdater), userInfo: nil, repeats: true)//checks every 20 seconds
-        
-        
+        //loadyours
+
         //get ID
         self.getUserInfo()
         
         self.crumbmessages += helperFunctions.loadCoreDataMessage(true)!//true to load yours
-        self.crumbmessages = self.crumbmessages.reversed()
+        //self.crumbmessages = self.crumbmessages//.reversed()
+        
+        
+        //YourTableView.refreshControl?.addTarget(self, action: #selector(YourCrumbsTableViewController.handleRefresh(_:)), for: UIControlEvents.valueChanged)
+        
+        self.YourTableView.addSubview(self.refreshControl)
         
         YourTableView.estimatedRowHeight = 200
         YourTableView.rowHeight = UITableViewAutomaticDimension
@@ -81,7 +86,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         let container = CKContainer.default()
         let publicData = container.publicCloudDatabase
         
-        let CKuserID: CKRecordID = CKRecordID(recordName: NSUserData.string(forKey: "recordID")!)
+        let CKuserID: CKRecordID = CKRecordID(recordName: NSUserData.string(forKey: "recordID")!)//keychain
 
         let query = CKQuery(recordType: "UserInfo", predicate: NSPredicate(format: "%K == %@", "creatorUserRecordID" ,CKReference(recordID: CKuserID, action: CKReferenceAction.none)))
         
@@ -175,8 +180,10 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
                 
             let id = crumbmsg.uRecordID
             
-            self.helperFunctions.coreDataDeleteCrumb(id!, manx: AppDelegate().CDStack.mainContext)   //must use something other than urecordid
-                
+            self.helperFunctions.coreDataDeleteCrumb(id!/*, manx: AppDelegate().CDStack.mainContext*/)   //must use something other than urecordid
+            
+            self.helperFunctions.cloudKitDeleteCrumb(CKRecordID(recordName: id!))
+            
             crumbmessages.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
         }
@@ -240,6 +247,10 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
             
             if crumbmsg.calculate() > 0 {
                 let ref = Int(crumbmsg.calculate())
+                
+                let uicolorNormal = UIColor(red: 146/255, green: 144/255, blue: 144/255, alpha: 1)
+                cell.timeCountdown.textColor = uicolorNormal
+                
                 if ref >= 1 {
                     cell.timeCountdown.text! = "\(ref)h left"//////////////////////////////////////////////////
                 }else {
@@ -247,8 +258,11 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
                 }
             } else{
                 cell.timeCountdown.text! = "Time's up!"
-
-
+                
+                //Time's up indication Red Color
+                let uicolor = UIColor(red: 225/255, green: 0/255, blue: 0/255, alpha: 1)
+                cell.timeCountdown.textColor = uicolor
+                //
             }
             
             /*if crumbmsg.addressStr != nil{
@@ -337,7 +351,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
 
     func loadList(_ notification: Notification){//yayay//This solves the others crumbs problem i think
         crumbmessages.removeAll()
-        self.crumbmessages += limitTotalCrumbs(helperFunctions.loadCoreDataMessage(true)!)//true to load yours//is only loading one and not looping thorugh crumbs
+        self.crumbmessages = helperFunctions.loadCoreDataMessage(true)!//true to load yours//is only loading one and not looping thorugh crumbs
         //self.crumbmessages)
         
         //print("loading in loadlist")
@@ -353,7 +367,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         dispatch_async(dispatch_get_main_queue(), { () -> Void in
         self.CrumbCountBBI.title = "\(String(self.NSUserData.stringForKey("crumbCount")!))/5"
         })
-    }*/
+    }
     
     func limitTotalCrumbs(_ crumbs: [CrumbMessage]) -> [CrumbMessage]{
         if crumbs.count > 15{
@@ -366,7 +380,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         }else{
             return crumbs.reversed()
         }
-    }
+    }*/
     
     func noVoteIndicator(){
         let alertController = UIAlertController(title: "BreadCrumbs", message:
@@ -385,6 +399,16 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         
         crumbmessages.insert(newCrumb, at: 0)
         reloadTables()
+    }
+    
+    func handleRefresh(_ refreshControl: UIRefreshControl) {
+        DispatchQueue.main.async(execute: { () -> Void in
+            
+            self.crumbmessages = self.helperFunctions.loadCoreDataMessage(true)!
+            
+            self.YourTableView.reloadData()
+        })
+        refreshControl.endRefreshing()
     }
     
     @IBAction func PostButton(_ sender: AnyObject) {

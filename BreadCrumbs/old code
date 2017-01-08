@@ -212,3 +212,100 @@ abort()
 }
 }*/
 
+/*func updateIsViewedValue(_ crumb: CrumbMessage){
+//updates coredata value of viewed others, needs a reload function to complete its function
+
+let predicate = NSPredicate(format: "recorduuid == %@", crumb.uRecordID!)
+
+let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Message")
+fetchRequest.predicate = predicate
+
+do {// change it, it not work y?
+let fetchedMsgs = try helperFunctions.moc.fetch(fetchRequest) as! [Message]
+
+let one:Int = 1
+fetchedMsgs.first?.setValue(one, forKey: "viewedOther")//is seen
+
+
+do {// save it!
+try helperFunctions.moc.save()//it is not saving
+} catch {
+print(error)
+}
+} catch {
+print(error)
+}
+}*/
+
+/*func doesArrContainUnique(_ CDArr: [CrumbMessage], LoadedArr: [CrumbMessage], prevDropped: [CrumbMessage])-> [CrumbMessage]{
+let bothLoadedAndDropped = LoadedArr + dropped
+
+var uniqueArr = [CrumbMessage]()
+var testArr = [CrumbMessage]()
+
+if bothLoadedAndDropped.count < CDArr.count{//
+for cdcrumbs in CDArr{
+
+for ldcrumbs in bothLoadedAndDropped{
+
+if ldcrumbs.uRecordID == cdcrumbs.uRecordID {//if crumb is in tableview remove from list
+testArr.removeAll()
+break
+
+}
+testArr += [cdcrumbs]
+
+}
+if testArr.count == bothLoadedAndDropped.count{//if a value is not found store it
+uniqueArr += [testArr[0]]
+break
+}
+}
+
+}
+
+let totalAmount = bothLoadedAndDropped + uniqueArr
+
+if totalAmount.count < CDArr.count{
+uniqueArr += doesArrContainUnique(CDArr, LoadedArr: totalAmount, prevDropped: dropped)
+}
+
+//return(actualAmount)
+return (uniqueArr)
+
+}*/
+//limit crumbs in view to 15, the brains of the operation
+/* func islimited(_ uniques: [CrumbMessage], loaded: [CrumbMessage])-> ([CrumbMessage],[CrumbMessage]){
+var total = loaded + uniques
+//var final = [CrumbMessage]()
+//var dropped = [CrumbMessage]()
+
+if total.count > 15{
+let remove = total.count - 15
+final = [CrumbMessage](total.dropFirst(remove))
+dropped = [CrumbMessage](total[0...(remove-1)])
+}
+
+return (final,dropped)
+}
+
+
+//limit crumbs in view to 15
+func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+let lastLoadedElement = crumbmessages.count - 1
+if indexPath.row == lastLoadedElement {
+
+if dropped.count >= 15{
+let fifteenMore = dropped[0...14]
+dropped = [CrumbMessage](dropped.dropFirst(15))
+
+self.crumbmessages += fifteenMore.reversed()
+}else if dropped.count < 15 && dropped.count > 0 {
+self.crumbmessages += dropped[0...(dropped.count - 1)]
+
+dropped = [CrumbMessage]()
+}//if zero do nothing
+
+}
+}*/
+

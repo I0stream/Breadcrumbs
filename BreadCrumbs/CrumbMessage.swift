@@ -23,6 +23,7 @@ class CrumbMessage{
     var uRecordID: String?//the id of the unique record
     var viewedOther: Int?
     var hasVoted: Int?
+    var markedForDelete: Int?
     //var addressStr: String?
     //var commentsArr: [Comment]//array of comments
     

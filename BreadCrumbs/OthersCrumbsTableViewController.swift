@@ -12,7 +12,7 @@ import UIKit
 import CoreLocation
 import CoreData
 
-class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource, UITableViewDelegate,NewOthersCrumbsViewControllerDelegate, updateViewDelegate {
+class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource, UITableViewDelegate,NewOthersCrumbsViewControllerDelegate {
     
     //i write my best code when I have no sleep
     //and by "my best code" I mean my worst code
@@ -20,19 +20,26 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
     //MARK: Properties
     
     var crumbmessages = [CrumbMessage]()
-    var dropped = [CrumbMessage]()
-    var final = [CrumbMessage]()
+    //var dropped = [CrumbMessage]()
+    //var final = [CrumbMessage]()
     
     //let helperFunctions = Helper()
     let helperFunctions = AppDelegate().helperfunctions
     
     let locationManager: CLLocationManager = AppDelegate().locationManager
     let NSUserData = UserDefaults.standard
+    
     var count = 0
     var cellHeights = [CGFloat?]()
     let heightspacer: CGFloat = UIScreen.main.bounds.height * 0.35
     var inscreen: Bool = false
 
+    lazy var refreshControl: UIRefreshControl = {
+        let refreshControl = UIRefreshControl()
+        refreshControl.addTarget(self, action: #selector(OthersCrumbsTableViewController.handleRefresh(_:)), for: UIControlEvents.valueChanged)
+        
+        return refreshControl
+    }()
     
     @IBOutlet weak var OthersTableView: UITableView!
     
@@ -47,15 +54,13 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
         // Use the edit button item provided by the table view controller.
         navigationItem.leftBarButtonItem = editButtonItem
         
-        loadOthersCoreDataStore()//just loads coredata objs with no smarts need to add tests
-        
+        self.crumbmessages += helperFunctions.loadCoreDataMessage(false)!//false load others
         //pull to refresh observer
-        /*OthersTableView.refreshControl?.addTarget(self, action: #selector(OthersCrumbsTableViewController.handleRefresh(_:)), for: UIControlEvents.valueChanged)
 
-        self.OthersTableView.addSubview(OthersTableView.refreshControl!)*/
+        self.OthersTableView.addSubview(self.refreshControl)
 
         OthersTableView.rowHeight = UITableViewAutomaticDimension
-        OthersTableView.estimatedRowHeight = 95
+        OthersTableView.estimatedRowHeight = 200
     }
     /*override func viewDidDisappear(_ animated: Bool) {
         for crumbs in crumbmessages{
@@ -111,9 +116,6 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
                     crumbmsg.viewedOther = 1
                     print("updated view")
              }*/
-        }else if (segue.identifier == "PostButton"){
-            let destVC = segue.destination as! WriteCrumbViewController
-            destVC.delegate = self
         }
         
     }
@@ -123,21 +125,19 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
     
     // populate cell's view with object data
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        
+
         if crumbmessages.count == 0{
             let cell = tableView.dequeueReusableCell(withIdentifier: "NoCrumbMessage", for: indexPath)
             return cell
         }else if indexPath.row == (crumbmessages.count){
             let cell = tableView.dequeueReusableCell(withIdentifier: "SpacerOther", for: indexPath)
             cell.selectionStyle = UITableViewCellSelectionStyle.none
-            
             return cell
         }else {
+            
             let cell = tableView.dequeueReusableCell(withIdentifier: "OthersMsgCell", for: indexPath) as! OthersCrumbsTableViewCell
             
             let crumbmsg = crumbmessages[indexPath.row]
-            
-            
             
             //setColorVoteButton
             if crumbmsg.hasVoted == 1{//user has voted
@@ -147,7 +147,6 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
                 let normalColor = UIColor(red: 245/255, green: 166/255, blue: 35/255, alpha: 1)
                 cell.VoteButton.setTitleColor(normalColor, for: .normal)
             }
-            
             // Fetches the appropriate msg for the data source layout.
             
             //sets the values for the labels in the cell, time value and location value
@@ -163,11 +162,14 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
             cell.TimeRemainingValueLabel.text = crumbmsg.timeRelative()//time is how long ago it was posted, dont see the point to change var name to something more explanatory right now
             //This is reused in yours
             
-            //
             cell.VoteButton.tag = indexPath.row
             cell.VoteButton.addTarget(self, action: #selector(OthersCrumbsTableViewController.buttonActions), for: .touchUpInside)
             if crumbmsg.calculate() > 0 {
                 let ref = Int(crumbmsg.calculate())
+                
+                let uicolorNormal = UIColor(red: 146/255, green: 144/255, blue: 144/255, alpha: 1)
+                cell.timeCountdown.textColor = uicolorNormal
+                
                 if ref >= 1 {
                     cell.timeCountdown.text! = "\(ref)h left"//////////////////////////////////////////////////
                 }else {
@@ -175,128 +177,22 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
                 }
             } else{
                 cell.timeCountdown.text! = "Time's up!"
+                
+                //Time's up indication Red Color
+                let uicolor = UIColor(red: 225/255, green: 0/255, blue: 0/255, alpha: 1)
+                cell.timeCountdown.textColor = uicolor
+                //
             }
-            
             cell.TextViewCellOutlet.font = UIFont.systemFont(ofSize: 16)
             
             return cell
         }
     }
-
     
-    //right now just sample msgs
-    func loadOthersCoreDataStore() {
-        let fmCrumbMessage = helperFunctions.loadCoreDataMessage(false)//loadsothers
         
-        if fmCrumbMessage?.isEmpty != true{
-            if fmCrumbMessage![0].uRecordID != nil{
-                self.crumbmessages += fmCrumbMessage!
-                DispatchQueue.main.async(execute: { () -> Void in
-                    self.OthersTableView.reloadData()
-                })
-            }
-        }
-    }
-    
-    /*func updateIsViewedValue(_ crumb: CrumbMessage){
-        //updates coredata value of viewed others, needs a reload function to complete its function
-        
-        let predicate = NSPredicate(format: "recorduuid == %@", crumb.uRecordID!)
-        
-        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Message")
-        fetchRequest.predicate = predicate
-        
-        do {// change it, it not work y?
-            let fetchedMsgs = try helperFunctions.moc.fetch(fetchRequest) as! [Message]
-            
-            let one:Int = 1
-            fetchedMsgs.first?.setValue(one, forKey: "viewedOther")//is seen
-            
-            
-            do {// save it!
-                try helperFunctions.moc.save()//it is not saving
-            } catch {
-                print(error)
-            }
-        } catch {
-            print(error)
-        }
-    }*/
- 
-    /*func doesArrContainUnique(_ CDArr: [CrumbMessage], LoadedArr: [CrumbMessage], prevDropped: [CrumbMessage])-> [CrumbMessage]{
-        let bothLoadedAndDropped = LoadedArr + dropped
-        
-        var uniqueArr = [CrumbMessage]()
-        var testArr = [CrumbMessage]()
-        
-        if bothLoadedAndDropped.count < CDArr.count{//
-            for cdcrumbs in CDArr{
-                
-                for ldcrumbs in bothLoadedAndDropped{
-                    
-                    if ldcrumbs.uRecordID == cdcrumbs.uRecordID {//if crumb is in tableview remove from list
-                        testArr.removeAll()
-                        break
-                        
-                    }
-                    testArr += [cdcrumbs]
-                    
-                }
-                if testArr.count == bothLoadedAndDropped.count{//if a value is not found store it
-                    uniqueArr += [testArr[0]]
-                    break
-                }
-            }
-            
-        }
-        
-        let totalAmount = bothLoadedAndDropped + uniqueArr
-        
-        if totalAmount.count < CDArr.count{
-            uniqueArr += doesArrContainUnique(CDArr, LoadedArr: totalAmount, prevDropped: dropped)
-        }
-        
-        //return(actualAmount)
-        return (uniqueArr)
-        
-    }*/
-    //limit crumbs in view to 15, the brains of the operation
-   /* func islimited(_ uniques: [CrumbMessage], loaded: [CrumbMessage])-> ([CrumbMessage],[CrumbMessage]){
-        var total = loaded + uniques
-        //var final = [CrumbMessage]()
-        //var dropped = [CrumbMessage]()
-        
-        if total.count > 15{
-            let remove = total.count - 15
-            final = [CrumbMessage](total.dropFirst(remove))
-            dropped = [CrumbMessage](total[0...(remove-1)])
-        }
-        
-        return (final,dropped)
-    }
-    
-     
-    //limit crumbs in view to 15
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let lastLoadedElement = crumbmessages.count - 1
-        if indexPath.row == lastLoadedElement {
-            
-            if dropped.count >= 15{
-                let fifteenMore = dropped[0...14]
-                dropped = [CrumbMessage](dropped.dropFirst(15))
-                
-                self.crumbmessages += fifteenMore.reversed()
-            }else if dropped.count < 15 && dropped.count > 0 {
-                self.crumbmessages += dropped[0...(dropped.count - 1)]
-                
-                dropped = [CrumbMessage]()
-            }//if zero do nothing
-            
-        }
-    }*/
-    
     //refresh table view
-    func handleRefresh(_ refreshControl: UIRefreshControl) {        DispatchQueue.main.async(execute: { () -> Void in
+    func handleRefresh(_ refreshControl: UIRefreshControl) {
+        DispatchQueue.main.async(execute: { () -> Void in
             
             self.crumbmessages = self.helperFunctions.loadCoreDataMessage(false)!
             
@@ -306,12 +202,10 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
     }
     
     func reloadViewOnReopen(_ notification: Notification){
-        
         print("Loading in reload others")
         DispatchQueue.main.async(execute: { () -> Void in
 
             self.crumbmessages = self.helperFunctions.loadCoreDataMessage(false)!
-            
             self.OthersTableView.reloadData()
         })
         //******************************************** Will want to reload votes *****************************************************
@@ -332,7 +226,7 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
             //print("no messages; do something")
             return 1
         } else{
-            return crumbmessages.count
+            return crumbmessages.count + 1
         }
     }
     
@@ -351,11 +245,17 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
             let crumbmsg = crumbmessages[indexPath.row]
             
             let id = crumbmsg.uRecordID
-            helperFunctions.coreDataDeleteCrumb(id!, manx: AppDelegate().CDStack.mainContext)//must use something other than urecordid
+            
+            
+            //helperFunctions.coreDataDeleteCrumb(id!/*, manx: AppDelegate().CDStack.mainContext*/)//must use something other than urecordid
+            helperFunctions.markForDelete(id: id!)
             crumbmessages.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
         }
     }
+    
+    
+    
     func buttonActions(sender: UIButton){
         let row = sender.tag
         let indexPath = IndexPath(row: row, section: 1)
@@ -424,16 +324,10 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
         })
     }
     
-    func addNewMessage(_ newCrumb: CrumbMessage) {
-        
-        crumbmessages.insert(newCrumb, at: 0)
-        reloadTables()
-    }
-    
     @IBAction func othersPostButton(_ sender: Any) {
         
-        let destVC = WriteCrumbViewController()
-        destVC.delegate = self
+        //let destVC = WriteCrumbViewController()
+        //destVC.delegate = self
         
         self.performSegue(withIdentifier: "PostButton", sender: self)
 
