@@ -96,8 +96,14 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.row == 0{
-            let cell = tableView.dequeueReusableCell(withIdentifier: "Spacer", for: indexPath)
-            cell.selectionStyle = UITableViewCellSelectionStyle.none
+            
+            let cell = tableView.dequeueReusableCell(withIdentifier: "Spacer", for: indexPath) as! SpacerViewCrumbCell
+            
+            cell.selectionStyle = .none
+            cell.Refresh.isEnabled = true
+            
+            cell.Refresh.addTarget(self, action: #selector(ViewCrumbViewController.refreshSpacer), for: .touchUpInside)
+            
             
             return cell
         }else if indexPath.row == 1 {
@@ -166,6 +172,13 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
+    //MARK:SpacerFunction
+    
+    func refreshSpacer(){
+        print("run")
+        handleRefresh(refreshControl)
+    }
+    
     //MARK: Commenting functions
     
     // prepare view with object data;
@@ -208,9 +221,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     //MARK: Refresh
     
     func handleRefresh(_ refreshControl: UIRefreshControl) {
-        
         reloadForRefresh()
-        
         refreshControl.endRefreshing()
     }
     

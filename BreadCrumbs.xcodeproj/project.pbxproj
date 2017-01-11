@@ -13,6 +13,7 @@
 		65031FD81E00A4AB00038348 /* Comment+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65031FD41E00A4AB00038348 /* Comment+CoreDataProperties.swift */; };
 		650862A51CD507E400006DAD /* PageManagerViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650862A41CD507E400006DAD /* PageManagerViewController.swift */; };
 		650B2B981E0228F200A05372 /* CoreDataStack.swift in Sources */ = {isa = PBXBuildFile; fileRef = 650B2B971E0228F200A05372 /* CoreDataStack.swift */; };
+		651225361E2604540049630E /* SpacerViewCrumbCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 651225351E2604540049630E /* SpacerViewCrumbCell.swift */; };
 		6515D12C1CC148EB00570205 /* CrumbMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6515D12B1CC148EB00570205 /* CrumbMessage.swift */; };
 		6515D12D1CC148EB00570205 /* CrumbMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6515D12B1CC148EB00570205 /* CrumbMessage.swift */; };
 		651CFD711E1DDD7A0007D5C4 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 651CFD701E1DDD7A0007D5C4 /* UserNotifications.framework */; };
@@ -66,6 +67,7 @@
 		65031FD41E00A4AB00038348 /* Comment+CoreDataProperties.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = "Comment+CoreDataProperties.swift"; path = "BreadCrumbs/Comment+CoreDataProperties.swift"; sourceTree = "<group>"; };
 		650862A41CD507E400006DAD /* PageManagerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = PageManagerViewController.swift; sourceTree = "<group>"; };
 		650B2B971E0228F200A05372 /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
+		651225351E2604540049630E /* SpacerViewCrumbCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SpacerViewCrumbCell.swift; sourceTree = "<group>"; };
 		6515D12B1CC148EB00570205 /* CrumbMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CrumbMessage.swift; sourceTree = "<group>"; };
 		651CFD701E1DDD7A0007D5C4 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		6523F80D1E25F573003C49D1 /* NoAgreeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoAgreeViewController.swift; sourceTree = "<group>"; };
@@ -242,6 +244,7 @@
 				65F556BD1CD21D760014AC30 /* OthersCrumbsTableViewCell.swift */,
 				6576060A1DCD69D4006860C6 /* CrumbTableViewCell.swift */,
 				6576060B1DCD69D4006860C6 /* CommentCell.swift */,
+				651225351E2604540049630E /* SpacerViewCrumbCell.swift */,
 			);
 			name = cells;
 			sourceTree = "<group>";
@@ -408,6 +411,7 @@
 				6543DA511DC47CEA00197513 /* CommentShort.swift in Sources */,
 				65F556BC1CD219030014AC30 /* OthersCrumbsTableViewController.swift in Sources */,
 				654C0B5B1CC6AE4200060E58 /* YourCrumbsTableViewController.swift in Sources */,
+				651225361E2604540049630E /* SpacerViewCrumbCell.swift in Sources */,
 				657756B81DD9488D00ABAFD7 /* MIDatePicker.swift in Sources */,
 				65031FD51E00A4AB00038348 /* Message+CoreDataClass.swift in Sources */,
 				6577DCC81D3D6DBB00C25F52 /* UserInfo.swift in Sources */,

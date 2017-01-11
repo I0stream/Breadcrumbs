@@ -17,7 +17,7 @@ class AgreementViewController: UIViewController{
     }
     
     @IBAction func DoAgree(_ sender: Any) {
-        NSUserData.set("Agree", forKey: "didAgreeToPolAndEULA")
+        NSUserData.setValue("Agree", forKey: "didAgreeToPolAndEULA")
         performSegue(withIdentifier: "Agree", sender: sender)
     }
     
