@@ -14,7 +14,7 @@ class BreadCrumbsTests: XCTestCase {
     
     //MARK: BreadCrumbs tests
     func x(){
-    print("kill me")
+    print("what is a test?")
     }
     
 }

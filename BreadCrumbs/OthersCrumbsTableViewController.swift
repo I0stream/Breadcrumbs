@@ -179,7 +179,7 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
                 cell.timeCountdown.text! = "Time's up!"
                 
                 //Time's up indication Red Color
-                let uicolor = UIColor(red: 225/255, green: 0/255, blue: 0/255, alpha: 1)
+                let uicolor = UIColor(red: 225/255, green: 50/255, blue: 50/255, alpha: 1)
                 cell.timeCountdown.textColor = uicolor
                 //
             }

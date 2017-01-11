@@ -35,6 +35,8 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     var inscreen = false
     
     var crumbHeight: CGFloat?
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -45,7 +47,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
                 
         mapView.delegate = self
 
-        mapView.subviews[1].isHidden = true//not legal
+        //mapView.subviews[1].isHidden = true//not legal
         
         //anotations
         let mkAnnoTest = MKPointAnnotation.init()
@@ -59,26 +61,13 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         
         self.YourtableView.addSubview(self.refreshControl)
         
+
         loadComments()
+        //animateInfoBar("Pull to refresh")
     }
     
-    /*func viewdidAppear(animated: Bool) {
-        let attributionLabel = mapView.subviews[1]
-        attributionLabel.frame = CGRectMake(8, 20, attributionLabel.frame.size.width, attributionLabel.frame.size.height);
-    }*/
-    /*override func viewWillDisappear(_ animated: Bool) {
-        //send crumbvote here somehow
-        if counter != 0 && hasVotedInScreen == true{
-            print(theVoteValueToBeStored)
-            crumbVote(theVoteValueToBeStored, counter: counter)
-            /*if let del = self.delegate {
-                del.updateVoteSpecific(theVoteValueToBeStored, crumbUUID: (viewbreadcrumb?.uRecordID)!, hasVotedValue: counter)
-            }*/
-        }
-    }*/
-    
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let num = comments.count + 2// +2 because of invisible spacer plus the crumb being displayed
+        let num = comments.count + 2// + because of invisible spacer plus the crumb being displayed plus refresher
         return num
     }
     
@@ -90,7 +79,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         if indexPath.row == 0 {//spacer size
             let screenSize: CGRect = UIScreen.main.bounds
             let percentheight: CGFloat = screenSize.height * 0.5
-
+            
             let height: CGFloat = percentheight - 50.0
             return height
         }else if indexPath.row == 1{//crumb size
@@ -109,21 +98,21 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         if indexPath.row == 0{
             let cell = tableView.dequeueReusableCell(withIdentifier: "Spacer", for: indexPath)
             cell.selectionStyle = UITableViewCellSelectionStyle.none
-
+            
             return cell
-        } else if indexPath.row == 1 {
+        }else if indexPath.row == 1 {
             let msgCell = tableView.dequeueReusableCell(withIdentifier: "YourMsgCell", for: indexPath) as! CrumbTableViewCell
             
             if viewbreadcrumb!.calculate() > 0 {
                 msgCell.CreateCommentButton.addTarget(self, action: #selector(ViewCrumbViewController.commentSegue), for: .touchUpInside)
                 msgCell.VoteButton.addTarget(self, action: #selector(ViewCrumbViewController.Vote), for: .touchUpInside)
-
+                
             } else{
                 let color = UIColor(red: 146/255, green: 144/255, blue: 144/255, alpha: 1)//greay color
                 msgCell.CreateCommentButton.setTitleColor(color, for: .normal)
                 msgCell.CreateCommentButton.addTarget(self, action: #selector(ViewCrumbViewController.noCommentIndicator), for: .touchUpInside)
                 msgCell.VoteButton.addTarget(self, action: #selector(ViewCrumbViewController.noVoteIndicator), for: .touchUpInside)
-
+                
             }
             msgCell.ExitCrumbButton.addTarget(self, action: #selector(ViewCrumbViewController.exitCrumb), for: .touchUpInside)
             
@@ -149,7 +138,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
                 msgCell.TimeLeftLabel.text! = "Time's up!"
                 
                 //Time's up indication Red Color
-                let uicolor = UIColor(red: 225/255, green: 0/255, blue: 0/255, alpha: 1)
+                let uicolor = UIColor(red: 225/255, green: 50/255, blue: 50/255, alpha: 1)
                 msgCell.TimeLeftLabel.textColor = uicolor
                 //
             }
@@ -172,10 +161,13 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
             commentCells.CommentTextView.text = comment.text
             commentCells.usernameLabel.text = comment.username
             commentCells.timeAgoLabel.text = comment.timeRelative()//time is how long ago it was posted, dont see the point to change var name to something more explanatory right now
-
+            
             return commentCells
         }
     }
+    
+    //MARK: Commenting functions
+    
     // prepare view with object data;
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
         if (segue.identifier == "writeComment") && viewbreadcrumb!.calculate() > 0 {
@@ -187,19 +179,12 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
-
     
+    //createcommentdelegate function
     func addNewComment(_ newComment: CommentShort){
         comments += [newComment]
         YourtableView.reloadData()
     }
-    
-    //Voting is now simply handled by one button
-    //therefore it can only vote and unvote(no negative votes)
-    //given that this is the same across the whole app; in view, others, and yours
-    //and they all use selectors, I can locate all the saving ck, cd, updating etc in helperfunctions
-    //i just need to do it in a way that disallows double voting and ensures proper saving/updating
-    
     
     
     func loadComments(){
@@ -219,10 +204,38 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         dismiss(animated: true, completion: nil)
     }
     
-
+    
+    //MARK: Refresh
+    
+    func handleRefresh(_ refreshControl: UIRefreshControl) {
+        
+        reloadForRefresh()
+        
+        refreshControl.endRefreshing()
+    }
+    
+    
+    func reloadForRefresh(){
+        DispatchQueue.main.async(execute: { () -> Void in
+            
+            //self.crumbmessages = self.helperFunctions.loadCoreDataMessage(true)!
+            self.viewbreadcrumb = self.helperFunctions.getSpecific(recorduuid: (self.viewbreadcrumb?.uRecordID)!)
+            
+            self.comments.removeAll()
+            self.loadComments()
+            
+            self.YourtableView.reloadData()
+        })
+    }
+    
+    //MARK: Voting
+    //Voting is now simply handled by one button
+    //therefore it can only vote and unvote(no negative votes)
+    //given that this is the same across the whole app; in view, others, and yours
+    //and they all use selectors, I can locate all the saving ck, cd, updating etc in helperfunctions
+    //i just need to do it in a way that disallows double voting and ensures proper saving/updating
     
     func Vote(){
-        
         let indexPath = IndexPath(row: 1, section: 1)
         let msgCell = YourtableView.dequeueReusableCell(withIdentifier: "YourMsgCell", for: indexPath) as! CrumbTableViewCell
         
@@ -263,10 +276,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         })
     }
     
-    
-
-    
-    //MARK: animatino
+    //MARK: Alert disabled
     func noCommentIndicator(){
         let alertController = UIAlertController(title: "BreadCrumbs", message:
             "You cannot comment on a dead crumb", preferredStyle: UIAlertControllerStyle.alert)
@@ -274,7 +284,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         
         self.present(alertController, animated: true, completion: nil)
     }
-
+    
     func noVoteIndicator(){
         let alertController = UIAlertController(title: "BreadCrumbs", message:
             "You cannot vote on a dead crumb", preferredStyle: UIAlertControllerStyle.alert)
@@ -282,24 +292,6 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         
         self.present(alertController, animated: true, completion: nil)
     }
-    
-    //MARK: refresh
-    
-    func handleRefresh(_ refreshControl: UIRefreshControl) {
-        DispatchQueue.main.async(execute: { () -> Void in
-            
-            //self.crumbmessages = self.helperFunctions.loadCoreDataMessage(true)!
-            self.viewbreadcrumb = self.helperFunctions.updateself(recorduuid: (self.viewbreadcrumb?.uRecordID)!)
-            
-            self.comments.removeAll()
-            self.loadComments()
-            
-            self.YourtableView.reloadData()
-        })
-        refreshControl.endRefreshing()
-    }
-    
-    
 }
 //reloads table in yours or others in order to persist vote button colors colors
 protocol NewOthersCrumbsViewControllerDelegate: class {

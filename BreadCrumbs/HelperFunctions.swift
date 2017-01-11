@@ -114,7 +114,7 @@ class Helper{
                 let msgloc = fetchedmsgsCD[i].cdlocation() as CLLocation
                 
                 let nearby = msgloc.distance(from: usersLocation)// does not take into account high rise buildings
-                if nearby < 50{//is within x meters of users loc
+                if nearby < 30 && fetchedmsgsCD[i].calculate(){//is within x meters of users loc
                     
                     let value = 1
                     crumbmessagestotest += [value]
@@ -247,7 +247,7 @@ class Helper{
             try messageMO.managedObjectContext?.save()
             print("a message has been loaded and stored into coredata")
             //notify user a new msg is here with notification
-            AppDelegate().notify(title: "New BreadCrumb found!", body: "New Breadcrumbs! come check'em out!")
+            AppDelegate().notify(title: "New BreadCrumb found!", body: "New Breadcrumbs! come check'em out!", crumbID: crumbmessage.uRecordID!, userId: crumbmessage.senderuuid)
             
             //print("updated and stored more butts")
         } catch {
@@ -333,7 +333,6 @@ class Helper{
     func loadComments(uniqueRecordID: String) -> [CommentShort]{//loads from coredata
              
         var commentsToLoad = [CommentShort]()
-        
         
         var fetchRequest: NSFetchRequest<Comment>
         if #available(iOS 10.0, OSX 10.12, *) {
@@ -566,7 +565,7 @@ class Helper{
         }
     }
     
-    func updateself(recorduuid: String) -> CrumbMessage?{
+    func getSpecific(recorduuid: String) -> CrumbMessage?{
         let fetchRequest: NSFetchRequest<Message> = Message.fetchRequest()
         
         var crumb: CrumbMessage?
@@ -629,7 +628,7 @@ class Helper{
         
         //I can grab which keys i need here, ckreference for comment & vote
         notificationInfo.desiredKeys = ["votes"]
-        notificationInfo.alertBody = "1"
+        //notificationInfo.alertBody = "An alert for reasons"
         notificationInfo.shouldBadge = false
         subscription.notificationInfo = notificationInfo
  
@@ -638,7 +637,7 @@ class Helper{
             if let err = error {
                 print("subscription failed ", err.localizedDescription)
             } else {
-                print(returnRecord!)
+                //print(returnRecord!)
             }
         })
     }
@@ -655,13 +654,53 @@ class Helper{
             if testVote == NewVote{//notification
                 getcommentcktocd(ckidToTest: recorduuid)
                 //tell view crumb to reload(have an indicator)
-                AppDelegate().notify(title: "New Comment" ,body: "New comment posted in one of your Crumbs!")
+                
+                //reloadLocation(recorduuid: recorduuid.recordName)//sends notif to vc to reload
+                let user = getuserid(recorduuid: recorduuid.recordName)
+                
+                if let name = user{
+                    AppDelegate().notify(title: "New Comment" ,body: "New comment posted in one of your Crumbs!",crumbID: recorduuid.recordName, userId: name)
+                }else{
+                    return
+                }
             }else if testVote != NewVote{//no notification
                 self.updateCdVote(recorduuid.recordName, voteValue: vote)
+                
+                //reloadLocation(recorduuid: recorduuid.recordName)//sends notif to vc to reload
             }
         }
         
     }
+    
+    func getuserid(recorduuid: String) -> String?{
+        let predicate = NSPredicate(format: "recorduuid == %@", recorduuid)
+        let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Message")
+        fetchRequest.predicate = predicate
+        
+        do {// change it, it not work y?
+            let fetchedMsgs = try getmoc().fetch(fetchRequest) as! [Message]
+            
+            let userid = (fetchedMsgs.first?.senderuuid)! as String
+            
+            return userid
+        } catch {
+            print(error)
+            return nil
+        }
+    }
+    
+    //again, I looked far and wide for a better way to do this, but notification center is so obvious of an 
+    //answer for this type of thing
+    func reloadLocation(recorduuid: String){
+        
+        //notify all vcs, allowing them to decide whether or not to reload
+        //can send recordid in notification?
+        
+        let notif = Notification(name: Notification.Name(rawValue: "NotifLoad"), object: nil, userInfo: ["RecordID": recorduuid])
+
+        NotificationCenter.default.post(notif)
+    }
+    
     
     //used above
     func getcommentcktocd(ckidToTest: CKRecordID){
@@ -694,6 +733,7 @@ class Helper{
                                 if fetchResults.isEmpty{
                                     //save comments to cd
                                     self.saveCommentToCD(comment: com, recordID: ckidToTest.recordName)//Saves to coredata
+                                    return
                                 }
                             }
                         } catch{//there is an error

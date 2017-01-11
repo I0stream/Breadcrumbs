@@ -13,7 +13,7 @@ class PageManagerViewController: UIPageViewController, UIPageViewControllerDataS
     
     //MARK: Variables
     var indexcounter = 0
-    var identifiers: NSArray = ["IntroShill", "Intro-2", "Intro-3", "SignIn"]
+    var identifiers: NSArray = ["IntroShill", "Intro-2", "Intro-3", "Agreement"]
     
     
     //MARK: view loading
@@ -63,7 +63,7 @@ class PageManagerViewController: UIPageViewController, UIPageViewControllerDataS
 
         }
         if index == 3{
-            return self.storyboard!.instantiateViewController(withIdentifier: "SignIn") 
+            return self.storyboard!.instantiateViewController(withIdentifier: "Agreement")
         }
         
         return nil

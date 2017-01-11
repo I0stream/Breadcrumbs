@@ -16,6 +16,7 @@ import UIKit
 import CoreLocation
 import CoreData
 import UserNotifications
+import SystemConfiguration
 
 // FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
 // Consider refactoring the code to use the non-optional operators.
@@ -54,7 +55,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     var crumbmessage: CrumbMessage?
     //let managedObjectContext = AppDelegate().getContext() //broke
 
-    weak var delegate: updateViewDelegate?
+    //weak var delegate: updateViewDelegate?
     var currentTime = 4
     
     let datePicker = MIDatePicker.getFromNib()
@@ -125,16 +126,18 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         }
         
         //limit crumbs in area
-        if checkLocation(){//
+        if currentReachabilityStatus == .notReachable{//internet down
+            animateInfoBar("Internet is unavailable")
+            timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(checkToDeAnimate), userInfo: nil, repeats: true)
+        }else if checkLocation() {//
             helperfunctions.testStoredMsgsInArea(locationManager.location!)
-            
             if NSUserData.integer(forKey: "limitArea") == 1{
                 animateInfoBar("Too many crumbs in area")
             }
         }else if checkLocation() == false{//this is the code i am most proud of, animation is so good
             animateInfoBar("Location is down")
             
-            timer = Timer.scheduledTimer(timeInterval: 10.0, target: self, selector: #selector(checkToDeAnimate), userInfo: nil, repeats: true)
+            timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(checkToDeAnimate), userInfo: nil, repeats: true)
         }
         
         
@@ -336,7 +339,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
                 do {
                     try message.managedObjectContext?.save()
                     NotificationCenter.default.post(name: Notification.Name(rawValue: "load"), object: nil)//reloads crmessages from cd everywhere
-                    self.delegate?.addNewMessage(crumbmessage)
+                    //self.delegate?.addNewMessage(crumbmessage)
                     self.dismiss(animated: true, completion: nil)
                 } catch {
                     print(error)
@@ -470,7 +473,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         // Disable the Save button if the text field is empty.
         //let text = crumbMessageTextView.text ?? ""
         if crumbMessageTextView.text != "What do you think?" && crumbMessageTextView.text.characters.count <= 256 {
-            if checkLocation() {
+            if checkLocation() && currentReachabilityStatus != .notReachable {
                 submitView.isHidden = false
                 postButtonOutlet.isEnabled = true
             }
@@ -543,6 +546,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
     }
 }
+/*
 protocol updateViewDelegate: class{
     func addNewMessage(_ newCrumb: CrumbMessage)
-}
+}*/

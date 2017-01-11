@@ -31,7 +31,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     lazy var CDStack = CoreDataStack()//cd req functions
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
-        
+        //helperfunctions.cloudkitSub()
+
         // Register with APNs
         application.registerForRemoteNotifications()
         
@@ -146,7 +147,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         if currentUserLoc != nil && ((locAge) < 30.0 ){
             //30.0 / 1000.0//100 ft in km
 
-            let radiusKm = 20 / 1000.0//65.6 ft in km
+            let radiusKm = 30 / 1000.0//100 ft in km
             let predicate: NSPredicate = NSPredicate(format: "distanceToLocation:fromLocation:(%K, %@) < %f", "location", currentUserLoc!, radiusKm)
             let query = CKQuery(recordType: "CrumbMessage", predicate: predicate)
             helperfunctions.loadIcloudMessageToCoreData(query)
@@ -445,9 +446,57 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         
         
+        let dictionary = response.notification.request.content.userInfo
+        let recordid = dictionary["RecordUuid"] as? String
+        let userid = dictionary["UserId"] as? String
+        
+        
+        if response.actionIdentifier == UNNotificationDefaultActionIdentifier && recordid != nil{
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            
+            let initialViewController = storyboard.instantiateViewController(withIdentifier: "TabBarController") as! UITabBarController
+            
+            if userid == NSUserData.string(forKey: "recordID"){//need to open into view crumbs but idk how
+                initialViewController.selectedIndex = 1
+                //initialViewController
+                self.window?.rootViewController = initialViewController
+                
+                let yours = initialViewController.selectedViewController as! YourCrumbsTableViewController
+
+                let segue = UIStoryboardSegue(identifier: "yourMsgSegue", source: yours, destination: ViewCrumbViewController() as UIViewController)
+
+                let upcoming = segue.destination as! ViewCrumbViewController
+                
+                let crumbmsg = helperfunctions.getSpecific(recorduuid: recordid!)
+                
+                upcoming.viewbreadcrumb = crumbmsg
+                
+                let destVC = segue.destination as! ViewCrumbViewController
+                destVC.delegate = yours
+                
+                
+            } else if userid != NSUserData.string(forKey: "recordID"){//need to open into view crumbs but idk how
+                initialViewController.selectedIndex = 2
+                self.window?.rootViewController = initialViewController
+
+                let others = initialViewController.selectedViewController as! OthersCrumbsTableViewController
+                
+                let segue = UIStoryboardSegue(identifier: "othersviewcrumb", source: others, destination: ViewCrumbViewController() as UIViewController)
+                
+                let upcoming = segue.destination as! ViewCrumbViewController
+                
+                let crumbmsg = helperfunctions.getSpecific(recorduuid: recordid!)
+                
+                upcoming.viewbreadcrumb = crumbmsg
+                
+                upcoming.delegate = others
+                
+            }
+        }
+        
     }
     
-    func notify(title: String ,body: String/*, crumbID: String*/) {//used in load and store
+    func notify(title: String ,body: String, crumbID: String, userId: String) {//used in load and store
         let requestIdentifier = "SampleRequest" //identifier is to cancel the notification request
 
         //use crumbid to know which viewcrumb to open
@@ -457,7 +506,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             content.title = title
             content.body = body
             content.sound = UNNotificationSound.default()
-            
+            content.userInfo = ["RecordUuid": crumbID, "UserId": userId]
             
             // Deliver the notification in five seconds.
             let trigger = UNTimeIntervalNotificationTrigger.init(timeInterval: 5.0, repeats: false)

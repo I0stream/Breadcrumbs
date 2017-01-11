@@ -11,7 +11,7 @@ import CoreLocation
 import CoreData //need to see those stored nsmanagedObjs yo
 import CloudKit
 
-class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, NewOthersCrumbsViewControllerDelegate, updateViewDelegate {
+class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UITableViewDelegate, NewOthersCrumbsViewControllerDelegate/*, updateViewDelegate*/ {
 
     //MARK: Properties
     @IBOutlet weak var YourTableView: UITableView!
@@ -30,6 +30,9 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
     var cellHeights = [CGFloat?]()
     let heightspacer: CGFloat = UIScreen.main.bounds.height * 0.35
 
+    
+    //is indicator visible?
+    var indicatorAlive = false
 
     lazy var refreshControl: UIRefreshControl = {
         let refreshControl = UIRefreshControl()
@@ -51,7 +54,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         //loadyours
 
         //get ID
-        self.getUserInfo()
+        //self.getUserInfo()
         
         self.crumbmessages += helperFunctions.loadCoreDataMessage(true)!//true to load yours
         //self.crumbmessages = self.crumbmessages//.reversed()
@@ -63,57 +66,13 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         
         YourTableView.estimatedRowHeight = 200
         YourTableView.rowHeight = UITableViewAutomaticDimension
-        //tutorialCrumb()
-    }
-    
-    
-    /*func tutorialCrumb(){
-        let loc = CLLocation(latitude: CLLocationDegrees(exactly: 61.218056)!, longitude: CLLocationDegrees(-149.900278))
-        let tutcrumb = CrumbMessage(text: "This is a BreadCrumb. I you tap me, you will see where I was left, you can comment on me, and vote on me", senderName: "Sabre", location: loc, timeDropped: Date(), timeLimit: 4, senderuuid: "dfsajdzvcpoy290ureowiourq", votes: 7)
-        if NSUserData.bool(forKey: "testmessage"){
-            print("run")
-            crumbmessages.insert(tutcrumb!, at: 0)
-            NSUserData.setValue(false, forKey: "testmessage")
-        }
-    }*/
-    
-    //MARK: Get User Info
-    
-    //check out fetchrecordwithid and maybe use the value stored in nsuserdefaults"recordID"
-    func getUserInfo(){
         
-        //get public database object
-        let container = CKContainer.default()
-        let publicData = container.publicCloudDatabase
-        
-        let CKuserID: CKRecordID = CKRecordID(recordName: NSUserData.string(forKey: "recordID")!)//keychain
 
-        let query = CKQuery(recordType: "UserInfo", predicate: NSPredicate(format: "%K == %@", "creatorUserRecordID" ,CKReference(recordID: CKuserID, action: CKReferenceAction.none)))
+        //NotificationCenter.default.addObserver(self, selector: #selector(YourCrumbsTableViewController.reloadBasedOnRemoteNotif(_:recordID:)), name: Notification.Name(rawValue: "NotifLoad"), object: nil)
+
         
-        publicData.perform(query, inZoneWith: nil) {
-            results, error in
-            if error == nil{
-                for user in results! {
-                    let crumbCountCD = user["crumbCount"] as! Int
-                    let userName = user["userName"] as! String
-                    let premiumStatus = user["premiumStatus"] as! Bool
-                    
-                    let loadedUser = UserInfo
-                        .init()
-                    loadedUser.userName = userName
-                    loadedUser.crumbCount = crumbCountCD
-                    loadedUser.premium = premiumStatus
-                    
-                    /*dispatch_async (dispatch_get_main_queue ()) {
-                        self.CrumbCountBBI.title = "\(self.NSUserData.stringForKey("crumbCount")!)/5"
-                    }*/
-                }
-            }else{
-                print(error.debugDescription)
-            }
-        }
-       
     }
+    
     
     // prepare view with object data;
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -127,10 +86,10 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
             
             let destVC = segue.destination as! ViewCrumbViewController
             destVC.delegate = self
-        } else if (segue.identifier == "PostButton"){
+        }/* else if (segue.identifier == "PostButton"){
             let destVC = segue.destination as! WriteCrumbViewController
             destVC.delegate = self
-        }
+        }*/
         
     }
 
@@ -260,7 +219,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
                 cell.timeCountdown.text! = "Time's up!"
                 
                 //Time's up indication Red Color
-                let uicolor = UIColor(red: 225/255, green: 0/255, blue: 0/255, alpha: 1)
+                let uicolor = UIColor(red: 225/255, green: 50/255, blue: 50/255, alpha: 1)
                 cell.timeCountdown.textColor = uicolor
                 //
             }
@@ -402,18 +361,169 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
     }
     
     func handleRefresh(_ refreshControl: UIRefreshControl) {
+        
+        /*if let x = view.viewWithTag(5) {//if there is a view un animate it
+            UNanimateInfoBar()
+        }*/
+        
+        reloadCrumbs()
+        refreshControl.endRefreshing()
+    }
+    
+    func reloadCrumbs(){
         DispatchQueue.main.async(execute: { () -> Void in
             
             self.crumbmessages = self.helperFunctions.loadCoreDataMessage(true)!
             
             self.YourTableView.reloadData()
         })
-        refreshControl.endRefreshing()
     }
+    
     
     @IBAction func PostButton(_ sender: AnyObject) {
         
         self.performSegue(withIdentifier: "PostButton", sender: self)
     }
     
+    
+    //MARK: Reload
+    
+    func reloadBasedOnRemoteNotif(_ notification: Notification, recordID: String){
+        // viewController is visible
+        if recordID == NSUserData.string(forKey: "recordID"){//in yours, if its users we need to reload
+            
+            if self.isViewLoaded && (self.view.window != nil) {
+                //tell user he needs to refresh
+                //aka make an animation
+                //indicateReloadAnimation()
+                
+            } else if self.isViewLoaded {//not visible and instantiated able to force reload
+                reloadCrumbs()
+            }//dont need anything else
+        }
+    }
+    //MARK: ANIMATION
+    
+    
+    //based on write crumbs animation
+    func indicateReloadAnimation(){
+        //YourTableView.insertRows(at: [IndexPath(row: 0, section: 1)], with: .top)
+       // ("Please Refresh Table")
+    }
+
+    
+    //MARK: ANIMATION RELOAD
+    
+    //MARK: Subview
+    
+    func animateInfoBar(_ alert: String){
+        let duration = 0.5
+        let delay = 0.5
+        let options = UIViewAnimationOptions.transitionCurlDown
+        let damping:CGFloat = 1 // set damping ration
+        let velocity:CGFloat = 1.0
+        self.makeSubViewIndicator(alert)
+        UIView.animate(withDuration: duration, delay: delay, usingSpringWithDamping: damping, initialSpringVelocity: velocity, options: options, animations: {
+            self.view.viewWithTag(5)!.frame = CGRect(x: 0, y:0, width: (self.view.frame.size.width), height: 40)
+        }) { (true) in
+        }
+        indicatorAlive = true
+    }
+    
+    
+    func makeSubViewIndicator(_ text: String){
+        
+        let labelAnimate = UITextField(frame: CGRect(x: 0, y:20, width: (view.frame.size.width), height: 20))
+        labelAnimate.isUserInteractionEnabled = false
+        labelAnimate.text = text
+        labelAnimate.textColor = UIColor(red: 245/255, green: 166/255, blue: 35/255, alpha: 1)
+        labelAnimate.textAlignment = NSTextAlignment.center
+        labelAnimate.tag = 4//////
+        
+        //rectangle
+        let backgroundrect = UIView()
+        backgroundrect.frame = CGRect(x: 0, y:0, width: (view.frame.size.width), height: 40)
+        backgroundrect.backgroundColor = UIColor.white//(red: 90/255, green: 174/255, blue: 255/255, alpha: 1)
+        
+        backgroundrect.tag = 5/////
+        
+        view.addSubview(backgroundrect)
+        view.addSubview(labelAnimate)
+    }
+    
+    //if info bar exists unanimate it
+    func UNanimateInfoBar(){
+        
+        let duration = 1.0
+        let delay = 0.0
+        let options = UIViewAnimationOptions.transitionCurlUp
+        let damping:CGFloat = 1 // set damping ration
+        let velocity:CGFloat = 1.0
+        
+        UIView.animate(withDuration: duration, delay: delay, usingSpringWithDamping: damping, initialSpringVelocity: velocity, options: options, animations: {
+        }) { (true) in
+            self.removeInfoBarView()}
+        indicatorAlive = false
+        
+    }
+    func removeInfoBarView(){
+        self.view.viewWithTag(5)!.frame = CGRect(x: 0, y:0, width: (view.frame.size.width), height: 0)
+        self.view.viewWithTag(4)!.removeFromSuperview()
+        self.view.viewWithTag(5)!.removeFromSuperview()
+    }
+
+    
+    
+    //MARK: indicate reload
+
+    /*
+     if need reload
+    
+     animate indicator cell
+     
+     
+     
+     
+     */
+    
+    
+    
+    //MARK: Get User Info
+    
+    //check out fetchrecordwithid and maybe use the value stored in nsuserdefaults"recordID"
+    /*func getUserInfo(){
+        
+        //get public database object
+        let container = CKContainer.default()
+        let publicData = container.publicCloudDatabase
+        
+        let CKuserID: CKRecordID = CKRecordID(recordName: NSUserData.string(forKey: "recordID")!)//keychain
+        
+        let query = CKQuery(recordType: "UserInfo", predicate: NSPredicate(format: "%K == %@", "creatorUserRecordID" ,CKReference(recordID: CKuserID, action: CKReferenceAction.none)))
+        
+        publicData.perform(query, inZoneWith: nil) {
+            results, error in
+            if error == nil{
+                for user in results! {
+                    let crumbCountCD = user["crumbCount"] as! Int
+                    let userName = user["userName"] as! String
+                    let premiumStatus = user["premiumStatus"] as! Bool
+                    
+                    let loadedUser = UserInfo
+                        .init()
+                    loadedUser.userName = userName
+                    loadedUser.crumbCount = crumbCountCD
+                    loadedUser.premium = premiumStatus
+                    
+                    /*dispatch_async (dispatch_get_main_queue ()) {
+                     self.CrumbCountBBI.title = "\(self.NSUserData.stringForKey("crumbCount")!)/5"
+                     }*/
+                }
+            }else{
+                print(error.debugDescription)
+            }
+        }
+        
+    }*/
+
 }

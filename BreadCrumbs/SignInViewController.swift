@@ -7,7 +7,10 @@
 //
 
 import UIKit
+import SystemConfiguration
 import CloudKit
+
+
 // FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
 // Consider refactoring the code to use the non-optional operators.
 fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
@@ -44,6 +47,8 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var signUpButton: UIButton!
     @IBOutlet weak var ErrorDisp: UILabel!
     
+    weak var timer1 = Timer()
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -56,7 +61,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         NotificationCenter.default.addObserver(self, selector: #selector(SignInViewController.loadList(_:)),name:NSNotification.Name(rawValue: "ReloadSignIn"), object: nil)
         
         ErrorDisp.isHidden = true
-        locationManager.requestAlwaysAuthorization()
+        self.timer1 = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(SignInViewController.requestloc), userInfo: nil, repeats: false)
 
     }
     func loadList(_ notification: Notification){//yayay//This solves the others crumbs problem i think
@@ -65,6 +70,10 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         })
     }
 
+    func requestloc(){
+        locationManager.requestAlwaysAuthorization()
+        timer1?.invalidate()
+    }
     
     //MARK: Actions
     
@@ -146,15 +155,18 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     //MARK: Cloudkit
     //cloudkit user authentication
     func checkUserStatus(){
-        if isICloudContainerAvailable(){
+        if isICloudContainerAvailable() && currentReachabilityStatus != .notReachable{
             //print("a user is signed into icloud")
             signUpButton.isEnabled = true
             ErrorDisp.isHidden = true
-        }else if isICloudContainerAvailable() == false && NSUserData.bool(forKey: "ckAccountStatus") {
+        }else if isICloudContainerAvailable() == false && NSUserData.bool(forKey: "ckAccountStatus") && currentReachabilityStatus != .notReachable {
             ErrorDisp.text! = "Please sign into icloud and enable icloud drive"
             ErrorDisp.isHidden = false
             signUpButton.isEnabled = false
-            
+        }else if currentReachabilityStatus == .notReachable{
+            ErrorDisp.text! = "No service, cannot sign up without internet"
+            ErrorDisp.isHidden = false
+            signUpButton.isEnabled = false
         }
     }
     
@@ -212,4 +224,60 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         
     }
 
+}
+
+
+
+protocol Utilities {
+}
+
+extension NSObject:Utilities{
+    
+    
+    enum ReachabilityStatus {
+        case notReachable
+        case reachableViaWWAN
+        case reachableViaWiFi
+    }
+    
+    var currentReachabilityStatus: ReachabilityStatus {
+        
+        var zeroAddress = sockaddr_in()
+        zeroAddress.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
+        zeroAddress.sin_family = sa_family_t(AF_INET)
+        
+        guard let defaultRouteReachability = withUnsafePointer(to: &zeroAddress, {
+            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {
+                SCNetworkReachabilityCreateWithAddress(nil, $0)
+            }
+        }) else {
+            return .notReachable
+        }
+        
+        var flags: SCNetworkReachabilityFlags = []
+        if !SCNetworkReachabilityGetFlags(defaultRouteReachability, &flags) {
+            return .notReachable
+        }
+        
+        if flags.contains(.reachable) == false {
+            // The target host is not reachable.
+            return .notReachable
+        }
+        else if flags.contains(.isWWAN) == true {
+            // WWAN connections are OK if the calling application is using the CFNetwork APIs.
+            return .reachableViaWWAN
+        }
+        else if flags.contains(.connectionRequired) == false {
+            // If the target host is reachable and no connection is required then we'll assume that you're on Wi-Fi...
+            return .reachableViaWiFi
+        }
+        else if (flags.contains(.connectionOnDemand) == true || flags.contains(.connectionOnTraffic) == true) && flags.contains(.interventionRequired) == false {
+            // The connection is on-demand (or on-traffic) if the calling application is using the CFSocketStream or higher APIs and no [user] intervention is needed
+            return .reachableViaWiFi
+        }
+        else {
+            return .notReachable
+        }
+    }
+    
 }
