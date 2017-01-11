@@ -69,10 +69,10 @@
             </objects>
             <point key="canvasLocation" x="-4228" y="-1039"/>
         </scene>
-        <!--View Controller-->
+        <!--No Agree View Controller-->
         <scene sceneID="YoZ-FN-Npt">
             <objects>
-                <viewController id="VJC-De-QRg" sceneMemberID="viewController">
+                <viewController id="VJC-De-QRg" customClass="NoAgreeViewController" customModule="BreadCrumbs" customModuleProvider="target" sceneMemberID="viewController">
                     <layoutGuides>
                         <viewControllerLayoutGuide type="top" id="a3G-aW-5Yh"/>
                         <viewControllerLayoutGuide type="bottom" id="2VC-Jg-Xg2"/>
@@ -88,7 +88,6 @@
                                         <rect key="frame" x="15" y="15" width="354" height="183"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                         <string key="text">If you do not agree to the user agreement and the privacy policy you cannot use BreadCrumbs. You can change your mind and press that x in the upper right corner, but only if you want to. In the mean time you can check us out at Breadcrumbs.social and have a nice day.</string>
-                                        <color key="textColor" red="0.69019607839999997" green="0.69019607839999997" blue="0.69019607839999997" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences" enablesReturnKeyAutomatically="YES"/>
                                     </textView>
@@ -116,6 +115,7 @@
                                         <state key="normal" image="Cancel"/>
                                         <connections>
                                             <action selector="CancelComment:" destination="Iqz-AP-xRw" eventType="touchUpInside" id="BjH-84-6T5"/>
+                                            <action selector="ExitButton:" destination="VJC-De-QRg" eventType="touchUpInside" id="zX5-Gi-VyU"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -172,6 +172,7 @@
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="71O-Zv-QO4">
                                                 <rect key="frame" x="0.0" y="0.0" width="384" height="70"/>
                                                 <connections>
+                                                    <action selector="PrivacyPolicy:" destination="Ncp-68-9rX" eventType="touchUpInside" id="Dpi-Uf-0Wo"/>
                                                     <action selector="changeUsername:" destination="28W-jT-Dei" eventType="touchUpInside" id="M07-Xh-mkK"/>
                                                 </connections>
                                             </button>
@@ -199,6 +200,7 @@
                                             <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SUK-Ou-c24">
                                                 <rect key="frame" x="0.0" y="0.0" width="384" height="70"/>
                                                 <connections>
+                                                    <action selector="Agreement:" destination="Ncp-68-9rX" eventType="touchUpInside" id="XsP-qp-WVG"/>
                                                     <action selector="RateAppButton:" destination="28W-jT-Dei" eventType="touchUpInside" id="VaH-08-NBe"/>
                                                 </connections>
                                             </button>
@@ -260,8 +262,9 @@
                                             <constraint firstAttribute="width" constant="160" id="cxX-UN-ZTV"/>
                                         </constraints>
                                         <connections>
+                                            <action selector="DoAgree:" destination="Ncp-68-9rX" eventType="touchUpInside" id="gli-KE-KSH"/>
                                             <action selector="RateAppButton:" destination="28W-jT-Dei" eventType="touchUpInside" id="wfQ-pO-QD3"/>
-                                            <segue destination="9LW-tj-0DK" kind="show" id="IqB-yx-rxx"/>
+                                            <segue destination="9LW-tj-0DK" kind="show" identifier="Agree" id="IqB-yx-rxx"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -290,8 +293,9 @@
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="BZS-BH-OAi">
                                         <rect key="frame" x="0.0" y="0.0" width="160" height="70"/>
                                         <connections>
+                                            <action selector="DontAgree:" destination="Ncp-68-9rX" eventType="touchUpInside" id="Egz-oL-HHR"/>
                                             <action selector="RateAppButton:" destination="28W-jT-Dei" eventType="touchUpInside" id="htZ-3r-hRr"/>
-                                            <segue destination="VJC-De-QRg" kind="presentation" id="5Mg-J4-CqX"/>
+                                            <segue destination="VJC-De-QRg" kind="presentation" identifier="NoAgree" id="5Mg-J4-CqX"/>
                                         </connections>
                                     </button>
                                 </subviews>

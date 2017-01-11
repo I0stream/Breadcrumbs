@@ -9,11 +9,39 @@
 import UIKit
 
 class AgreementViewController: UIViewController{
-    
+    let NSUserData = AppDelegate().NSUserData
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
     }
     
+    @IBAction func DoAgree(_ sender: Any) {
+        NSUserData.set("Agree", forKey: "didAgreeToPolAndEULA")
+        performSegue(withIdentifier: "Agree", sender: sender)
+    }
+    
+    
+    @IBAction func DontAgree(_ sender: Any) {
+        performSegue(withIdentifier: "NoAgree", sender: sender)
+    }
+    
+    
+    @IBAction func PrivacyPolicy(_ sender: Any) {
+        let url = NSURL(string : "https://breadcrumbs.social/privacy-policy/")! as URL
+        if #available(iOS 10.0, *) {
+            UIApplication.shared.open(url , options: ["yes" : "yes" as Any], completionHandler: { (true) in
+                //print("sent to gmail")
+            })
+        }
+    }
+    @IBAction func Agreement(_ sender: Any) {
+        let url = NSURL(string : "https://breadcrumbs.social/user-agreement/")! as URL
+        if #available(iOS 10.0, *) {
+            UIApplication.shared.open(url , options: ["yes" : "yes" as Any], completionHandler: { (true) in
+                //print("sent to gmail")
+            })
+        }
+    }
     
 }

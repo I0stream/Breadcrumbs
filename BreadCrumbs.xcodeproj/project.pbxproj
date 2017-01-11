@@ -16,6 +16,7 @@
 		6515D12C1CC148EB00570205 /* CrumbMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6515D12B1CC148EB00570205 /* CrumbMessage.swift */; };
 		6515D12D1CC148EB00570205 /* CrumbMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6515D12B1CC148EB00570205 /* CrumbMessage.swift */; };
 		651CFD711E1DDD7A0007D5C4 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 651CFD701E1DDD7A0007D5C4 /* UserNotifications.framework */; };
+		6523F80E1E25F573003C49D1 /* NoAgreeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6523F80D1E25F573003C49D1 /* NoAgreeViewController.swift */; };
 		6538741B1DD54FA9009ABDBF /* old code in Resources */ = {isa = PBXBuildFile; fileRef = 6538741A1DD54FA9009ABDBF /* old code */; };
 		6539C0F91CFBC7920072F1E3 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6539C0F81CFBC7920072F1E3 /* CoreData.framework */; };
 		653BFF9C1CCA0BB7005923E9 /* ViewCrumbViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 653BFF9B1CCA0BB7005923E9 /* ViewCrumbViewController.swift */; };
@@ -67,6 +68,7 @@
 		650B2B971E0228F200A05372 /* CoreDataStack.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CoreDataStack.swift; sourceTree = "<group>"; };
 		6515D12B1CC148EB00570205 /* CrumbMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CrumbMessage.swift; sourceTree = "<group>"; };
 		651CFD701E1DDD7A0007D5C4 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
+		6523F80D1E25F573003C49D1 /* NoAgreeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoAgreeViewController.swift; sourceTree = "<group>"; };
 		6538741A1DD54FA9009ABDBF /* old code */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "old code"; sourceTree = "<group>"; };
 		6539C0F81CFBC7920072F1E3 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		653BFF9B1CCA0BB7005923E9 /* ViewCrumbViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewCrumbViewController.swift; sourceTree = "<group>"; };
@@ -228,6 +230,7 @@
 				650862A41CD507E400006DAD /* PageManagerViewController.swift */,
 				656E04C01E25B2E900A46521 /* AgreementViewController.swift */,
 				65EF38A81D21D2B400161A3E /* SignInViewController.swift */,
+				6523F80D1E25F573003C49D1 /* NoAgreeViewController.swift */,
 			);
 			name = pagemanagingIntro;
 			sourceTree = "<group>";
@@ -412,6 +415,7 @@
 				65031FD81E00A4AB00038348 /* Comment+CoreDataProperties.swift in Sources */,
 				65EF38A91D21D2B400161A3E /* SignInViewController.swift in Sources */,
 				65866C0A1CD6466200038400 /* SettingsViewController.swift in Sources */,
+				6523F80E1E25F573003C49D1 /* NoAgreeViewController.swift in Sources */,
 				656E04C11E25B2E900A46521 /* AgreementViewController.swift in Sources */,
 				657861FC1DD877A40027C5A0 /* CreateCommentViewController.swift in Sources */,
 				65031FD71E00A4AB00038348 /* Comment+CoreDataClass.swift in Sources */,
