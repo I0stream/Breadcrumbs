@@ -82,6 +82,8 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
             let indexPath = self.YourTableView.indexPathForSelectedRow!
             let crumbmsg = crumbmessages[indexPath.row]
             
+            upcoming.conHeight = 20 + (self.tabBarController?.tabBar.frame.size.height)!
+            
             upcoming.viewbreadcrumb = crumbmsg
             
             let destVC = segue.destination as! ViewCrumbViewController
@@ -385,106 +387,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         self.performSegue(withIdentifier: "PostButton", sender: self)
     }
     
-    
-    //MARK: Reload
-    
-    func reloadBasedOnRemoteNotif(_ notification: Notification, recordID: String){
-        // viewController is visible
-        if recordID == NSUserData.string(forKey: "recordID"){//in yours, if its users we need to reload
-            
-            if self.isViewLoaded && (self.view.window != nil) {
-                //tell user he needs to refresh
-                //aka make an animation
-                //indicateReloadAnimation()
-                
-            } else if self.isViewLoaded {//not visible and instantiated able to force reload
-                reloadCrumbs()
-            }//dont need anything else
-        }
-    }
-    //MARK: ANIMATION
-    
-    
-    //based on write crumbs animation
-    func indicateReloadAnimation(){
-        //YourTableView.insertRows(at: [IndexPath(row: 0, section: 1)], with: .top)
-       // ("Please Refresh Table")
-    }
 
-    
-    //MARK: ANIMATION RELOAD
-    
-    //MARK: Subview
-    
-    func animateInfoBar(_ alert: String){
-        let duration = 0.5
-        let delay = 0.5
-        let options = UIViewAnimationOptions.transitionCurlDown
-        let damping:CGFloat = 1 // set damping ration
-        let velocity:CGFloat = 1.0
-        self.makeSubViewIndicator(alert)
-        UIView.animate(withDuration: duration, delay: delay, usingSpringWithDamping: damping, initialSpringVelocity: velocity, options: options, animations: {
-            self.view.viewWithTag(5)!.frame = CGRect(x: 0, y:0, width: (self.view.frame.size.width), height: 40)
-        }) { (true) in
-        }
-        indicatorAlive = true
-    }
-    
-    
-    func makeSubViewIndicator(_ text: String){
-        
-        let labelAnimate = UITextField(frame: CGRect(x: 0, y:20, width: (view.frame.size.width), height: 20))
-        labelAnimate.isUserInteractionEnabled = false
-        labelAnimate.text = text
-        labelAnimate.textColor = UIColor(red: 245/255, green: 166/255, blue: 35/255, alpha: 1)
-        labelAnimate.textAlignment = NSTextAlignment.center
-        labelAnimate.tag = 4//////
-        
-        //rectangle
-        let backgroundrect = UIView()
-        backgroundrect.frame = CGRect(x: 0, y:0, width: (view.frame.size.width), height: 40)
-        backgroundrect.backgroundColor = UIColor.white//(red: 90/255, green: 174/255, blue: 255/255, alpha: 1)
-        
-        backgroundrect.tag = 5/////
-        
-        view.addSubview(backgroundrect)
-        view.addSubview(labelAnimate)
-    }
-    
-    //if info bar exists unanimate it
-    func UNanimateInfoBar(){
-        
-        let duration = 1.0
-        let delay = 0.0
-        let options = UIViewAnimationOptions.transitionCurlUp
-        let damping:CGFloat = 1 // set damping ration
-        let velocity:CGFloat = 1.0
-        
-        UIView.animate(withDuration: duration, delay: delay, usingSpringWithDamping: damping, initialSpringVelocity: velocity, options: options, animations: {
-        }) { (true) in
-            self.removeInfoBarView()}
-        indicatorAlive = false
-        
-    }
-    func removeInfoBarView(){
-        self.view.viewWithTag(5)!.frame = CGRect(x: 0, y:0, width: (view.frame.size.width), height: 0)
-        self.view.viewWithTag(4)!.removeFromSuperview()
-        self.view.viewWithTag(5)!.removeFromSuperview()
-    }
-
-    
-    
-    //MARK: indicate reload
-
-    /*
-     if need reload
-    
-     animate indicator cell
-     
-     
-     
-     
-     */
     
     
     

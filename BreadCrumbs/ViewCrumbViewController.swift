@@ -16,6 +16,8 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     var viewbreadcrumb: CrumbMessage?
     var comments = [CommentShort]()
     
+    var conHeight: CGFloat?
+    
     let helperFunctions = AppDelegate().helperfunctions
     //let helperFunctions = Helper()
     weak var delegate: NewOthersCrumbsViewControllerDelegate?
@@ -28,19 +30,41 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         return refreshControl
     }()
     
+    
+    @IBOutlet weak var PALEBLUEDOT: UIImageView!
+    
     @IBOutlet weak var YourtableView: UITableView!
     @IBOutlet weak var mapView: MKMapView!
+    @IBOutlet weak var ButtonUIViewContainer: UIView!
     
     //keeps track of votes in screen
     var inscreen = false
     
+    //tracks cell heights
     var crumbHeight: CGFloat?
     
+    //tracks need to refresh
+    var refreshNeed = false
     
     override func viewDidLoad() {
         super.viewDidLoad()
         
+        if conHeight == nil{
+            conHeight = 49 + 20
+        }
+        
+        for subview in view.subviews as [UIView] {
+            for constraint in subview.constraints as [NSLayoutConstraint] {
+                if constraint.identifier == "BottomLayoutFloat" {
+                    constraint.constant = conHeight!
+                }
+            }
+        }
+        
+        
         if viewbreadcrumb?.hasVoted == nil { viewbreadcrumb?.hasVoted = 0}
+        
+        if refreshNeed == false {PALEBLUEDOT.isHidden = true}
         
         self.YourtableView.delegate = self
         self.YourtableView.dataSource = self
@@ -61,10 +85,26 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         
         self.YourtableView.addSubview(self.refreshControl)
         
+        
+        //NotifLoad
+        NotificationCenter.default.addObserver(self, selector: #selector(ViewCrumbViewController.BlueDotIndicate(_:)),name:NSNotification.Name(rawValue: "NotifLoad"), object: nil)
 
         loadComments()
         //animateInfoBar("Pull to refresh")
     }
+    
+    func BlueDotIndicate(_ notification: Notification){
+        if let recordid = notification.userInfo?["RecordID"] as? String{
+            if recordid == self.viewbreadcrumb?.uRecordID{
+                DispatchQueue.main.async(execute: { () -> Void in
+                    self.PALEBLUEDOT.isHidden = false
+
+                })
+            }
+        }
+    }
+    
+    
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
         let num = comments.count + 2// + because of invisible spacer plus the crumb being displayed plus refresher
@@ -97,13 +137,8 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         if indexPath.row == 0{
             
-            let cell = tableView.dequeueReusableCell(withIdentifier: "Spacer", for: indexPath) as! SpacerViewCrumbCell
-            
+            let cell = tableView.dequeueReusableCell(withIdentifier: "Spacer", for: indexPath)
             cell.selectionStyle = .none
-            cell.Refresh.isEnabled = true
-            
-            cell.Refresh.addTarget(self, action: #selector(ViewCrumbViewController.refreshSpacer), for: .touchUpInside)
-            
             
             return cell
         }else if indexPath.row == 1 {
@@ -170,13 +205,8 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
             
             return commentCells
         }
-    }
-    
-    //MARK:SpacerFunction
-    
-    func refreshSpacer(){
-        print("run")
-        handleRefresh(refreshControl)
+        
+        //if last add "SpacerBottom"?
     }
     
     //MARK: Commenting functions
@@ -202,7 +232,12 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func loadComments(){
         let fmcom = helperFunctions.loadComments(uniqueRecordID: (viewbreadcrumb?.uRecordID!)!)
-        comments.append(contentsOf: fmcom)
+        
+        let sortedCom = fmcom.sorted(by: {$0.timeSent.timeIntervalSince1970 < $1.timeSent.timeIntervalSince1970})
+
+        
+            //sort comments by date here
+        comments.append(contentsOf: sortedCom)
     }
     
     func commentSegue(){
@@ -220,6 +255,21 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     
     //MARK: Refresh
     
+    
+    @IBAction func RefreshButtonAction(_ sender: Any) {
+        
+        reloadForRefresh()
+
+        let button = (sender as! UIButton)
+        
+        UIView.animate(withDuration: 0.5, animations:{
+            button.transform = button.transform.rotated(by: CGFloat.pi)
+            button.transform = button.transform.rotated(by: CGFloat.pi)
+        })
+        
+    }
+    
+    
     func handleRefresh(_ refreshControl: UIRefreshControl) {
         reloadForRefresh()
         refreshControl.endRefreshing()
@@ -227,13 +277,24 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     
     
     func reloadForRefresh(){
+        
         DispatchQueue.main.async(execute: { () -> Void in
             
-            //self.crumbmessages = self.helperFunctions.loadCoreDataMessage(true)!
-            self.viewbreadcrumb = self.helperFunctions.getSpecific(recorduuid: (self.viewbreadcrumb?.uRecordID)!)
-            
+            if self.refreshNeed{//if we know there is a msg in cd use only cd
+                print("away blue dot")
+                //button go away (blue dot)
+                
+                self.PALEBLUEDOT.isHidden = true
+                self.refreshNeed = false
+                //also update crumb
+                self.viewbreadcrumb = self.helperFunctions.getSpecific(recorduuid: (self.viewbreadcrumb?.uRecordID)!)
+            }else {//if user wants to refresh constantly, use both
+                //ck
+                self.helperFunctions.getcommentcktocd(ckidToTest: CKRecordID(recordName: (self.viewbreadcrumb?.uRecordID)!))
+                self.viewbreadcrumb = self.helperFunctions.getSpecific(recorduuid: (self.viewbreadcrumb?.uRecordID)!)
+            }
             self.comments.removeAll()
-            self.loadComments()
+            self.loadComments()//cd
             
             self.YourtableView.reloadData()
         })

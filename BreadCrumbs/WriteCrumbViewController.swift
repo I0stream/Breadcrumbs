@@ -75,6 +75,9 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        //NSUserData.setValue(0, forKey: "ExplainerCrumb")
+        
+        self.locationManager.startUpdatingLocation()
         
         datePicker.delegate = self
         
@@ -305,6 +308,8 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
             if error != nil {
                 print(error.debugDescription)
                 print("ck error in write crumbs")
+                
+                self.dismiss(animated: true, completion: nil)
             }else{
                 crumbmessage?.uRecordID = record?.recordID.recordName
                 self.saveToCoreDataWrite(crumbmessage!)
@@ -341,10 +346,11 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
                     NotificationCenter.default.post(name: Notification.Name(rawValue: "load"), object: nil)//reloads crmessages from cd everywhere
                     //self.delegate?.addNewMessage(crumbmessage)
                     self.dismiss(animated: true, completion: nil)
+                    
+                    
                 } catch {
                     print(error)
                     print("cd error in write crumbs")
-                    
                 }
 
         }/*else{
@@ -537,13 +543,13 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     //cancel writecrumb and return to yourcrumbtableview
     @IBAction func CancelPost(_ sender: AnyObject) {
         dismiss(animated: true, completion: nil)
-        locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
+        self.locationManager.stopUpdatingLocation()
 
     }
     @IBAction func PostMessage(_ sender: AnyObject) {
         addCrumbCDAndCK(sender)
         postButtonOutlet.isEnabled = false
-        locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
+        self.locationManager.stopUpdatingLocation()
     }
 }
 /*

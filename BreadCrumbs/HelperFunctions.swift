@@ -488,6 +488,8 @@ class Helper{
             do {
                 try commentMO.managedObjectContext?.save()
                 print("new comment saved to coredata")
+                
+                ReloadVCForComment(recorduuid: recordID)//sends notif to vc to reload
             } catch {
                 print(error)
                 print("cd error in create crumbs")
@@ -655,7 +657,9 @@ class Helper{
                 getcommentcktocd(ckidToTest: recorduuid)
                 //tell view crumb to reload(have an indicator)
                 
-                //reloadLocation(recorduuid: recorduuid.recordName)//sends notif to vc to reload
+                
+                
+                //ReloadVCForComment(recorduuid: recorduuid.recordName)//sends notif to vc to reload
                 let user = getuserid(recorduuid: recorduuid.recordName)
                 
                 if let name = user{
@@ -666,7 +670,7 @@ class Helper{
             }else if testVote != NewVote{//no notification
                 self.updateCdVote(recorduuid.recordName, voteValue: vote)
                 
-                //reloadLocation(recorduuid: recorduuid.recordName)//sends notif to vc to reload
+                //ReloadVCForComment(recorduuid: recorduuid.recordName)//sends notif to vc to reload
             }
         }
         
@@ -691,13 +695,12 @@ class Helper{
     
     //again, I looked far and wide for a better way to do this, but notification center is so obvious of an 
     //answer for this type of thing
-    func reloadLocation(recorduuid: String){
+    func ReloadVCForComment(recorduuid: String){
         
         //notify all vcs, allowing them to decide whether or not to reload
         //can send recordid in notification?
         
         let notif = Notification(name: Notification.Name(rawValue: "NotifLoad"), object: nil, userInfo: ["RecordID": recorduuid])
-
         NotificationCenter.default.post(notif)
     }
     

@@ -107,6 +107,8 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
             let indexPath = OthersTableView.indexPathForSelectedRow!
             let crumbmsg = crumbmessages[indexPath.row]
             
+            upcoming.conHeight = 20 + (self.tabBarController?.tabBar.frame.size.height)!
+            
             upcoming.viewbreadcrumb = crumbmsg
   
             upcoming.delegate = self

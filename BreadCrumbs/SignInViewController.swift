@@ -11,31 +11,6 @@ import SystemConfiguration
 import CloudKit
 
 
-// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
-// Consider refactoring the code to use the non-optional operators.
-fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l < r
-  case (nil, _?):
-    return true
-  default:
-    return false
-  }
-}
-
-// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
-// Consider refactoring the code to use the non-optional operators.
-fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
-  switch (lhs, rhs) {
-  case let (l?, r?):
-    return l > r
-  default:
-    return rhs < lhs
-  }
-}
-
-
 class SignInViewController: UIViewController, UITextFieldDelegate {
 
     let NSUserData = AppDelegate().NSUserData
@@ -55,21 +30,14 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         self.setUserNameTextField.delegate = self
         self.hideKeyboardWhenTappedAround()
         
-        accountStatus()//ckstatus
-        checkUserStatus()
+        accountStatus()//does user have icloud drive enabled
+        errorTest()//does user have internet service, does he have icloud enabled, and icloud drive enabled
         
         NotificationCenter.default.addObserver(self, selector: #selector(SignInViewController.loadList(_:)),name:NSNotification.Name(rawValue: "ReloadSignIn"), object: nil)
-        
         ErrorDisp.isHidden = true
         self.timer1 = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(SignInViewController.requestloc), userInfo: nil, repeats: false)
 
     }
-    func loadList(_ notification: Notification){//yayay//This solves the others crumbs problem i think
-        DispatchQueue.main.async(execute: { () -> Void in
-            self.checkUserStatus()
-        })
-    }
-
     func requestloc(){
         locationManager.requestAlwaysAuthorization()
         timer1?.invalidate()
@@ -78,7 +46,9 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     //MARK: Actions
     
     @IBAction func signUpAction(_ sender: UIButton) {
-        if setUserNameTextField.text?.characters.count > 0 && setUserNameTextField.text?.characters.count < 21 && NSUserData.bool(forKey: "ckAccountStatus"){
+        
+        if isICloudContainerAvailable() && setUserNameTextField.text?.characters.count > 0 && setUserNameTextField.text?.characters.count < 17 && NSUserData.bool(forKey: "ckAccountStatus") && currentReachabilityStatus != .notReachable{
+            
             let time = Date()
 
             //make a record in cloudkit if a userinfo for this account is not found
@@ -88,10 +58,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
             NSUserData.setValue(7, forKey: "crumbCount")// let cCount = NSUserData.integerForKey("crumbCount")
             NSUserData.setValue(time, forKey: "SinceLastCheck")
             NSUserData.setValue(0, forKey: "premiumStatus")
-            NSUserData.setValue(true, forKey: "testmessage")
             NSUserData.setValue(0, forKey: "ExplainerCrumb")
-
-            self.resignFirstResponder()
             
             //gets and sets userrecordID
             iCloudUserIDAsync() {
@@ -105,44 +72,57 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
                 }
             }
             AppDelegate().initLocationManager()
+            
             if !(AppDelegate().timer1 == nil) && !(checkLocation()) {
                 print("running in sign in")
+                //every 60 seconds runs
                 Timer.scheduledTimer(timeInterval: 60.0, target: AppDelegate(), selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 30 sec for a msg
             }
-            
             helperFunctions.cloudkitSub()
+
+            self.resignFirstResponder()
+            
             
             performSegue(withIdentifier: "SignInSegue", sender: sender)//presents weird and i also want user to be able to access this and sign out/in again. cant change username after picking though. may need more view controllers
+        }else{
+            errorTest()
         }
-        else if setUserNameTextField.text?.characters.count < 1 || setUserNameTextField.text?.characters.count > 21{
-            ErrorDisp.text = "enter a valid length username"
-            ErrorDisp.isHidden = false
-            signUpButton.isEnabled = false
-        }else if isICloudContainerAvailable() == false || NSUserData.bool(forKey: "ckAccountStatus"){
-            ErrorDisp.text = "Please sign into icloud and enable icloud drive"
-            ErrorDisp.isHidden = false
-            signUpButton.isEnabled = false
+    }
+    
+    //MARK: Tests
+    
+    //length error, cloud error, internet error
+    func errorTest(){
+        if isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && currentReachabilityStatus != .notReachable && setUserNameTextField.text?.characters.count > 0 && setUserNameTextField.text?.characters.count < 17{//success
+            //print("a user is signed into icloud")
+            signUpButton.isEnabled = true
+            ErrorDisp.isHidden = true
+            
+        }else if isICloudContainerAvailable() == false || NSUserData.bool(forKey: "ckAccountStatus") == false{
+            
+            failMessage(text: "Please sign into iCloud and enable iCloud drive")
+            
+        }else if currentReachabilityStatus == .notReachable{
+            failMessage(text: "No service, cannot sign up without internet")
+        }else if setUserNameTextField.text?.characters.count < 1 {
+            
+            failMessage(text: "Please enter a longer username")
+            
+        }else if setUserNameTextField.text?.characters.count > 16{
+            
+            failMessage(text: "Please enter a longer username")
             
         }
     }
-    //MARK: Misc + tests
-    func hideKeyboardWhenTappedAround() {
-        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(SignInViewController.dismissKeyboard))
-        view.addGestureRecognizer(tap)
+    //fail message
+    func failMessage(text: String){
+        ErrorDisp.text = text
+        ErrorDisp.isHidden = false
+        signUpButton.isEnabled = false
     }
     
-    func dismissKeyboard() {
-        view.endEditing(true)
-    }
+
     
-    func textFieldDidEndEditing(_ textField: UITextField) {
-        AView.isHidden = false
-    }
-    
-    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
-        self.view.endEditing(true)
-        return false
-    }
     func checkLocation() -> Bool{
         if locationManager.location != nil{
             return true
@@ -152,39 +132,11 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     }
     
     
-    //MARK: Cloudkit
+    //MARK: Cloud authentification
+    
+    
     //cloudkit user authentication
-    func checkUserStatus(){
-        if isICloudContainerAvailable() && currentReachabilityStatus != .notReachable{
-            //print("a user is signed into icloud")
-            signUpButton.isEnabled = true
-            ErrorDisp.isHidden = true
-        }else if isICloudContainerAvailable() == false && NSUserData.bool(forKey: "ckAccountStatus") && currentReachabilityStatus != .notReachable {
-            ErrorDisp.text! = "Please sign into icloud and enable icloud drive"
-            ErrorDisp.isHidden = false
-            signUpButton.isEnabled = false
-        }else if currentReachabilityStatus == .notReachable{
-            ErrorDisp.text! = "No service, cannot sign up without internet"
-            ErrorDisp.isHidden = false
-            signUpButton.isEnabled = false
-        }
-    }
-    
-    func iCloudUserIDAsync(_ complete: @escaping (_ instance: CKRecordID?, _ error: NSError?) -> ()) {
-        let container = CKContainer.default()
-        container.fetchUserRecordID() {
-            recordID, error in
-            if error != nil {
-                print(error!.localizedDescription)
-                complete(nil, error as NSError?)
-            } else {
-                complete(recordID, nil)
-            }
-        }
-    }
-    
     func isICloudContainerAvailable()->Bool {
-        
         if FileManager.default.ubiquityIdentityToken != nil {
             return true
         }
@@ -205,6 +157,57 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         }
     }
     
+    
+    func iCloudUserIDAsync(_ complete: @escaping (_ instance: CKRecordID?, _ error: NSError?) -> ()) {
+        let container = CKContainer.default()
+        container.fetchUserRecordID() {
+            recordID, error in
+            if error != nil {
+                print(error!.localizedDescription)
+                complete(nil, error as NSError?)
+            } else {
+                complete(recordID, nil)
+            }
+        }
+    }
+    
+    //MARK: Dismiss and textfield
+    func hideKeyboardWhenTappedAround() {
+        let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(SignInViewController.dismissKeyboard))
+        view.addGestureRecognizer(tap)
+    }
+    
+    func dismissKeyboard() {
+        //accountStatus()//does user have icloud drive enabled
+        //checkUserStatus()//does user have internet service, does he have icloud enabled, and icloud drive enabled
+        view.endEditing(true)
+    }
+    
+    func textFieldDidEndEditing(_ textField: UITextField) {
+        AView.isHidden = false
+        
+        accountStatus()//does user have icloud drive enabled
+        
+        errorTest()
+    }
+    
+    func textFieldShouldReturn(_ textField: UITextField) -> Bool {
+        self.view.endEditing(true)
+        return false
+    }
+    
+    //MARK: Notification center
+    func loadList(_ notification: Notification){
+        DispatchQueue.main.async(execute: { () -> Void in
+            self.accountStatus()
+            self.errorTest()
+
+        })
+    }
+
+    
+    //MARK: UserInfo Cloud Creation
+    //idk i need it for premium but when will i do that?
     func createUserInfo(_ username: String){
         
         let container = CKContainer.default()
@@ -213,7 +216,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         let record = CKRecord(recordType: "UserInfo")
         
         record.setValue(username, forKey: "userName")
-        record.setValue(5, forKey: "crumbCount")
+        record.setValue(7, forKey: "crumbCount")
         record.setValue(0, forKey: "premiumStatus")
         
         publicData.save(record, completionHandler: { record, error in
@@ -226,6 +229,30 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
 
 }
 
+
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func < <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+    switch (lhs, rhs) {
+    case let (l?, r?):
+        return l < r
+    case (nil, _?):
+        return true
+    default:
+        return false
+    }
+}
+
+// FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
+// Consider refactoring the code to use the non-optional operators.
+fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
+    switch (lhs, rhs) {
+    case let (l?, r?):
+        return l > r
+    default:
+        return rhs < lhs
+    }
+}
 
 
 protocol Utilities {

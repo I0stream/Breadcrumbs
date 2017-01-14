@@ -38,6 +38,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
         accountStatus()// is icloud drive available?
         
+        
         //application.applicationIconBadgeNumber = 0
 
         //is icloud available? is icloud drive available? does he have a username? does user have a stored user id?
@@ -58,14 +59,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
 
             AppDelegate().NSUserData.setValue(0, forKey: "limitArea")
             
-            //60
+            if NSUserData.object(forKey: "ExplainerCrumb") == nil {
+                NSUserData.setValue(0, forKey: "ExplainerCrumb")
+                print("was empty")
+            }
+            
+            //60 seconds
             self.timer1 = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(AppDelegate.loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 60 sec for a msg
             
             CDStack.saveContext()
             
-
-
-        } else {//if not go to sign in
+        }else {//if not go to sign in
             
             //gets and sets userrecordID
             if NSUserData.string(forKey: "recordID") == nil/*|| user != signedIn*/{//keychain
@@ -112,7 +116,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             
             helperfunctions.updateCrumbFromSub(recorduuid: recordID!, NewVote: voteValue)
             
-            //update record with id
             completionHandler(.newData)
         }
         
@@ -136,6 +139,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     //this is the heart of the app
     func loadAndStoreiCloudMsgsBasedOnLoc(){// load icloud msgs; need to check if msg is already loaded & store loaded msgs to persist between views and app instances
         //I need to wait before running this stuff get better accuracy data ->
+        self.locationManager.startUpdatingLocation()
         
         let currentUserLoc = bestCurrent
         var locAge = 31.0
@@ -214,7 +218,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                 // IMPORTANT!!! Minimize power usage by stopping the location manager as soon as possible.
                 //
                 bestCurrent = bestEffortAtLocation
-                self.locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
+                self.locationManager.stopUpdatingLocation()
             }
             
         }
@@ -384,8 +388,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
         accountStatus()
+        //isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && NSUserData.string(forKey: "userName") != nil && NSUserData.string(forKey: "recordID") != nil
         
-        if isICloudContainerAvailable() && NSUserData.string(forKey: "userName") != nil && NSUserData.bool(forKey: "ckAccountStatus"){
+        //isICloudContainerAvailable() && NSUserData.string(forKey: "userName") != nil && NSUserData.bool(forKey: "ckAccountStatus")
+        if isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && NSUserData.string(forKey: "userName") != nil && NSUserData.string(forKey: "recordID") != nil{
             loadAndStoreiCloudMsgsBasedOnLoc()//not this
             //UPDATE VOTES HERE
             
@@ -412,7 +418,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             
         //isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && NSUserData.string(forKey: "userName") != nil && NSUserData.string(forKey: "recordID") != nil
         //is icloud enabled, is username set
-        }else if isICloudContainerAvailable() && NSUserData.string(forKey: "userName") == nil{
+        }else {
             
             NotificationCenter.default.post(name: Notification.Name(rawValue: "ReloadSignIn"), object: nil)
             

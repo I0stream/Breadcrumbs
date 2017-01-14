@@ -86,8 +86,10 @@ class ChangeUserNameViewController: SettingsViewController, UITextFieldDelegate 
     
     //the button action that changes the username
     @IBAction func ChangeNameButton(_ sender: AnyObject) {
-        if ChangeNameField.text?.characters.count < 1 || ChangeNameField.text?.characters.count > 16{
-            errorMessageLabel.text = "enter a valid username"
+        if ChangeNameField.text?.characters.count > 16{
+            errorMessageLabel.text = "Username is too long by \((ChangeNameField.text?.characters.count)! - 16) characters"
+        }else if ChangeNameField.text?.characters.count < 1{
+            errorMessageLabel.text = "Username is too short"
         }else{
             
             NSUserData.setValue(ChangeNameField.text, forKey: "userName")
