@@ -39,7 +39,7 @@ class SettingsViewController: UIViewController{
     
     @IBAction func customerSupportButton(_ sender: Any) {
         //print("does not work in sim")
-        let email = "breadcrumbs.company@gmail.com"
+        let email = "breadcrumbs.help@gmail.com"
         let url = NSURL(string: "mailto:\(email)")
         if #available(iOS 10.0, *) {
             UIApplication.shared.open(url as! URL, options: ["yes" : "yes" as Any], completionHandler: { (true) in

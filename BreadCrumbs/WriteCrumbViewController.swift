@@ -114,12 +114,6 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         }
         
         
-        //start load and store if not already
-        if !(AppDelegate().timer1 == nil) && !(checkLocation()) {
-            print("running in write")
-            Timer.scheduledTimer(timeInterval: 60.0, target: AppDelegate(), selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 30 sec for a msg
-        }
-        
         //show crumbcount explainer only once; maybe later have a ? mark button to show explainer
         if NSUserData.value(forKey: "ExplainerCrumb") as! Int == 0{
             //display explainer
@@ -543,13 +537,13 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     //cancel writecrumb and return to yourcrumbtableview
     @IBAction func CancelPost(_ sender: AnyObject) {
         dismiss(animated: true, completion: nil)
-        self.locationManager.stopUpdatingLocation()
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
 
     }
     @IBAction func PostMessage(_ sender: AnyObject) {
         addCrumbCDAndCK(sender)
         postButtonOutlet.isEnabled = false
-        self.locationManager.stopUpdatingLocation()
+        self.locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
     }
 }
 /*

@@ -34,7 +34,6 @@ class Helper{
         publicData.perform(query, inZoneWith: nil) { results, error in
             if error == nil{ // There is no error
                 for cmsg in results! {
-                    
                     let dbtext = cmsg["text"] as! String
                     let dbsenderName = cmsg["senderName"] as! String
                     let dblocation = cmsg["location"] as! CLLocation
@@ -51,11 +50,9 @@ class Helper{
                     loadedMessage!.hasVoted = 0
                     
                     let testID = loadedMessage?.senderuuid != self.NSUserData.string(forKey: "recordID")!//keychain
-                    
+                                        
                     if (loadedMessage!.calculate() > 0) && testID{
-                        
                         DispatchQueue.main.async(execute: { () -> Void in
-
                             //TESTS IF LOADED MSG IS IN COREDATA IF NOT THEN STORES IT BRAH
                             let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Message")
                             let cdPredicate = NSPredicate(format: "recorduuid == %@", loadedMessage!.uRecordID!)
@@ -64,6 +61,7 @@ class Helper{
                             do {
                                 if let fetchResults = try self.getmoc().fetch(fetchRequest) as? [Message]{
                                     if fetchResults.isEmpty{
+                                        
 
                                         self.saveToCoreData(loadedMessage!)
                                     }
@@ -73,18 +71,15 @@ class Helper{
                                 print(fetchError)
                             }
                         })
-                    }
-                    else if loadedMessage!.calculate() <= 0//if message is past due delete the ckufer
-                    {
+                    } else if loadedMessage!.calculate() <= 0 {
                         //delete, I think
                         print("delete crumb")
-                        print(loadedMessage!)
                         
                         let yum = CKRecordID(recordName: (loadedMessage?.uRecordID)!)
                         self.cloudKitDeleteCrumb(yum)
                         
                         print("Finished request delete \(cmsg)")
-                    }else{break}
+                    }
                 }
             }else {
                 print(error.debugDescription)//print error
@@ -114,7 +109,7 @@ class Helper{
                 let msgloc = fetchedmsgsCD[i].cdlocation() as CLLocation
                 
                 let nearby = msgloc.distance(from: usersLocation)// does not take into account high rise buildings
-                if nearby < 30 && fetchedmsgsCD[i].calculate(){//is within x meters of users loc
+                if nearby < 50 && fetchedmsgsCD[i].calculate(){//is within x meters of users loc
                     
                     let value = 1
                     crumbmessagestotest += [value]
@@ -247,7 +242,11 @@ class Helper{
             try messageMO.managedObjectContext?.save()
             print("a message has been loaded and stored into coredata")
             //notify user a new msg is here with notification
-            AppDelegate().notify(title: "New BreadCrumb found!", body: "New Breadcrumbs! come check'em out!", crumbID: crumbmessage.uRecordID!, userId: crumbmessage.senderuuid)
+            
+            DispatchQueue.main.async(execute: { () -> Void in
+                AppDelegate().notify(title: "New BreadCrumb found!", body: "New Breadcrumb! come check'em out!", crumbID: crumbmessage.uRecordID!, userId: crumbmessage.senderuuid)
+            })
+
             
             //print("updated and stored more butts")
         } catch {
@@ -521,7 +520,7 @@ class Helper{
                 
                 publicData.save(record!, completionHandler: {theRecord, error in
                     if error == nil{
-                        print("saved version")
+                        //print("saved version")
                         
                     }else{
                         
@@ -621,6 +620,9 @@ class Helper{
     //used in appdel (for testing) and sign in for final
     func cloudkitSub(){//recorduuid: String
         
+        
+        
+        //
         let container = CKContainer.default().publicCloudDatabase//privateCloudDatabase 
         //keychain
         let predicate = NSPredicate(format: "senderuuid == %@", NSUserData.string(forKey: "recordID")!)//subscribes to a the current users new record updates(i think)
@@ -644,7 +646,12 @@ class Helper{
         })
     }
     
+    
+    
+    
+    
     //update crumb obj, from remote notif receiver in appdel
+    //only updates comments for your messages
     func updateCrumbFromSub(recorduuid: CKRecordID, NewVote: Int?){//will have updated vote here
         //print("updateCrumbFromSub")
         
@@ -656,21 +663,9 @@ class Helper{
             if testVote == NewVote{//notification
                 getcommentcktocd(ckidToTest: recorduuid)
                 //tell view crumb to reload(have an indicator)
-                
-                
-                
-                //ReloadVCForComment(recorduuid: recorduuid.recordName)//sends notif to vc to reload
-                let user = getuserid(recorduuid: recorduuid.recordName)
-                
-                if let name = user{
-                    AppDelegate().notify(title: "New Comment" ,body: "New comment posted in one of your Crumbs!",crumbID: recorduuid.recordName, userId: name)
-                }else{
-                    return
-                }
             }else if testVote != NewVote{//no notification
                 self.updateCdVote(recorduuid.recordName, voteValue: vote)
                 
-                //ReloadVCForComment(recorduuid: recorduuid.recordName)//sends notif to vc to reload
             }
         }
         
@@ -699,6 +694,7 @@ class Helper{
         
         //notify all vcs, allowing them to decide whether or not to reload
         //can send recordid in notification?
+        //let name = self.NSUserData.string(forKey: "recordID")!//getuserid(recorduuid: recorduuid.recordName)
         
         let notif = Notification(name: Notification.Name(rawValue: "NotifLoad"), object: nil, userInfo: ["RecordID": recorduuid])
         NotificationCenter.default.post(notif)

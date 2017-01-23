@@ -160,7 +160,7 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
                 cell.VoteValue.text = "\(crumbmsg.votes!) vote"
             }
             cell.YouTheUserLabel.text = crumbmsg.senderName
-            cell.YouTheUserLabel.font = UIFont.boldSystemFont(ofSize: 17)
+            //cell.YouTheUserLabel.font = UIFont.boldSystemFont(ofSize: 17)
             cell.TimeRemainingValueLabel.text = crumbmsg.timeRelative()//time is how long ago it was posted, dont see the point to change var name to something more explanatory right now
             //This is reused in yours
             
@@ -253,6 +253,7 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
             helperFunctions.markForDelete(id: id!)
             crumbmessages.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
+            reloadTables()
         }
     }
     

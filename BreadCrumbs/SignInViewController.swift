@@ -22,7 +22,9 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var signUpButton: UIButton!
     @IBOutlet weak var ErrorDisp: UILabel!
     
-    weak var timer1 = Timer()
+    weak var timer2 = Timer()
+    weak var timerload = Timer()
+
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,12 +37,12 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         
         NotificationCenter.default.addObserver(self, selector: #selector(SignInViewController.loadList(_:)),name:NSNotification.Name(rawValue: "ReloadSignIn"), object: nil)
         ErrorDisp.isHidden = true
-        self.timer1 = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(SignInViewController.requestloc), userInfo: nil, repeats: false)
+        self.timer2 = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(SignInViewController.requestloc), userInfo: nil, repeats: false)
 
     }
     func requestloc(){
         locationManager.requestAlwaysAuthorization()
-        timer1?.invalidate()
+        timer2?.invalidate()
     }
     
     //MARK: Actions
@@ -76,7 +78,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
             if !(AppDelegate().timer1 == nil) && !(checkLocation()) {
                 print("running in sign in")
                 //every 60 seconds runs
-                Timer.scheduledTimer(timeInterval: 60.0, target: AppDelegate(), selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 30 sec for a msg
+                timerload = Timer.scheduledTimer(timeInterval: 60.0, target: AppDelegate(), selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 30 sec for a msg
             }
             helperFunctions.cloudkitSub()
 

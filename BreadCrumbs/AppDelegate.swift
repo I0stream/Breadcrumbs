@@ -30,6 +30,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     weak var timer1 = Timer()//for keeping track of load and store
     lazy var CDStack = CoreDataStack()//cd req functions
     
+    var iLoad = 0
+    
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         //helperfunctions.cloudkitSub()
 
@@ -43,7 +45,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
 
         //is icloud available? is icloud drive available? does he have a username? does user have a stored user id?
         //if so go to app
-        if isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && NSUserData.string(forKey: "userName") != nil && NSUserData.string(forKey: "recordID") != nil{//keychain
+        // NSUserData.string(forKey: "didAgreeToPolAndEULA") == "Agree"
+
+        if isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && NSUserData.string(forKey: "userName") != nil && NSUserData.string(forKey: "recordID") != nil && NSUserData.string(forKey: "didAgreeToPolAndEULA") == "Agree"{//keychain
             
             self.window = UIWindow(frame: UIScreen.main.bounds)
             
@@ -66,10 +70,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             
             //60 seconds
             self.timer1 = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(AppDelegate.loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 60 sec for a msg
-            
             CDStack.saveContext()
             
-        }else {//if not go to sign in
+        } else {//if not go to sign in
             
             //gets and sets userrecordID
             if NSUserData.string(forKey: "recordID") == nil/*|| user != signedIn*/{//keychain
@@ -89,7 +92,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
             
-            let initialViewController = storyboard.instantiateViewController(withIdentifier: "pgManager") as! PageManagerViewController
+            let initialViewController = storyboard.instantiateViewController(withIdentifier: "Welcome") as! WelcomeViewController
             
             self.window?.rootViewController = initialViewController
             self.window?.makeKeyAndVisible()
@@ -116,6 +119,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             
             helperfunctions.updateCrumbFromSub(recorduuid: recordID!, NewVote: voteValue)
             
+            //        AppDelegate().notify(title: "New Comment" ,body: "New comment posted in one of your Crumbs!",crumbID: recorduuid, userId: name)
+
+            
+            
             completionHandler(.newData)
         }
         
@@ -137,6 +144,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     //constant checking for new msgs
     
     //this is the heart of the app
+    
+    //does not run in background, gets queued then runs after returning to foreground, try p
     func loadAndStoreiCloudMsgsBasedOnLoc(){// load icloud msgs; need to check if msg is already loaded & store loaded msgs to persist between views and app instances
         //I need to wait before running this stuff get better accuracy data ->
         self.locationManager.startUpdatingLocation()
@@ -149,15 +158,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         }
         
         if currentUserLoc != nil && ((locAge) < 30.0 ){
-            //30.0 / 1000.0//100 ft in km
-
-            let radiusKm = 30 / 1000.0//100 ft in km
-            let predicate: NSPredicate = NSPredicate(format: "distanceToLocation:fromLocation:(%K, %@) < %f", "location", currentUserLoc!, radiusKm)
+            
+            let radiusKm = 50 / 1000.0//30=~100ft,40=131ft
+            let predicate: NSPredicate = NSPredicate(format: "distanceToLocation:fromLocation:(%K,%@) < %f", "location", currentUserLoc!, radiusKm)
             let query = CKQuery(recordType: "CrumbMessage", predicate: predicate)
             helperfunctions.loadIcloudMessageToCoreData(query)
             
             helperfunctions.testStoredMsgsInArea(currentUserLoc!)
-            
+
             print("load and store has run")
             return
             
@@ -204,7 +212,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             //if best is empty 
             //if new value is more accurate
             //if bestcurrent is old as fuck
-            
             // store new value
             self.bestEffortAtLocation = newloc
             /*var bestCurrentTime = 0.0
@@ -218,7 +225,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                 // IMPORTANT!!! Minimize power usage by stopping the location manager as soon as possible.
                 //
                 bestCurrent = bestEffortAtLocation
-                self.locationManager.stopUpdatingLocation()
+                self.locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
             }
             
         }
@@ -379,6 +386,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         self.NSUserData.setValue(0, forKey: "counterLoc")
         AddCrumbCount()
         CDStack.saveContext()
+/*        if (AppDelegate().timer1 == nil) && (checkLocation()) {
+            print("running in background")
+            self.timer1 = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 30 sec for a msg
+        }*/
     }
     
     func applicationWillEnterForeground(_ application: UIApplication) {
@@ -391,14 +402,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         //isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && NSUserData.string(forKey: "userName") != nil && NSUserData.string(forKey: "recordID") != nil
         
         //isICloudContainerAvailable() && NSUserData.string(forKey: "userName") != nil && NSUserData.bool(forKey: "ckAccountStatus")
-        if isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && NSUserData.string(forKey: "userName") != nil && NSUserData.string(forKey: "recordID") != nil{
+        if isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && NSUserData.string(forKey: "userName") != nil && NSUserData.string(forKey: "recordID") != nil && NSUserData.string(forKey: "didAgreeToPolAndEULA") == "Agree"{
             loadAndStoreiCloudMsgsBasedOnLoc()//not this
             //UPDATE VOTES HERE
-            
             //start load and store if not already
-            if !(AppDelegate().timer1 == nil) && !(checkLocation()) {
-                print("running in write")
-                self.timer1 = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 30 sec for a msg
+            
+            if SignInViewController().timerload != nil{
+                SignInViewController().timerload?.invalidate()
+            }
+            
+            
+            if (AppDelegate().timer1 == nil) && (checkLocation()) {
+                print("running in active")
+                self.timer1 = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 60 sec for a msg
             }
             
             helperfunctions.updateTableViewVoteValues()//updates all votes
@@ -418,7 +434,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             
         //isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && NSUserData.string(forKey: "userName") != nil && NSUserData.string(forKey: "recordID") != nil
         //is icloud enabled, is username set
-        }else {
+        }else if isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && NSUserData.string(forKey: "didAgreeToPolAndEULA") == "Agree"{
             
             NotificationCenter.default.post(name: Notification.Name(rawValue: "ReloadSignIn"), object: nil)
             
@@ -428,6 +444,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             
             let initialViewController = storyboard.instantiateViewController(withIdentifier: "SignIn")
             
+            self.window?.rootViewController = initialViewController
+            self.window?.makeKeyAndVisible()
+        }else{
+            self.window = UIWindow(frame: UIScreen.main.bounds)
+            
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            
+            let initialViewController = storyboard.instantiateViewController(withIdentifier: "Welcome") as! WelcomeViewController
             self.window?.rootViewController = initialViewController
             self.window?.makeKeyAndVisible()
         }
@@ -503,8 +527,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     }
     
     func notify(title: String ,body: String, crumbID: String, userId: String) {//used in load and store
-        let requestIdentifier = "SampleRequest" //identifier is to cancel the notification request
-
+        let requestIdentifier = "ARequestId" //identifier is to cancel the notification request
+        print("notify run")
         //use crumbid to know which viewcrumb to open
         if #available(iOS 10.0, *) {
             
@@ -521,6 +545,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             UNUserNotificationCenter.current().delegate = self
             UNUserNotificationCenter.current().add(request){(error) in
                 
+            print("notification sent")
                 if (error != nil){
                     
                     print(error?.localizedDescription ?? "error in notify")

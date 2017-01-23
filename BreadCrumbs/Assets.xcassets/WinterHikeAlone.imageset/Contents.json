@@ -2,17 +2,15 @@
   "images" : [
     {
       "idiom" : "universal",
-      "filename" : "swirlOnly.png",
+      "filename" : "winterSolitude@0,5x.jpg",
       "scale" : "1x"
     },
     {
       "idiom" : "universal",
-      "filename" : "arrow120.png",
       "scale" : "2x"
     },
     {
       "idiom" : "universal",
-      "filename" : "Artboard 1.png",
       "scale" : "3x"
     }
   ],

@@ -47,8 +47,9 @@ class PageManagerViewController: UIPageViewController, UIPageViewControllerDataS
         //This method creates a new instance of the specified view controller each time you call it.
               
         //UserView
+        
         if index == 0 {
-            return self.storyboard!.instantiateViewController(withIdentifier: "IntroShill") 
+            return self.storyboard!.instantiateViewController(withIdentifier: "IntroShill")
         }
         
         //Your bread crumb table view controller view

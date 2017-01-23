@@ -60,6 +60,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         //self.crumbmessages = self.crumbmessages//.reversed()
         
         
+        
         //YourTableView.refreshControl?.addTarget(self, action: #selector(YourCrumbsTableViewController.handleRefresh(_:)), for: UIControlEvents.valueChanged)
         
         self.YourTableView.addSubview(self.refreshControl)
@@ -134,23 +135,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         }
     }
     
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if (editingStyle == UITableViewCellEditingStyle.delete) {
-                
-            let crumbmsg = crumbmessages[indexPath.row]
-                
-            let id = crumbmsg.uRecordID
-            
-            self.helperFunctions.coreDataDeleteCrumb(id!/*, manx: AppDelegate().CDStack.mainContext*/)   //must use something other than urecordid
-            
-            self.helperFunctions.cloudKitDeleteCrumb(CKRecordID(recordName: id!))
-            
-            crumbmessages.remove(at: indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
-        }
-        
 
-    }
     
     // MARK: - Navigation
     
@@ -200,7 +185,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
                 cell.VoteValue.text = "\(crumbmsg.votes!) vote"
             }
             cell.YouTheUserLabel.text = crumbmsg.senderName
-            cell.YouTheUserLabel.font = UIFont.boldSystemFont(ofSize: 17)
+            //cell.YouTheUserLabel.font = UIFont.
             cell.TimeRemainingValueLabel.text = crumbmsg.timeRelative()//time is how long ago it was posted, dont see the point to change var name to something more explanatory right now
             
             cell.VoteButton.tag = indexPath.row
@@ -252,6 +237,24 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
                 dropped = [CrumbMessage]()
             }//if zero do nothing
         }
+    }
+    
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+        if (editingStyle == UITableViewCellEditingStyle.delete) {
+            
+            let crumbmsg = crumbmessages[indexPath.row]
+            
+            let id = crumbmsg.uRecordID
+            
+            self.helperFunctions.coreDataDeleteCrumb(id!/*, manx: AppDelegate().CDStack.mainContext*/)   //must use something other than urecordid
+            
+            self.helperFunctions.cloudKitDeleteCrumb(CKRecordID(recordName: id!))
+            crumbmessages.remove(at: indexPath.row)
+            tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
+            reloadTables()
+        }
+        
+        
     }
     
     func buttonActions(sender: UIButton){

@@ -281,7 +281,6 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         DispatchQueue.main.async(execute: { () -> Void in
             
             if self.refreshNeed{//if we know there is a msg in cd use only cd
-                print("away blue dot")
                 //button go away (blue dot)
                 
                 self.PALEBLUEDOT.isHidden = true
@@ -289,6 +288,11 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
                 //also update crumb
                 self.viewbreadcrumb = self.helperFunctions.getSpecific(recorduuid: (self.viewbreadcrumb?.uRecordID)!)
             }else {//if user wants to refresh constantly, use both
+                //button go away (blue dot)
+                
+                self.PALEBLUEDOT.isHidden = true
+                self.refreshNeed = false
+                //also update crumb
                 //ck
                 self.helperFunctions.getcommentcktocd(ckidToTest: CKRecordID(recordName: (self.viewbreadcrumb?.uRecordID)!))
                 self.viewbreadcrumb = self.helperFunctions.getSpecific(recorduuid: (self.viewbreadcrumb?.uRecordID)!)
