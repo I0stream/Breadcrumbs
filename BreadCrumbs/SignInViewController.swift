@@ -256,6 +256,7 @@ fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
     }
 }
 
+//this too i think is his: http://stackoverflow.com/q/41414737
 
 protocol Utilities {
 }

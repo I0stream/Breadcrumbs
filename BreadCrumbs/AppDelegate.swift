@@ -344,7 +344,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         print(error)
     }
     
-
+    /*I think this is his http://stackoverflow.com/a/24696878 */
+    
     func locationManager(_ manager: CLLocationManager,
                          didChangeAuthorization status: CLAuthorizationStatus) {
         var shouldIAllow = false
