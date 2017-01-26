@@ -17,6 +17,7 @@
 		6515D12D1CC148EB00570205 /* CrumbMessage.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6515D12B1CC148EB00570205 /* CrumbMessage.swift */; };
 		651CB3761E3293BD008D3C88 /* WelcomeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 651CB3751E3293BD008D3C88 /* WelcomeViewController.swift */; };
 		651CFD711E1DDD7A0007D5C4 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 651CFD701E1DDD7A0007D5C4 /* UserNotifications.framework */; };
+		65219AEC1E399FF80068CBA3 /* ReportMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65219AEB1E399FF80068CBA3 /* ReportMenuViewController.swift */; };
 		6523F80E1E25F573003C49D1 /* NoAgreeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6523F80D1E25F573003C49D1 /* NoAgreeViewController.swift */; };
 		6538741B1DD54FA9009ABDBF /* old code in Resources */ = {isa = PBXBuildFile; fileRef = 6538741A1DD54FA9009ABDBF /* old code */; };
 		6539C0F91CFBC7920072F1E3 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6539C0F81CFBC7920072F1E3 /* CoreData.framework */; };
@@ -41,6 +42,7 @@
 		6578159F1D62BE0B004F4660 /* HelperFunctions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6578159E1D62BE0B004F4660 /* HelperFunctions.swift */; };
 		657861FC1DD877A40027C5A0 /* CreateCommentViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 657861FB1DD877A40027C5A0 /* CreateCommentViewController.swift */; };
 		65866C0A1CD6466200038400 /* SettingsViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65866C091CD6466200038400 /* SettingsViewController.swift */; };
+		658898371E395ED40003735D /* ReportViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 658898361E395ED40003735D /* ReportViewController.swift */; };
 		65C0DDD11E2323BD00DB521E /* BreadCrumbsTests.xctest in Resources */ = {isa = PBXBuildFile; fileRef = 654B117F1CB9705800BD6313 /* BreadCrumbsTests.xctest */; };
 		65C659CD1D2C8CEA00E11210 /* ChangeUserNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C659CC1D2C8CEA00E11210 /* ChangeUserNameViewController.swift */; };
 		65E47F231DFFD3780072996A /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65E47F221DFFD3780072996A /* CloudKit.framework */; };
@@ -71,6 +73,7 @@
 		6515D12B1CC148EB00570205 /* CrumbMessage.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CrumbMessage.swift; sourceTree = "<group>"; };
 		651CB3751E3293BD008D3C88 /* WelcomeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WelcomeViewController.swift; sourceTree = "<group>"; };
 		651CFD701E1DDD7A0007D5C4 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
+		65219AEB1E399FF80068CBA3 /* ReportMenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReportMenuViewController.swift; sourceTree = "<group>"; };
 		6523F80D1E25F573003C49D1 /* NoAgreeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoAgreeViewController.swift; sourceTree = "<group>"; };
 		6538741A1DD54FA9009ABDBF /* old code */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "old code"; sourceTree = "<group>"; };
 		6539C0F81CFBC7920072F1E3 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
@@ -99,6 +102,7 @@
 		6578159E1D62BE0B004F4660 /* HelperFunctions.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = HelperFunctions.swift; sourceTree = "<group>"; };
 		657861FB1DD877A40027C5A0 /* CreateCommentViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = CreateCommentViewController.swift; sourceTree = "<group>"; };
 		65866C091CD6466200038400 /* SettingsViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SettingsViewController.swift; sourceTree = "<group>"; };
+		658898361E395ED40003735D /* ReportViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReportViewController.swift; sourceTree = "<group>"; };
 		65A5A2D61CF681B60019DB49 /* MessageDataModel.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = MessageDataModel.xcdatamodel; sourceTree = "<group>"; };
 		65C659CC1D2C8CEA00E11210 /* ChangeUserNameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangeUserNameViewController.swift; sourceTree = "<group>"; };
 		65CB617A1CD3D175002D6F9E /* BreadCrumbs.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = BreadCrumbs.entitlements; sourceTree = "<group>"; };
@@ -212,6 +216,8 @@
 				657606111DCD69E1006860C6 /* cells */,
 				65219BAD1DDBFE11006765C3 /* mainViews */,
 				65219BB21DDBFFA4006765C3 /* pickerView */,
+				65219AEB1E399FF80068CBA3 /* ReportMenuViewController.swift */,
+				658898361E395ED40003735D /* ReportViewController.swift */,
 				654B117A1CB9705800BD6313 /* Info.plist */,
 				6538741A1DD54FA9009ABDBF /* old code */,
 				654B11751CB9705800BD6313 /* Assets.xcassets */,
@@ -415,6 +421,7 @@
 				65031FD61E00A4AB00038348 /* Message+CoreDataProperties.swift in Sources */,
 				65FCBD681DDBF2B9002D07BA /* MessageDataModel.xcdatamodeld in Sources */,
 				6576060E1DCD69D4006860C6 /* CrumbTableViewCell.swift in Sources */,
+				65219AEC1E399FF80068CBA3 /* ReportMenuViewController.swift in Sources */,
 				6543DA511DC47CEA00197513 /* CommentShort.swift in Sources */,
 				65F556BC1CD219030014AC30 /* OthersCrumbsTableViewController.swift in Sources */,
 				654C0B5B1CC6AE4200060E58 /* YourCrumbsTableViewController.swift in Sources */,
@@ -425,6 +432,7 @@
 				65031FD81E00A4AB00038348 /* Comment+CoreDataProperties.swift in Sources */,
 				65EF38A91D21D2B400161A3E /* SignInViewController.swift in Sources */,
 				65866C0A1CD6466200038400 /* SettingsViewController.swift in Sources */,
+				658898371E395ED40003735D /* ReportViewController.swift in Sources */,
 				651CB3761E3293BD008D3C88 /* WelcomeViewController.swift in Sources */,
 				6523F80E1E25F573003C49D1 /* NoAgreeViewController.swift in Sources */,
 				656E04C11E25B2E900A46521 /* AgreementViewController.swift in Sources */,

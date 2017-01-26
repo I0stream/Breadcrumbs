@@ -144,6 +144,11 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         }else if indexPath.row == 1 {
             let msgCell = tableView.dequeueReusableCell(withIdentifier: "YourMsgCell", for: indexPath) as! CrumbTableViewCell
             
+            //report button
+            msgCell.ReportButton.addTarget(self, action: #selector(ViewCrumbViewController.report), for: .touchUpInside)
+            
+            
+            
             if viewbreadcrumb!.calculate() > 0 {
                 msgCell.CreateCommentButton.addTarget(self, action: #selector(ViewCrumbViewController.commentSegue), for: .touchUpInside)
                 msgCell.VoteButton.addTarget(self, action: #selector(ViewCrumbViewController.Vote), for: .touchUpInside)
@@ -208,6 +213,14 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         
         //if last add "SpacerBottom"?
     }
+    //MARK: REport
+    
+    func report() {
+        performSegue(withIdentifier: "ReportMenuSegue", sender: self)
+    }
+    
+    
+    
     
     //MARK: Commenting functions
     
