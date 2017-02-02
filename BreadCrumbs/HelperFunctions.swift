@@ -24,6 +24,21 @@ class Helper{
         //let moc = (UIApplication.shared.delegate as! AppDelegate).CDStack.mainContext
         return moc!
     }
+    
+    func blockedUsertest(senderID: String) -> Bool{
+        let blockedUsers = NSUserData.array(forKey: "BlockedUsers") as? [String]
+        
+        if blockedUsers == nil{
+            return true
+        }
+        
+        if (blockedUsers?.contains(senderID))!{
+            return false
+        }else{
+            return true
+        }
+    }
+    
     //MARK: LOAD
     func loadIcloudMessageToCoreData(_ query: CKQuery) {// used in appdelegate and signinviewcontroller
         //get public database object
@@ -50,8 +65,9 @@ class Helper{
                     loadedMessage!.hasVoted = 0
                     
                     let testID = loadedMessage?.senderuuid != self.NSUserData.string(forKey: "recordID")!//keychain
-                                        
-                    if (loadedMessage!.calculate() > 0) && testID{
+                    let blocktest = self.blockedUsertest(senderID: (loadedMessage?.senderuuid)!)//
+                    
+                    if (loadedMessage!.calculate() > 0) && testID && blocktest{
                         DispatchQueue.main.async(execute: { () -> Void in
                             //TESTS IF LOADED MSG IS IN COREDATA IF NOT THEN STORES IT BRAH
                             let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Message")
@@ -169,7 +185,7 @@ class Helper{
                         let fmCrumbMessageYours = CrumbMessage(text: fmtext, senderName: fmsenderName, location: fmlocation, timeDropped: fmtimedropped, timeLimit: fmtimelimit, senderuuid: fmsenderuuid, votes: fmvotes)
                         
                         fmCrumbMessageYours?.hasVoted = fetchedmsgsCD[i].hasVoted! as Int
-                        // ]\\commentsArr commentsArr
+                        // ]\\sArr commentsArr
                         
                         fmCrumbMessageYours?.uRecordID = fetchedmsgsCD[i].recorduuid! as String
                         //fmCrumbMessageYours?.addressStr = fmaddressStr
@@ -348,13 +364,15 @@ class Helper{
             //commentsToLoad
             var i = 0
             while  i <= (fmComment.count - 1){//loops through all of coredata store
-                if fmComment[i].message?.recorduuid == uniqueRecordID {//compares sendername of user's to msgs and returns user's msgs
+                if (fmComment[i].message?.recorduuid)! == uniqueRecordID && fmComment[i].message?.markedForDelete == 0 && blockedUsertest(senderID: fmComment[i].userID!){//compares sendername of user's to msgs and returns user's msgs
 
                     let fmtext = fmComment[i].text! as String
                     let fmsenderName = fmComment[i].username! as String
                     let fmtimeSent = fmComment[i].timeSent! as Date
-                    let fmComment = CommentShort(username: fmsenderName, text: fmtext, timeSent: fmtimeSent)
-                
+                    let fmuserid = fmComment[i].userID! as String
+                    let fmrecid =  fmComment[i].recorduuid! as String
+                    let fmComment = CommentShort(username: fmsenderName, text: fmtext, timeSent: fmtimeSent, userID: fmuserid)
+                    fmComment.recorduuid = fmrecid
                     // ]\\commentsArr commentsArr
                     //fmCrumbMessageYours?.addressStr = fmaddressStr
                     commentsToLoad += [fmComment]
@@ -480,6 +498,8 @@ class Helper{
             commentMO.setValue(comment.username, forKey: "username")
             commentMO.setValue(comment.timeSent, forKey: "timeSent")
             //recorduuid
+            commentMO.setValue(comment.userID, forKey: "userID")
+            commentMO.setValue(0, forKey: "markedForDelete")//false
             commentMO.setValue(comment.recorduuid, forKey: "recorduuid")
             commentMO.message = ComMessage
             
@@ -619,9 +639,6 @@ class Helper{
     //takes a recordid, and subscribes to be notified of changes
     //used in appdel (for testing) and sign in for final
     func cloudkitSub(){//recorduuid: String
-        
-        
-        
         //
         let container = CKContainer.default().publicCloudDatabase//privateCloudDatabase 
         //keychain
@@ -718,7 +735,8 @@ class Helper{
                     let text = ckComment.value(forKey: "text") as! String
                     let time = ckComment.value(forKey: "timeSent") as! Date
                     let recorduuid = ckComment.recordID.recordName
-                    let com = CommentShort(username: user, text: text, timeSent: time)
+                    let userid = ckComment.value(forKey: "senderuuid") as! String
+                    let com = CommentShort(username: user, text: text, timeSent: time, userID: userid)
                     com.recorduuid = recorduuid
                     
                     DispatchQueue.main.async(execute: { () -> Void in//test to see if msg is in core data
@@ -731,8 +749,9 @@ class Helper{
                             if let fetchResults = try self.getmoc().fetch(fetchRequest) as? [Comment]{
                                 if fetchResults.isEmpty{
                                     //save comments to cd
-                                    self.saveCommentToCD(comment: com, recordID: ckidToTest.recordName)//Saves to coredata
-                                    return
+                                    if self.blockedUsertest(senderID: userid){
+                                        self.saveCommentToCD(comment: com, recordID: ckidToTest.recordName)//Saves to coredata
+                                    }
                                 }
                             }
                         } catch{//there is an error
@@ -886,5 +905,34 @@ class Helper{
         } catch {
             print(error)
         }
+    }
+    
+    func commentHide(id: String){
+        let predicate = NSPredicate(format: "recorduuid == %@", id)
+        
+        var fetchRequest: NSFetchRequest<Comment>
+        
+        if #available(iOS 10.0, OSX 10.12, *) {
+            fetchRequest = Comment.fetchRequest()
+        } else {
+            fetchRequest = NSFetchRequest(entityName: "Comment")
+        }
+        
+        fetchRequest.predicate = predicate
+        
+        do {// change it, it not work y?
+            let fetchedMsgs = try getmoc().fetch(fetchRequest)
+            
+            fetchedMsgs.first?.setValue(1, forKey: "markedForDelete")
+            
+            do {// save it!
+                try getmoc().save()
+            } catch {
+                print(error)
+            }
+        } catch {
+            print(error)
+        }
+        
     }
 }

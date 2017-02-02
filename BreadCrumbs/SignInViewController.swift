@@ -49,7 +49,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     
     @IBAction func signUpAction(_ sender: UIButton) {
         
-        if isICloudContainerAvailable() && setUserNameTextField.text?.characters.count > 0 && setUserNameTextField.text?.characters.count < 17 && NSUserData.bool(forKey: "ckAccountStatus") && currentReachabilityStatus != .notReachable{
+        if isICloudContainerAvailable() && setUserNameTextField.text?.characters.count > 0 && setUserNameTextField.text?.characters.count < 17 && NSUserData.bool(forKey: "ckAccountStatus") && currentReachabilityStatus != .notReachable && AppDelegate().isBanned(){
             
             let time = Date()
 
@@ -86,7 +86,10 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
             
             
             performSegue(withIdentifier: "SignInSegue", sender: sender)//presents weird and i also want user to be able to access this and sign out/in again. cant change username after picking though. may need more view controllers
-        }else{
+        }else if AppDelegate().isBanned(){
+            performSegue(withIdentifier: "BannedPage", sender: sender)
+        }
+        else{
             errorTest()
         }
     }
@@ -220,6 +223,9 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         record.setValue(username, forKey: "userName")
         record.setValue(7, forKey: "crumbCount")
         record.setValue(0, forKey: "premiumStatus")
+        record.setValue(0, forKey: "Reported")
+        record.setValue("notBanned", forKey: "Banned")
+        record.setValue(NSUserData.string(forKey: "recordID"), forKey: "UserID")
         
         publicData.save(record, completionHandler: { record, error in
             if error != nil {

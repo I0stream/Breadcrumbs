@@ -10,13 +10,18 @@ import MapKit
 import CloudKit
 import CoreData
 
-class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CreateCommentDelegate, MKMapViewDelegate{
+class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableViewDataSource, CreateCommentDelegate, MKMapViewDelegate, reportreloaddelegate{
     
     //MARK: Variables
     var viewbreadcrumb: CrumbMessage?
     var comments = [CommentShort]()
     
     var conHeight: CGFloat?
+    
+    var segType: String?
+    
+    let userSelf = AppDelegate().NSUserData.string(forKey: "recordID")
+
     
     let helperFunctions = AppDelegate().helperfunctions
     //let helperFunctions = Helper()
@@ -145,10 +150,13 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
             let msgCell = tableView.dequeueReusableCell(withIdentifier: "YourMsgCell", for: indexPath) as! CrumbTableViewCell
             
             //report button
-            msgCell.ReportButton.addTarget(self, action: #selector(ViewCrumbViewController.report), for: .touchUpInside)
-            
-            
-            
+            if viewbreadcrumb?.senderuuid == userSelf{
+                msgCell.ReportButton.isHidden = true
+                msgCell.ReportButton.isEnabled = false
+            }else if viewbreadcrumb?.senderuuid != userSelf{
+                msgCell.ReportButton.tag = indexPath.row
+                msgCell.ReportButton.addTarget(self, action: #selector(ViewCrumbViewController.report), for: .touchUpInside)
+            }
             if viewbreadcrumb!.calculate() > 0 {
                 msgCell.CreateCommentButton.addTarget(self, action: #selector(ViewCrumbViewController.commentSegue), for: .touchUpInside)
                 msgCell.VoteButton.addTarget(self, action: #selector(ViewCrumbViewController.Vote), for: .touchUpInside)
@@ -203,10 +211,19 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
             let commentCells = tableView.dequeueReusableCell(withIdentifier: "commentYours", for: indexPath) as! CommentCell
             commentCells.selectionStyle = .none
             
+            
             let comment = comments[(indexPath.row - 2)]
             commentCells.CommentTextView.text = comment.text
             commentCells.usernameLabel.text = comment.username
             commentCells.timeAgoLabel.text = comment.timeRelative()//time is how long ago it was posted, dont see the point to change var name to something more explanatory right now
+            
+            if comment.userID == userSelf{
+                commentCells.ReportButton.isHidden = true
+                commentCells.ReportButton.isEnabled = false
+            }else if comment.userID != userSelf{
+                commentCells.ReportButton.tag = (indexPath.row)
+                commentCells.ReportButton.addTarget(self, action: #selector(ViewCrumbViewController.report), for: .touchUpInside)
+            }
             
             return commentCells
         }
@@ -215,8 +232,18 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     //MARK: REport
     
-    func report() {
-        performSegue(withIdentifier: "ReportMenuSegue", sender: self)
+    func report(sender: UIButton) {
+        if viewbreadcrumb!.calculate() > 0 {
+            performSegue(withIdentifier: "ReportMenuSegue", sender: sender)
+            
+        }else{
+            let alertController = UIAlertController(title: "BreadCrumbs", message:
+                "You cannot report a dead crumb as it has been deleted", preferredStyle: UIAlertControllerStyle.alert)
+            alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default,handler: nil))
+            
+            self.present(alertController, animated: true, completion: nil)
+        }
+
     }
     
     
@@ -231,8 +258,29 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
             upcoming.viewbreadcrumb = viewbreadcrumb
             let destVC = segue.destination as! CreateCommentViewController
             destVC.delegate = self
-
-        }
+        } else if (segue.identifier == "ReportMenuSegue") && viewbreadcrumb!.calculate() > 0{
+        
+            let upcoming = segue.destination as! ReportMenuViewController
+            upcoming.delegate = self
+            
+            let button = sender as! UIButton
+            let tag = button.tag
+            if tag == 1{
+                upcoming.reportedMessageId = viewbreadcrumb?.uRecordID
+                upcoming.reportedUserId = viewbreadcrumb?.senderuuid
+                upcoming.reportedtext = viewbreadcrumb?.text
+                upcoming.reporteduserID = viewbreadcrumb?.senderuuid
+                upcoming.typeToReport = "crumbmessage"
+                
+            }else{
+                let index = tag - 2
+                let comment = comments[index]
+                upcoming.reportedMessageId = comment.recorduuid
+                upcoming.reportedUserId = comment.userID
+                upcoming.reportedtext = comment.text
+                upcoming.reporteduserID = comment.userID
+                upcoming.typeToReport = "comment"
+            }}
     }
     
     
@@ -381,6 +429,24 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         
         self.present(alertController, animated: true, completion: nil)
     }
+    
+    func reload() {
+        segType = "comment"
+        self.comments.removeAll()
+        self.loadComments()//cd
+        
+        self.YourtableView.reloadData()
+    }
+    
+    
+    /*@IBAction func prepareForUnwind(segue: UIStoryboardSegue) {
+    }
+    override func canPerformUnwindSegueAction(_ action: Selector, from fromViewController: UIViewController, withSender sender: Any) -> Bool {
+        return true
+    }*/
+
+
+    
 }
 //reloads table in yours or others in order to persist vote button colors colors
 protocol NewOthersCrumbsViewControllerDelegate: class {

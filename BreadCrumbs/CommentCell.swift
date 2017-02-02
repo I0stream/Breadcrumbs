@@ -16,6 +16,8 @@ class CommentCell: UITableViewCell {
     
     @IBOutlet weak var timeAgoLabel: UILabel!
     
+    @IBOutlet weak var ReportButton: UIButton!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

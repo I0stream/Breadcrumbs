@@ -19,7 +19,9 @@ extension Comment {
     @NSManaged public var text: String?
     @NSManaged public var timeSent: NSDate?
     @NSManaged public var username: String?
+    @NSManaged public var userID: String?
     @NSManaged public var recorduuid: String?
     @NSManaged public var message: Message?
+    @NSManaged public var markedForDelete: NSNumber?//0 is false 1 is true
 
 }

@@ -40,6 +40,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
         accountStatus()// is icloud drive available?
         
+        getUserInfo()
         
         //application.applicationIconBadgeNumber = 0
 
@@ -47,7 +48,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         //if so go to app
         // NSUserData.string(forKey: "didAgreeToPolAndEULA") == "Agree"
 
-        if isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && NSUserData.string(forKey: "userName") != nil && NSUserData.string(forKey: "recordID") != nil && NSUserData.string(forKey: "didAgreeToPolAndEULA") == "Agree"{//keychain
+        if TestIfUserSignedIn(){//keychain
             
             self.window = UIWindow(frame: UIScreen.main.bounds)
             
@@ -72,7 +73,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             self.timer1 = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(AppDelegate.loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 60 sec for a msg
             CDStack.saveContext()
             
-        } else {//if not go to sign in
+        } else if !isBanned(){
+            self.window = UIWindow(frame: UIScreen.main.bounds)
+            
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            
+            
+            let initialViewController = storyboard.instantiateViewController(withIdentifier: "Banned")
+            
+            self.window?.rootViewController = initialViewController
+            self.window?.makeKeyAndVisible()
+        }else {//if not go to sign in
             
             //gets and sets userrecordID
             if NSUserData.string(forKey: "recordID") == nil/*|| user != signedIn*/{//keychain
@@ -101,33 +112,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         return true
     }
 
-    
-    //this func it pretty dumb, so I get a notif when a any breadcrumb changes(it includes the recordid)
-    //but it does not tell me what specific value has changed
-    //so i just update the only two that can, comment and vote
-    //at least to my knowledge this is how it works
-    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        
-        let cloudKitNotification = CKNotification.init(fromRemoteNotificationDictionary: userInfo as! [String : NSObject])
-        
-        //let alertBody = cloudKitNotification.alertBody//123
-        //print(alertBody!)
-        
-        if cloudKitNotification.notificationType == .query {
-            let recordID = (cloudKitNotification as! CKQueryNotification).recordID
-            let voteValue = (cloudKitNotification as! CKQueryNotification).recordFields?.first?.value as? Int
-            
-            helperfunctions.updateCrumbFromSub(recorduuid: recordID!, NewVote: voteValue)
-            
-            //        AppDelegate().notify(title: "New Comment" ,body: "New comment posted in one of your Crumbs!",crumbID: recorduuid, userId: name)
-
-            
-            
-            completionHandler(.newData)
+    func TestIfUserSignedIn()-> Bool{
+        if isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && NSUserData.string(forKey: "userName") != nil && NSUserData.string(forKey: "recordID") != nil && NSUserData.string(forKey: "didAgreeToPolAndEULA") == "Agree" && isBanned() {
+           return true
+        }else{
+            return false
         }
-        
     }
+    
+    func isBanned() -> Bool{
+        
+        let isbanValue = self.NSUserData.string(forKey: "banned") == "banned"
 
+        
+        let notbanned = self.NSUserData.string(forKey: "banned") != "banned"
+
+        if notbanned{
+            return true//not banned
+        }else if isbanValue{
+            return false
+        }else{
+            return false
+        }
+    }
+    
+    
     
     func accountStatus(){
         let container = CKContainer.default()
@@ -139,6 +148,36 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                 self.NSUserData.setValue(false, forKey: "ckAccountStatus")
             }
         }
+    }
+    
+    func getUserInfo(){
+        let container = CKContainer.default()
+        let publicData = container.publicCloudDatabase
+        let CKuserID: CKRecordID = CKRecordID(recordName: NSUserData.string(forKey: "recordID")!)//keychain
+        
+        let query = CKQuery(recordType: "UserInfo", predicate: NSPredicate(format: "%K == %@", "creatorUserRecordID" ,CKReference(recordID: CKuserID, action: CKReferenceAction.none)))
+        
+        publicData.perform(query, inZoneWith: nil) {
+            results, error in
+            if error == nil{
+                for userinfo in results! {//need to have this update if user has already signed in before
+                    let crumbCountCD = userinfo["crumbCount"] as! Int
+                    let userName = userinfo["userName"] as! String
+                    let premiumStatus = userinfo["premiumStatus"] as! Bool
+                    let recordName = userinfo.recordID.recordName
+                    let banned = userinfo["Banned"] as! String
+                    
+                    self.NSUserData.setValue(userName, forKey: "userName")
+                    self.NSUserData.setValue(crumbCountCD, forKey: "crumbCount")
+                    self.NSUserData.setValue(premiumStatus, forKey: "premiumStatus")
+                    self.NSUserData.setValue(recordName, forKey: "recordName")
+                    self.NSUserData.setValue(banned, forKey: "banned")
+                }
+            }else{
+                print(error!)
+            }
+        }
+        
     }
     //MARK: save icloud msgs to coreData
     //constant checking for new msgs
@@ -208,7 +247,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             }
         }
         if bestEffortAtLocation == nil || (bestEffortAtLocation.horizontalAccuracy > (newloc?.horizontalAccuracy)!) || bestCurrentTime > 31.0{
-            
             //if best is empty 
             //if new value is more accurate
             //if bestcurrent is old as fuck
@@ -263,33 +301,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         }
     }
     
-    func getUserInfo(){
-        let container = CKContainer.default()
-        let publicData = container.publicCloudDatabase
-        let CKuserID: CKRecordID = CKRecordID(recordName: NSUserData.string(forKey: "recordID")!)//keychain
-        
-        let query = CKQuery(recordType: "UserInfo", predicate: NSPredicate(format: "%K == %@", "creatorUserRecordID" ,CKReference(recordID: CKuserID, action: CKReferenceAction.none)))
-        
-        publicData.perform(query, inZoneWith: nil) {
-            results, error in
-            if error == nil{
-                for userinfo in results! {//need to have this update if user has already signed in before
-                    let crumbCountCD = userinfo["crumbCount"] as! Int
-                    let userName = userinfo["userName"] as! String
-                    let premiumStatus = userinfo["premiumStatus"] as! Bool
-                    let recordName = userinfo.recordID.recordName
-                    
-                    self.NSUserData.setValue(userName, forKey: "userName")
-                    self.NSUserData.setValue(crumbCountCD, forKey: "crumbCount")
-                    self.NSUserData.setValue(premiumStatus, forKey: "premiumStatus")
-                    self.NSUserData.setValue(recordName, forKey: "recordName")
-                }
-            }else{
-                print(error!)
-            }
-        }
-        
-    }
+
     
     //crumb count checker adder
     //
@@ -400,10 +412,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
         accountStatus()
-        //isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && NSUserData.string(forKey: "userName") != nil && NSUserData.string(forKey: "recordID") != nil
+        getUserInfo()
+
         
-        //isICloudContainerAvailable() && NSUserData.string(forKey: "userName") != nil && NSUserData.bool(forKey: "ckAccountStatus")
-        if isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && NSUserData.string(forKey: "userName") != nil && NSUserData.string(forKey: "recordID") != nil && NSUserData.string(forKey: "didAgreeToPolAndEULA") == "Agree"{
+        if TestIfUserSignedIn(){
             loadAndStoreiCloudMsgsBasedOnLoc()//not this
             //UPDATE VOTES HERE
             //start load and store if not already
@@ -432,10 +444,60 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             /*if !checkLocation(){
                 
             }*/
-            
         //isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && NSUserData.string(forKey: "userName") != nil && NSUserData.string(forKey: "recordID") != nil
         //is icloud enabled, is username set
-        }else if isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && NSUserData.string(forKey: "didAgreeToPolAndEULA") == "Agree"{
+        } else if !isBanned(){
+            self.window = UIWindow(frame: UIScreen.main.bounds)
+            
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            
+            
+            let initialViewController = storyboard.instantiateViewController(withIdentifier: "Banned")
+            
+            self.window?.rootViewController = initialViewController
+            self.window?.makeKeyAndVisible()
+        }else if (forKey: "didAgreeToPolAndEULA") != "Agree"{
+            if NSUserData.string(forKey: "recordID") == nil/*|| user != signedIn*/{//keychain
+                iCloudUserIDAsync() {
+                    recordID, error in
+                    if let userID = recordID?.recordName {
+                        print("received iCloudID \(userID)")
+                        self.NSUserData.setValue(userID, forKey: "recordID")//switch to keychain?
+                        self.getUserInfo()
+                        //checks crumbcount and populates it, populates premium with most recent value
+                    } else {
+                        print("Fetched iCloudID was nil")
+                    }
+                }
+            }
+            
+            self.window = UIWindow(frame: UIScreen.main.bounds)
+            
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            
+            let initialViewController = storyboard.instantiateViewController(withIdentifier: "Agreement")
+            
+            self.window?.rootViewController = initialViewController
+            self.window?.makeKeyAndVisible()
+            print("sign in")
+        
+        
+        }else if isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && NSUserData.string(forKey: "didAgreeToPolAndEULA") == "Agree" {
+            
+            //gets and sets userrecordID
+            if NSUserData.string(forKey: "recordID") == nil/*|| user != signedIn*/{//keychain
+                iCloudUserIDAsync() {
+                    recordID, error in
+                    if let userID = recordID?.recordName {
+                        print("received iCloudID \(userID)")
+                        self.NSUserData.setValue(userID, forKey: "recordID")//switch to keychain?
+                        self.getUserInfo()
+                        //checks crumbcount and populates it, populates premium with most recent value
+                    } else {
+                        print("Fetched iCloudID was nil")
+                    }
+                }
+            }
             
             NotificationCenter.default.post(name: Notification.Name(rawValue: "ReloadSignIn"), object: nil)
             
@@ -448,6 +510,22 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             self.window?.rootViewController = initialViewController
             self.window?.makeKeyAndVisible()
         }else{
+            
+            //gets and sets userrecordID
+            if NSUserData.string(forKey: "recordID") == nil/*|| user != signedIn*/{//keychain
+                iCloudUserIDAsync() {
+                    recordID, error in
+                    if let userID = recordID?.recordName {
+                        print("received iCloudID \(userID)")
+                        self.NSUserData.setValue(userID, forKey: "recordID")//switch to keychain?
+                        self.getUserInfo()
+                        //checks crumbcount and populates it, populates premium with most recent value
+                    } else {
+                        print("Fetched iCloudID was nil")
+                    }
+                }
+            }
+            
             self.window = UIWindow(frame: UIScreen.main.bounds)
             
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -455,6 +533,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             let initialViewController = storyboard.instantiateViewController(withIdentifier: "Welcome") as! WelcomeViewController
             self.window?.rootViewController = initialViewController
             self.window?.makeKeyAndVisible()
+            print("welcome")
         }
 
         //When app is reopened check cloudkit for updated vote values for crumbs that are still alive
@@ -471,6 +550,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     
     //remote Notification funcs for subscriptions
     
+    
+    //this func it pretty dumb, so I get a notif when a any breadcrumb changes(it includes the recordid)
+    //but it does not tell me what specific value has changed
+    //so i just update the only two that can, comment and vote
+    //at least to my knowledge this is how it works
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        
+        let cloudKitNotification = CKNotification.init(fromRemoteNotificationDictionary: userInfo as! [String : NSObject])
+        
+        //let alertBody = cloudKitNotification.alertBody//123
+        //print(alertBody!)
+        
+        if cloudKitNotification.notificationType == .query {
+            let recordID = (cloudKitNotification as! CKQueryNotification).recordID
+            let voteValue = (cloudKitNotification as! CKQueryNotification).recordFields?.first?.value as? Int
+            
+            helperfunctions.updateCrumbFromSub(recorduuid: recordID!, NewVote: voteValue)
+            
+            //        AppDelegate().notify(title: "New Comment" ,body: "New comment posted in one of your Crumbs!",crumbID: recorduuid, userId: name)
+            
+            
+            
+            completionHandler(.newData)
+        }
+        
+    }
     
     //user Notification funcs function for load and store
     

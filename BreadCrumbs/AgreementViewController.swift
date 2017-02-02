@@ -44,4 +44,12 @@ class AgreementViewController: UIViewController{
         }
     }
     
+    @IBAction func UserGuidelines(_ sender: Any) {
+        let url = NSURL(string : "https://breadcrumbs.social/user-guidelines/")! as URL
+        if #available(iOS 10.0, *) {
+            UIApplication.shared.open(url , options: ["yes" : "yes" as Any], completionHandler: { (true) in
+                //print("sent to gmail")
+            })
+        }
+    }
 }

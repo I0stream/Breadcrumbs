@@ -18,6 +18,7 @@ class OthersCrumbsTableViewCell: UITableViewCell {
     @IBOutlet weak var timeCountdown: UILabel!
     @IBOutlet weak var VoteButton: UIButton!
     
+    @IBOutlet weak var ReportButton: UIButton!
 
     override func awakeFromNib() {
         super.awakeFromNib()

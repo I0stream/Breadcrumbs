@@ -112,7 +112,8 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
             UIApplication.shared.registerForRemoteNotifications()
 
         }
-        
+        NSUserData.setValue(0, forKey: "ExplainerCrumb")
+
         
         //show crumbcount explainer only once; maybe later have a ? mark button to show explainer
         if NSUserData.value(forKey: "ExplainerCrumb") as! Int == 0{
@@ -232,8 +233,8 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     func removeInfoBarView(){
         self.view.viewWithTag(5)!.frame = CGRect(x: 0, y:(self.view.viewWithTag(1)!.frame.size.height), width: (view.frame.size.width), height: 0)
         self.view.viewWithTag(26)?.transform.ty = (view.viewWithTag(26
-            )?.transform.ty)! - 20
-        view.viewWithTag(34)?.transform.ty = (view.viewWithTag(34)?.transform.ty)! - 20
+            )?.transform.ty)! - 20//text
+        //view.viewWithTag(34)?.transform.ty = (view.viewWithTag(34)?.transform.ty)! - 20//textbox
         view.viewWithTag(2)?.transform.ty = (view.viewWithTag(2)?.transform.ty)! - 20
 
         self.view.viewWithTag(4)!.removeFromSuperview()

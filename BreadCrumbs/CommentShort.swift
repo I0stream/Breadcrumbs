@@ -16,11 +16,13 @@ class CommentShort {
     let text: String
     let timeSent: Date
     var recorduuid: String?
+    let userID: String
     
-    init(username: String, text: String, timeSent: Date) {
+    init(username: String, text: String, timeSent: Date, userID: String) {
         self.username = username
         self.text = text
         self.timeSent = timeSent
+        self.userID = userID
         //time posted
     }
     

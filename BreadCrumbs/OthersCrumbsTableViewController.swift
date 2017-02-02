@@ -118,6 +118,17 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
                     crumbmsg.viewedOther = 1
                     print("updated view")
              }*/
+        } else if segue.identifier == "OthersToReportMenu"{
+            let upcoming = segue.destination as! ReportMenuViewController
+            
+            let row = (sender as! UIButton).tag
+            let crumbmsg = crumbmessages[row]
+            
+            upcoming.reportedMessageId = crumbmsg.uRecordID
+            upcoming.reportedUserId = crumbmsg.senderuuid
+            upcoming.reportedtext = crumbmsg.text
+            upcoming.reporteduserID = crumbmsg.senderuuid
+            upcoming.typeToReport = "crumbmessage"
         }
         
     }
@@ -166,6 +177,8 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
             
             cell.VoteButton.tag = indexPath.row
             cell.VoteButton.addTarget(self, action: #selector(OthersCrumbsTableViewController.buttonActions), for: .touchUpInside)
+            cell.ReportButton.tag = indexPath.row
+            cell.ReportButton.addTarget(self, action: #selector(OthersCrumbsTableViewController.report), for: .touchUpInside)
             if crumbmsg.calculate() > 0 {
                 let ref = Int(crumbmsg.calculate())
                 
@@ -328,11 +341,26 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
     }
     
     @IBAction func othersPostButton(_ sender: Any) {
-        
-        //let destVC = WriteCrumbViewController()
-        //destVC.delegate = self
-        
         self.performSegue(withIdentifier: "PostButton", sender: self)
 
     }
+    
+    func report(sender: UIButton) {
+        let i = sender.tag
+        if crumbmessages[i].calculate() > 0 {
+            performSegue(withIdentifier: "OthersToReportMenu", sender: sender)
+            
+        }else{
+            let alertController = UIAlertController(title: "BreadCrumbs", message:
+                "You cannot report a dead crumb as it has been deleted", preferredStyle: UIAlertControllerStyle.alert)
+            alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default,handler: nil))
+            
+            self.present(alertController, animated: true, completion: nil)
+        }
+        
+    }
+    
+    @IBAction func UnwindReciever(segue: UIStoryboardSegue) {
+    }
+
 }

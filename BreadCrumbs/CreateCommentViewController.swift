@@ -128,7 +128,7 @@ class CreateCommentViewController: UIViewController, UITextViewDelegate {
     
     func AddComment(){
         let date = Date()
-        let newComment = CommentShort(username: NSUserData.string(forKey: "userName")!, text: WriteCommentTextView.text, timeSent: date)
+        let newComment = CommentShort(username: NSUserData.string(forKey: "userName")!, text: WriteCommentTextView.text, timeSent: date, userID: self.NSUserData.string(forKey: "recordID")!)
         delegate?.addNewComment(newComment)
         //AddToCD(newComment)
         AddToCKThenCD(newComment)
@@ -144,6 +144,7 @@ class CreateCommentViewController: UIViewController, UITextViewDelegate {
         commentRecord.setValue(comment.timeSent, forKey: "timeSent")
         commentRecord.setValue(comment.username, forKey: "userName")
         commentRecord.setValue(comment.text, forKey: "text")
+        commentRecord.setValue(comment.userID, forKey: "senderuuid")
         
         
         //var ref = CKReference(record: listRecord, action: .DeleteSelf)
@@ -196,6 +197,7 @@ class CreateCommentViewController: UIViewController, UITextViewDelegate {
                 commentMO.setValue(comment.username, forKey: "username")
                 commentMO.setValue(comment.timeSent, forKey: "timeSent")
                 //recorduuid
+                commentMO.setValue(comment.userID, forKey: "userID")
                 commentMO.setValue(recorduuid, forKey: "recorduuid")
                 commentMO.message = ComMessage
                 
