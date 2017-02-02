@@ -160,7 +160,7 @@ class ReportViewController: UIViewController, UITextViewDelegate {
         //itemRecord.setObject(ref, forKey: "owningList")
         
         
-        reportRecord.setValue(reportedMessageId, forKey: "dbreportedMessageID")//message reported
+        reportRecord.setValue(reportedMessageId, forKey: "reportedMessageID")//message reported
         reportRecord.setValue(userSelf, forKey: "reportSender")//person who sent report
         reportRecord.setValue(WriteReportTextView.text, forKey: "reportText")//why they reported it
         reportRecord.setValue(reporteduserID, forKey: "reportedMessageUserID")

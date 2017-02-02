@@ -99,7 +99,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func BlueDotIndicate(_ notification: Notification){
-        if let recordid = notification.userInfo?["RecordID"] as? String{
+        if let recordid = notification.userInfo?["RecordUuid"] as? String{
             if recordid == self.viewbreadcrumb?.uRecordID{
                 DispatchQueue.main.async(execute: { () -> Void in
                     self.PALEBLUEDOT.isHidden = false

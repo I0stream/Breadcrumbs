@@ -173,7 +173,6 @@
                                                 <rect key="frame" x="0.0" y="0.0" width="384" height="70"/>
                                                 <connections>
                                                     <action selector="PrivacyPolicy:" destination="Ncp-68-9rX" eventType="touchUpInside" id="Dpi-Uf-0Wo"/>
-                                                    <action selector="changeUsername:" destination="28W-jT-Dei" eventType="touchUpInside" id="M07-Xh-mkK"/>
                                                 </connections>
                                             </button>
                                         </subviews>
@@ -201,7 +200,6 @@
                                                 <rect key="frame" x="0.0" y="0.0" width="384" height="70"/>
                                                 <connections>
                                                     <action selector="Agreement:" destination="Ncp-68-9rX" eventType="touchUpInside" id="XsP-qp-WVG"/>
-                                                    <action selector="RateAppButton:" destination="28W-jT-Dei" eventType="touchUpInside" id="VaH-08-NBe"/>
                                                 </connections>
                                             </button>
                                         </subviews>
@@ -1157,7 +1155,7 @@
                         <rect key="frame" x="0.0" y="0.0" width="414" height="736"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
-                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" ambiguous="YES" misplaced="YES" mapType="standard" scrollEnabled="NO" rotateEnabled="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zpQ-qd-jxH">
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" userInteractionEnabled="NO" contentMode="scaleToFill" misplaced="YES" mapType="standard" scrollEnabled="NO" rotateEnabled="NO" translatesAutoresizingMaskIntoConstraints="NO" id="zpQ-qd-jxH">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="360"/>
                             </mapView>
                             <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" showsHorizontalScrollIndicator="NO" showsVerticalScrollIndicator="NO" dataMode="prototypes" style="plain" separatorStyle="none" rowHeight="44" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="kcu-42-o7K">
@@ -2174,7 +2172,7 @@
                                 </constraints>
                             </view>
                             <view hidden="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="iX2-65-zQ3">
-                                <rect key="frame" x="0.0" y="627" width="414" height="60"/>
+                                <rect key="frame" x="0.0" y="676" width="414" height="60"/>
                                 <subviews>
                                     <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="dGy-LX-Wr7">
                                         <rect key="frame" x="0.0" y="0.0" width="414" height="60"/>
@@ -2429,11 +2427,12 @@
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
                         <subviews>
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="MeS-Sq-4RK">
-                                <rect key="frame" x="15" y="125" width="384" height="106"/>
+                                <rect key="frame" x="15" y="125" width="379" height="145"/>
                                 <subviews>
-                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" editable="NO" text="You have been banned.You may appeal your ban, if you so chose to. Have a nice day." textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fak-A0-32d">
-                                        <rect key="frame" x="15" y="15" width="354" height="76"/>
+                                    <textView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" showsHorizontalScrollIndicator="NO" editable="NO" textAlignment="natural" selectable="NO" translatesAutoresizingMaskIntoConstraints="NO" id="fak-A0-32d">
+                                        <rect key="frame" x="15" y="15" width="349" height="115"/>
                                         <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
+                                        <string key="text">You have been banned. You may appeal your ban, if you so chose to please label the email 'Ban Appeal' and include your user id number in the appeal. Have a nice day.</string>
                                         <fontDescription key="fontDescription" type="system" pointSize="18"/>
                                         <textInputTraits key="textInputTraits" autocapitalizationType="sentences" enablesReturnKeyAutomatically="YES"/>
                                     </textView>
@@ -2442,7 +2441,7 @@
                                 <constraints>
                                     <constraint firstAttribute="bottom" secondItem="fak-A0-32d" secondAttribute="bottom" constant="15" id="0QY-U6-i7M"/>
                                     <constraint firstItem="fak-A0-32d" firstAttribute="top" secondItem="MeS-Sq-4RK" secondAttribute="top" constant="15" id="5wY-Ht-NAE"/>
-                                    <constraint firstAttribute="height" constant="106" id="IY5-fw-Npz"/>
+                                    <constraint firstAttribute="height" constant="145" id="6Zo-VD-BGh"/>
                                     <constraint firstItem="fak-A0-32d" firstAttribute="leading" secondItem="MeS-Sq-4RK" secondAttribute="leading" constant="15" id="URM-4c-6O7"/>
                                     <constraint firstAttribute="trailing" secondItem="fak-A0-32d" secondAttribute="trailing" constant="15" id="a0b-Sr-6lj"/>
                                 </constraints>
@@ -2498,24 +2497,38 @@
                                     <constraint firstAttribute="trailing" secondItem="hnn-AI-NBC" secondAttribute="trailing" constant="15" id="wNr-pR-tDu"/>
                                 </constraints>
                             </view>
+                            <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="User Id:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xax-8p-J0c">
+                                <rect key="frame" x="42" y="310" width="330" height="30"/>
+                                <constraints>
+                                    <constraint firstAttribute="height" constant="30" id="75r-tT-lXI"/>
+                                    <constraint firstAttribute="width" constant="330" id="llJ-M5-i4d"/>
+                                </constraints>
+                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
+                                <nil key="textColor"/>
+                                <nil key="highlightedColor"/>
+                            </label>
                         </subviews>
                         <color key="backgroundColor" red="0.97254901959999995" green="0.97254901959999995" blue="0.97254901959999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
-                            <constraint firstAttribute="trailingMargin" secondItem="MeS-Sq-4RK" secondAttribute="trailing" constant="-5" id="0dI-Vg-zu8"/>
                             <constraint firstItem="oNl-S8-QT2" firstAttribute="top" secondItem="h5o-dv-aZL" secondAttribute="top" id="81i-g7-HUU"/>
                             <constraint firstItem="d36-Jl-hSl" firstAttribute="centerX" secondItem="h5o-dv-aZL" secondAttribute="centerX" id="BmU-ZR-EXl"/>
+                            <constraint firstItem="xax-8p-J0c" firstAttribute="top" secondItem="MeS-Sq-4RK" secondAttribute="bottom" constant="40" id="KOL-ZL-b8y"/>
                             <constraint firstItem="MeS-Sq-4RK" firstAttribute="leading" secondItem="h5o-dv-aZL" secondAttribute="leadingMargin" constant="-5" id="O18-d0-OoF"/>
                             <constraint firstItem="qtD-At-Yxb" firstAttribute="top" secondItem="d36-Jl-hSl" secondAttribute="bottom" constant="75" id="X5o-Oo-JPg"/>
-                            <constraint firstItem="MeS-Sq-4RK" firstAttribute="centerX" secondItem="h5o-dv-aZL" secondAttribute="centerX" id="aS2-fF-CsQ"/>
+                            <constraint firstItem="xax-8p-J0c" firstAttribute="centerX" secondItem="h5o-dv-aZL" secondAttribute="centerX" id="Xf0-xc-qK4"/>
+                            <constraint firstItem="MeS-Sq-4RK" firstAttribute="centerX" secondItem="h5o-dv-aZL" secondAttribute="centerX" constant="-2.5" id="aS2-fF-CsQ"/>
                             <constraint firstAttribute="trailing" secondItem="oNl-S8-QT2" secondAttribute="trailing" id="hTB-3D-7BF"/>
                             <constraint firstItem="MeS-Sq-4RK" firstAttribute="top" secondItem="Wg4-ge-Qzf" secondAttribute="bottom" constant="105" id="ic5-FO-brJ"/>
                             <constraint firstItem="oNl-S8-QT2" firstAttribute="leading" secondItem="h5o-dv-aZL" secondAttribute="leading" id="ivK-VK-Doj"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <outlet property="UserIDLabel" destination="xax-8p-J0c" id="gI7-l3-tjO"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PVr-mL-wL9" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-3823" y="-1974"/>
+            <point key="canvasLocation" x="-3823.188405797102" y="-1974.4565217391305"/>
         </scene>
     </scenes>
     <resources>
@@ -2537,8 +2550,8 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="Z5g-uf-dNi"/>
-        <segue reference="w23-IQ-pCl"/>
         <segue reference="OWZ-9w-7Zi"/>
+        <segue reference="76v-Ar-Pcv"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.3529411764705882" green="0.68235294117647061" blue="1" alpha="1" colorSpace="calibratedRGB"/>
 </document>

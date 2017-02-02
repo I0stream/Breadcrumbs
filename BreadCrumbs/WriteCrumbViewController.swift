@@ -112,8 +112,6 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
             UIApplication.shared.registerForRemoteNotifications()
 
         }
-        NSUserData.setValue(0, forKey: "ExplainerCrumb")
-
         
         //show crumbcount explainer only once; maybe later have a ? mark button to show explainer
         if NSUserData.value(forKey: "ExplainerCrumb") as! Int == 0{

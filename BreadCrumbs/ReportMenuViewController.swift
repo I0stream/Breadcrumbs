@@ -115,7 +115,7 @@ class ReportMenuViewController: UIViewController {
             //and reload viewcrumb
             
             delegate?.reload()
-            performSegue(withIdentifier: "UnwindThroughHierarchy", sender: self)
+            dismiss(animated: true, completion: nil)
         }
     }
 }

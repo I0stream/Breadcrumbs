@@ -10,10 +10,16 @@ import UIKit
 
 class BannedViewController: UIViewController {
 
+    let NSUserData = AppDelegate().NSUserData
+
+    
+    @IBOutlet weak var UserIDLabel: UILabel!
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
+        UserIDLabel.text = "ID: \(NSUserData.string(forKey: "recordID")!)"
     }
 
     override func didReceiveMemoryWarning() {
