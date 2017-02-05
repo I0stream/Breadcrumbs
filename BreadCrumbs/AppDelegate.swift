@@ -38,9 +38,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         // Register with APNs
         application.registerForRemoteNotifications()
         
-        accountStatus()// is icloud drive available?
-        
-        getUserInfo()
+        //accountStatus()// is icloud drive available?
+        accountStatus()
+
+        if NSUserData.string(forKey: "recordID") != nil{
+            getUserInfo()
+
+        }
         
         //application.applicationIconBadgeNumber = 0
 
@@ -49,7 +53,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         // NSUserData.string(forKey: "didAgreeToPolAndEULA") == "Agree"
 
         if TestIfUserSignedIn(){//keychain
-            
             self.window = UIWindow(frame: UIScreen.main.bounds)
             
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -399,10 +402,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         self.NSUserData.setValue(0, forKey: "counterLoc")
         AddCrumbCount()
         CDStack.saveContext()
-/*        if (AppDelegate().timer1 == nil) && (checkLocation()) {
-            print("running in background")
-            self.timer1 = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 30 sec for a msg
-        }*/
+
     }
     
     func applicationWillEnterForeground(_ application: UIApplication) {
@@ -412,10 +412,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     func applicationDidBecomeActive(_ application: UIApplication) {
         // Restart any tasks that were paused (or not yet started) while the application was inactive. If the application was previously in the background, optionally refresh the user interface.
         accountStatus()
-        getUserInfo()
 
+        if NSUserData.string(forKey: "recordID") != nil{
+            getUserInfo()
+
+        }
         
         if TestIfUserSignedIn(){
+            getUserInfo()
+
             loadAndStoreiCloudMsgsBasedOnLoc()//not this
             //UPDATE VOTES HERE
             //start load and store if not already
@@ -456,7 +461,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             
             self.window?.rootViewController = initialViewController
             self.window?.makeKeyAndVisible()
-        }else if (forKey: "didAgreeToPolAndEULA") != "Agree"{
+        }else if (forKey: "didAgreeToPolAndEULA") != "Agree" && NSUserData.string(forKey: "welcomeValue") == "welcome"{
             if NSUserData.string(forKey: "recordID") == nil/*|| user != signedIn*/{//keychain
                 iCloudUserIDAsync() {
                     recordID, error in
@@ -482,7 +487,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             print("sign in")
         
         
-        }else if isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && NSUserData.string(forKey: "didAgreeToPolAndEULA") == "Agree" {
+        }else if isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && NSUserData.string(forKey: "didAgreeToPolAndEULA") == "Agree" && NSUserData.string(forKey: "welcomeValue") == "welcome"{
             
             //gets and sets userrecordID
             if NSUserData.string(forKey: "recordID") == nil/*|| user != signedIn*/{//keychain

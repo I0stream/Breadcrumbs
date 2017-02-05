@@ -75,7 +75,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
             }
             AppDelegate().initLocationManager()
             
-            if !(AppDelegate().timer1 == nil) && !(checkLocation()) {
+            if (AppDelegate().timer1 == nil) && (checkLocation()) {
                 print("running in sign in")
                 //every 60 seconds runs
                 timerload = Timer.scheduledTimer(timeInterval: 60.0, target: AppDelegate(), selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 30 sec for a msg

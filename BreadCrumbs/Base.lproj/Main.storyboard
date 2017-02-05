@@ -17,7 +17,7 @@
                 <pageViewController storyboardIdentifier="pgManager" autoresizesArchivedViewToFullSize="NO" useStoryboardIdentifierAsRestorationIdentifier="YES" transitionStyle="scroll" navigationOrientation="horizontal" spineLocation="none" id="0jd-1T-HCL" customClass="PageManagerViewController" customModule="BreadCrumbs" customModuleProvider="target" sceneMemberID="viewController"/>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="eKq-qk-Kpq" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-4415" y="-1040"/>
+            <point key="canvasLocation" x="-4658" y="-1040"/>
         </scene>
         <!--Intro - 1-->
         <scene sceneID="KJC-U0-O2g">
@@ -289,7 +289,6 @@
                                         </constraints>
                                         <connections>
                                             <action selector="DoAgree:" destination="Ncp-68-9rX" eventType="touchUpInside" id="gli-KE-KSH"/>
-                                            <action selector="RateAppButton:" destination="28W-jT-Dei" eventType="touchUpInside" id="wfQ-pO-QD3"/>
                                             <segue destination="9LW-tj-0DK" kind="show" identifier="Agree" id="IqB-yx-rxx"/>
                                         </connections>
                                     </button>
@@ -323,7 +322,6 @@
                                         </constraints>
                                         <connections>
                                             <action selector="DontAgree:" destination="Ncp-68-9rX" eventType="touchUpInside" id="Egz-oL-HHR"/>
-                                            <action selector="RateAppButton:" destination="28W-jT-Dei" eventType="touchUpInside" id="htZ-3r-hRr"/>
                                             <segue destination="VJC-De-QRg" kind="presentation" identifier="NoAgree" id="5Mg-J4-CqX"/>
                                         </connections>
                                     </button>
@@ -622,7 +620,7 @@
                                                 <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="Kab-AE-2v1">
                                                     <rect key="frame" x="15" y="25" width="384" height="75"/>
                                                     <subviews>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Post a Crumb!" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wxc-o3-FWK">
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Tap the plus to post a crumb!" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="Wxc-o3-FWK">
                                                             <rect key="frame" x="15" y="27" width="354" height="21"/>
                                                             <accessibility key="accessibilityConfiguration">
                                                                 <accessibilityTraits key="traits" staticText="YES" notEnabled="YES"/>
@@ -1787,8 +1785,8 @@
                             <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="bTd-DE-Zcs">
                                 <rect key="frame" x="0.0" y="0.0" width="414" height="100"/>
                                 <subviews>
-                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Others' Crumbs" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KDK-8m-e8W">
-                                        <rect key="frame" x="30" y="41" width="164" height="29"/>
+                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Found Crumbs" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="KDK-8m-e8W">
+                                        <rect key="frame" x="30" y="41" width="155" height="29"/>
                                         <fontDescription key="fontDescription" type="system" weight="light" pointSize="24"/>
                                         <nil key="textColor"/>
                                         <nil key="highlightedColor"/>
@@ -2015,7 +2013,7 @@
                             <constraint firstItem="hza-6J-psz" firstAttribute="top" secondItem="uvP-sM-d0n" secondAttribute="bottom" id="wCm-Mm-XWX"/>
                         </constraints>
                     </view>
-                    <tabBarItem key="tabBarItem" title="New" image="new" id="4Bu-hE-hV7"/>
+                    <tabBarItem key="tabBarItem" title="Found" image="new" id="4Bu-hE-hV7"/>
                     <connections>
                         <outlet property="OthersTableView" destination="uvP-sM-d0n" id="C1g-LJ-xhG"/>
                         <segue destination="he1-fY-bVj" kind="show" identifier="PostButton" id="OWZ-9w-7Zi"/>
@@ -2061,7 +2059,6 @@
                                         </state>
                                         <connections>
                                             <action selector="StartButton:" destination="8aB-xB-Ao3" eventType="touchUpInside" id="W7r-yF-P3l"/>
-                                            <action selector="signUpAction:" destination="9LW-tj-0DK" eventType="touchUpInside" id="gzv-qn-qxI"/>
                                             <segue destination="0jd-1T-HCL" kind="show" identifier="ShowPg" id="Ajd-hq-cKD"/>
                                         </connections>
                                     </button>
@@ -2099,7 +2096,7 @@
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="F8X-Eh-Eo5" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-4415" y="-1974"/>
+            <point key="canvasLocation" x="-4658" y="-1974"/>
         </scene>
         <!--ReportMessage-->
         <scene sceneID="taU-BF-hHN">
@@ -2479,8 +2476,6 @@
                                         </constraints>
                                         <connections>
                                             <action selector="AppealBan:" destination="nQh-cm-GnO" eventType="touchUpInside" id="HdG-1K-oit"/>
-                                            <action selector="DoAgree:" destination="Ncp-68-9rX" eventType="touchUpInside" id="qRt-w6-f52"/>
-                                            <action selector="RateAppButton:" destination="28W-jT-Dei" eventType="touchUpInside" id="hrS-Yl-QRh"/>
                                         </connections>
                                     </button>
                                 </subviews>
@@ -2497,33 +2492,32 @@
                                     <constraint firstAttribute="trailing" secondItem="hnn-AI-NBC" secondAttribute="trailing" constant="15" id="wNr-pR-tDu"/>
                                 </constraints>
                             </view>
-                            <label opaque="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="User Id:" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="xax-8p-J0c">
-                                <rect key="frame" x="42" y="310" width="330" height="30"/>
+                            <textField opaque="NO" clipsSubviews="YES" contentMode="scaleToFill" misplaced="YES" contentHorizontalAlignment="left" contentVerticalAlignment="center" placeholder="user ID" textAlignment="natural" minimumFontSize="17" translatesAutoresizingMaskIntoConstraints="NO" id="uqm-xh-0fL">
+                                <rect key="frame" x="41" y="310" width="332" height="30"/>
                                 <constraints>
-                                    <constraint firstAttribute="height" constant="30" id="75r-tT-lXI"/>
-                                    <constraint firstAttribute="width" constant="330" id="llJ-M5-i4d"/>
+                                    <constraint firstAttribute="width" constant="330" id="o1g-AA-OlH"/>
                                 </constraints>
-                                <fontDescription key="fontDescription" type="system" pointSize="16"/>
                                 <nil key="textColor"/>
-                                <nil key="highlightedColor"/>
-                            </label>
+                                <fontDescription key="fontDescription" type="system" pointSize="14"/>
+                                <textInputTraits key="textInputTraits" enablesReturnKeyAutomatically="YES"/>
+                            </textField>
                         </subviews>
                         <color key="backgroundColor" red="0.97254901959999995" green="0.97254901959999995" blue="0.97254901959999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                         <constraints>
                             <constraint firstItem="oNl-S8-QT2" firstAttribute="top" secondItem="h5o-dv-aZL" secondAttribute="top" id="81i-g7-HUU"/>
                             <constraint firstItem="d36-Jl-hSl" firstAttribute="centerX" secondItem="h5o-dv-aZL" secondAttribute="centerX" id="BmU-ZR-EXl"/>
-                            <constraint firstItem="xax-8p-J0c" firstAttribute="top" secondItem="MeS-Sq-4RK" secondAttribute="bottom" constant="40" id="KOL-ZL-b8y"/>
+                            <constraint firstItem="uqm-xh-0fL" firstAttribute="centerX" secondItem="h5o-dv-aZL" secondAttribute="centerX" id="Gks-nl-M8s"/>
                             <constraint firstItem="MeS-Sq-4RK" firstAttribute="leading" secondItem="h5o-dv-aZL" secondAttribute="leadingMargin" constant="-5" id="O18-d0-OoF"/>
                             <constraint firstItem="qtD-At-Yxb" firstAttribute="top" secondItem="d36-Jl-hSl" secondAttribute="bottom" constant="75" id="X5o-Oo-JPg"/>
-                            <constraint firstItem="xax-8p-J0c" firstAttribute="centerX" secondItem="h5o-dv-aZL" secondAttribute="centerX" id="Xf0-xc-qK4"/>
                             <constraint firstItem="MeS-Sq-4RK" firstAttribute="centerX" secondItem="h5o-dv-aZL" secondAttribute="centerX" constant="-2.5" id="aS2-fF-CsQ"/>
                             <constraint firstAttribute="trailing" secondItem="oNl-S8-QT2" secondAttribute="trailing" id="hTB-3D-7BF"/>
                             <constraint firstItem="MeS-Sq-4RK" firstAttribute="top" secondItem="Wg4-ge-Qzf" secondAttribute="bottom" constant="105" id="ic5-FO-brJ"/>
                             <constraint firstItem="oNl-S8-QT2" firstAttribute="leading" secondItem="h5o-dv-aZL" secondAttribute="leading" id="ivK-VK-Doj"/>
+                            <constraint firstItem="uqm-xh-0fL" firstAttribute="top" secondItem="MeS-Sq-4RK" secondAttribute="bottom" constant="40" id="oat-K0-8EZ"/>
                         </constraints>
                     </view>
                     <connections>
-                        <outlet property="UserIDLabel" destination="xax-8p-J0c" id="gI7-l3-tjO"/>
+                        <outlet property="UserIDField" destination="uqm-xh-0fL" id="lAP-Xn-xMJ"/>
                     </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="PVr-mL-wL9" userLabel="First Responder" sceneMemberID="firstResponder"/>
@@ -2549,9 +2543,9 @@
         <image name="you" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="Z5g-uf-dNi"/>
+        <segue reference="w23-IQ-pCl"/>
         <segue reference="OWZ-9w-7Zi"/>
-        <segue reference="76v-Ar-Pcv"/>
+        <segue reference="Z5g-uf-dNi"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.3529411764705882" green="0.68235294117647061" blue="1" alpha="1" colorSpace="calibratedRGB"/>
 </document>

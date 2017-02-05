@@ -10,6 +10,9 @@ import UIKit
 
 class WelcomeViewController: UIViewController {
 
+    let NSUserData = UserDefaults.standard//for storing states and numbers
+
+    
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -18,6 +21,8 @@ class WelcomeViewController: UIViewController {
 
     override func didReceiveMemoryWarning() {
         super.didReceiveMemoryWarning()
+        NSUserData.set("welcome", forKey: "welcomeValue")//) = "welcome"
+
         // Dispose of any resources that can be recreated.
     }
     

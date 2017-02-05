@@ -8,18 +8,19 @@
 
 import UIKit
 
-class BannedViewController: UIViewController {
+class BannedViewController: UIViewController{
 
     let NSUserData = AppDelegate().NSUserData
 
     
-    @IBOutlet weak var UserIDLabel: UILabel!
+    @IBOutlet weak var UserIDField: UITextField!
     
     override func viewDidLoad() {
         super.viewDidLoad()
-
         // Do any additional setup after loading the view.
-        UserIDLabel.text = "ID: \(NSUserData.string(forKey: "recordID")!)"
+        UserIDField.text = "ID: \(NSUserData.string(forKey: "recordID")!)"
+        //UserIDField.
+        UserIDField.borderStyle = .none
     }
 
     override func didReceiveMemoryWarning() {
@@ -27,6 +28,9 @@ class BannedViewController: UIViewController {
         // Dispose of any resources that can be recreated.
     }
     
+    func textFieldShouldBeginEditing(_ textField: UITextField) -> Bool {
+        return false
+    }
 
     /*
     // MARK: - Navigation
