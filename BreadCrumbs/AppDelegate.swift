@@ -164,14 +164,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             results, error in
             if error == nil{
                 for userinfo in results! {//need to have this update if user has already signed in before
-                    let crumbCountCD = userinfo["crumbCount"] as! Int
                     let userName = userinfo["userName"] as! String
                     let premiumStatus = userinfo["premiumStatus"] as! Bool
                     let recordName = userinfo.recordID.recordName
                     let banned = userinfo["Banned"] as! String
                     
                     self.NSUserData.setValue(userName, forKey: "userName")
-                    self.NSUserData.setValue(crumbCountCD, forKey: "crumbCount")
                     self.NSUserData.setValue(premiumStatus, forKey: "premiumStatus")
                     self.NSUserData.setValue(recordName, forKey: "recordName")
                     self.NSUserData.setValue(banned, forKey: "banned")
@@ -431,10 +429,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             
             
             if (AppDelegate().timer1 == nil) && (checkLocation()) {
-                print("running in active")
+                print("running in signed in did becom active")
                 self.timer1 = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 60 sec for a msg
             }
-            
+
             helperfunctions.updateTableViewVoteValues()//updates all votes
             helperfunctions.checkMarkedForDeleteCD()//deletes old markeds
             

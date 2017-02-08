@@ -21,6 +21,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     var segType: String?
     
     let userSelf = AppDelegate().NSUserData.string(forKey: "recordID")
+    var votevalue = 0
 
     
     let helperFunctions = AppDelegate().helperfunctions
@@ -173,12 +174,25 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
             
             //sets the values for the labels in the cell, time value and location value
             if viewbreadcrumb?.votes != 1{
-                msgCell.VoteValueLabel.text = "\((viewbreadcrumb?.votes)!) votes"
+                //msgCell.VoteValueLabel.text = "\((viewbreadcrumb?.votes)!) votes"
+                msgCell.VoteButton.setTitle("\((viewbreadcrumb?.votes)!) votes", for: .normal)
             } else {
-                msgCell.VoteValueLabel.text = "\((viewbreadcrumb?.votes)!) vote"
+                msgCell.VoteButton.setTitle("\((viewbreadcrumb?.votes)!) vote", for: .normal)
+
+                //msgCell.VoteValueLabel.text = "\((viewbreadcrumb?.votes)!) vote"
             }
             msgCell.MsgTextView.text = viewbreadcrumb!.text
             msgCell.UserLabel.text = viewbreadcrumb!.senderName
+            
+            var textwidth = msgCell.UserLabel.intrinsicContentSize.width
+            let contentwidth = UIScreen.main.bounds.width - 126//screen width minus total constraints and item widths + 15 padding
+            if textwidth > contentwidth{
+                while textwidth > contentwidth {
+                    msgCell.UserLabel.font = msgCell.UserLabel.font.withSize((msgCell.UserLabel.font.pointSize-1))
+                    textwidth = msgCell.UserLabel.intrinsicContentSize.width
+                }
+            }
+            
             msgCell.TimeLabel.text = "\(viewbreadcrumb!.dateOrganizer())"
             if viewbreadcrumb!.calculate() > 0 {
                 let ref = Int(viewbreadcrumb!.calculate())
@@ -214,7 +228,20 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
             
             let comment = comments[(indexPath.row - 2)]
             commentCells.CommentTextView.text = comment.text
+            
             commentCells.usernameLabel.text = comment.username
+            
+            var textwidth = commentCells.usernameLabel.intrinsicContentSize.width
+            let contentwidth = UIScreen.main.bounds.width - 210//screen width minus total constraints and item widths + 15 padding
+            if textwidth > contentwidth{
+                while textwidth > contentwidth {
+                    commentCells.usernameLabel.font = commentCells.usernameLabel.font.withSize((commentCells.usernameLabel.font.pointSize-1))
+                    textwidth = commentCells.usernameLabel.intrinsicContentSize.width
+                }
+            }
+            
+            
+            
             commentCells.timeAgoLabel.text = comment.timeRelative()//time is how long ago it was posted, dont see the point to change var name to something more explanatory right now
             
             if comment.userID == userSelf{
@@ -228,7 +255,6 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
             return commentCells
         }
         
-        //if last add "SpacerBottom"?
     }
     //MARK: REport
     
@@ -307,6 +333,8 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
 
     func exitCrumb(){
         if inscreen == true{
+            //saves voting stuff
+            helperFunctions.crumbVote((viewbreadcrumb?.hasVoted!)!, crumb: viewbreadcrumb!, voteValue: votevalue )
             delegate?.reloadTables()
         }
         //
@@ -376,24 +404,29 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         let indexPath = IndexPath(row: 1, section: 1)
         let msgCell = YourtableView.dequeueReusableCell(withIdentifier: "YourMsgCell", for: indexPath) as! CrumbTableViewCell
         
+        
         //voting
         //sets a couple values according to past versions of thos values
         if viewbreadcrumb?.hasVoted == 1 && inscreen == false{//has voted before setting vote to zero this is bad because of past structure
             inscreen = true
             viewbreadcrumb?.hasVoted = 0
+            votevalue = -1
             viewbreadcrumb?.votes! = (viewbreadcrumb?.votes)! - 1
             
         }else if viewbreadcrumb?.hasVoted == 0 && inscreen == false{//has not voted before +1
             inscreen = true
             viewbreadcrumb?.hasVoted = 1
+            votevalue = 1
             viewbreadcrumb?.votes!
                 = (viewbreadcrumb?.votes)! + 1
         } else if viewbreadcrumb?.hasVoted == 1 && inscreen == true{
             viewbreadcrumb?.hasVoted = 0
+            votevalue = -1
             viewbreadcrumb?.votes! = (viewbreadcrumb?.votes)! - 1
             
         }else if viewbreadcrumb?.hasVoted == 0 && inscreen == true{
             viewbreadcrumb?.hasVoted = 1
+            votevalue = 1
             viewbreadcrumb?.votes!
                 = (viewbreadcrumb?.votes)! + 1
         }
@@ -405,8 +438,8 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
             msgCell.VoteButton.setTitleColor(normalColor, for: .normal)
         }
         
-        //saves voting stuff
-        helperFunctions.crumbVote((viewbreadcrumb?.hasVoted!)!, crumb: viewbreadcrumb! )
+  //      //saves voting stuff
+//        helperFunctions.crumbVote((viewbreadcrumb?.hasVoted!)!, crumb: viewbreadcrumb!, voteValue: votevalue )
         //update table
         DispatchQueue.main.async(execute: { () -> Void in
             self.YourtableView.reloadData()

@@ -90,7 +90,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         crumbMessageTextView.textColor = UIColor.lightGray
 
         //crumbcount value
-        CrumbcounterLabel.text = "\(NSUserData.string(forKey: "crumbCount")!)/7 crumbs"
+        CrumbcounterLabel.text = "\(NSUserData.string(forKey: "crumbCount")!)/7 Crumbs"
         
         
         submitView.isHidden = true

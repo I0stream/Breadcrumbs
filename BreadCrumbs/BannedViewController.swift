@@ -41,6 +41,12 @@ class BannedViewController: UIViewController{
         // Pass the selected object to the new view controller.
     }
     */
+    
+    @IBAction func CopyAction(_ sender: Any) {
+        UIPasteboard.general.string = NSUserData.string(forKey: "recordID")!
+
+    }
+    
     @IBAction func AppealBan(_ sender: Any) {
         //print("does not work in sim")
         let email = "breadcrumbs.help@gmail.com"

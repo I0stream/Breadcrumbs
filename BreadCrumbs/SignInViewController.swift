@@ -22,7 +22,6 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var signUpButton: UIButton!
     @IBOutlet weak var ErrorDisp: UILabel!
     
-    weak var timer2 = Timer()
 
     
     override func viewDidLoad() {
@@ -36,12 +35,10 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         
         NotificationCenter.default.addObserver(self, selector: #selector(SignInViewController.loadList(_:)),name:NSNotification.Name(rawValue: "ReloadSignIn"), object: nil)
         ErrorDisp.isHidden = true
-        self.timer2 = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(SignInViewController.requestloc), userInfo: nil, repeats: false)
 
     }
     func requestloc(){
         locationManager.requestAlwaysAuthorization()
-        timer2?.invalidate()
     }
     
     //MARK: Actions
@@ -50,17 +47,8 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         
         if isICloudContainerAvailable() && setUserNameTextField.text?.characters.count > 0 && setUserNameTextField.text?.characters.count < 16 && NSUserData.bool(forKey: "ckAccountStatus") && currentReachabilityStatus != .notReachable && AppDelegate().isBanned(){
             
-            let time = Date()
-
             //make a record in cloudkit if a userinfo for this account is not found
-            createUserInfo(setUserNameTextField.text!)
-            
-            NSUserData.setValue(setUserNameTextField.text, forKey: "userName")
-            NSUserData.setValue(7, forKey: "crumbCount")// let cCount = NSUserData.integerForKey("crumbCount")
-            NSUserData.setValue(time, forKey: "SinceLastCheck")
-            NSUserData.setValue(0, forKey: "premiumStatus")
-            NSUserData.setValue(0, forKey: "ExplainerCrumb")
-            
+
             //gets and sets userrecordID
             iCloudUserIDAsync() {
                 recordID, error in
@@ -72,6 +60,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
                     print("Fetched iCloudID was nil")
                 }
             }
+            ckUserinfoTest(username: setUserNameTextField.text!)
             AppDelegate().initLocationManager()
             
             helperFunctions.cloudkitSub()
@@ -184,7 +173,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         AView.isHidden = false
-        
+        requestloc()
         accountStatus()//does user have icloud drive enabled
         
         errorTest()
@@ -208,6 +197,12 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     //MARK: UserInfo Cloud Creation
     //idk i need it for premium but when will i do that?
     func createUserInfo(_ username: String){
+        let time = Date()
+        NSUserData.setValue(setUserNameTextField.text, forKey: "userName")
+        NSUserData.setValue(7, forKey: "crumbCount")// let cCount = NSUserData.integerForKey("crumbCount")
+        NSUserData.setValue(time, forKey: "SinceLastCheck")
+        NSUserData.setValue(0, forKey: "premiumStatus")
+        NSUserData.setValue(0, forKey: "ExplainerCrumb")
         
         let container = CKContainer.default()
         let publicData = container.publicCloudDatabase
@@ -227,6 +222,49 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
             }
         })
         
+    }
+    
+    func ckUserinfoTest(username: String){
+        let container = CKContainer.default()
+        let publicData = container.publicCloudDatabase
+        let CKuserID: CKRecordID = CKRecordID(recordName: NSUserData.string(forKey: "recordID")!)//keychain
+        
+        let query = CKQuery(recordType: "UserInfo", predicate: NSPredicate(format: "%K == %@", "creatorUserRecordID" ,CKReference(recordID: CKuserID, action: CKReferenceAction.none)))
+        
+        publicData.perform(query, inZoneWith: nil) {
+            results, error in
+            if error == nil{
+                if results?.count == 1{
+                    print("found account")
+                    let inf = results?[0]
+                    inf?.setValue(username ,forKey: "userName")
+                    
+                    let crumbcount = inf?.value(forKey: "crumbCount") as! Int
+                    let prem = inf?.value(forKey: "premiumStatus") as! Int
+                    let ban = inf?.value(forKey: "Banned") as! String
+                    
+                    let time = Date()
+
+                    self.NSUserData.setValue(self.setUserNameTextField.text, forKey: "userName")
+                    self.NSUserData.setValue(crumbcount, forKey: "crumbCount")// let cCount = NSUserData.integerForKey("crumbCount")
+                    self.NSUserData.setValue(time, forKey: "SinceLastCheck")
+                    self.NSUserData.setValue(ban, forKey: "banned")
+                    self.NSUserData.setValue(prem, forKey: "premiumStatus")
+                    
+                    publicData.save(inf!, completionHandler: { record, error in
+                        if error != nil {
+                            print(error.debugDescription)
+                        }
+                    })
+                }else if (results?.isEmpty)!{
+                    print("no account found")
+                    self.createUserInfo(username)
+                }
+                
+            }else{
+                print(error!)
+            }
+        }
     }
 
 }

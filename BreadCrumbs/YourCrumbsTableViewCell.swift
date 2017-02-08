@@ -15,7 +15,7 @@ class YourCrumbsTableViewCell: UITableViewCell {
     @IBOutlet weak var TimeRemainingValueLabel: UILabel!
 //    @IBOutlet weak var LocationPosted: UILabel!
     @IBOutlet weak var TextViewCellOutlet: UITextView!
-    @IBOutlet weak var VoteValue: UILabel!
+    //@IBOutlet weak var VoteValue: UILabel!
     @IBOutlet weak var YouTheUserLabel: UILabel!
     @IBOutlet weak var timeCountdown: UILabel!
     @IBOutlet weak var VoteButton: UIButton!

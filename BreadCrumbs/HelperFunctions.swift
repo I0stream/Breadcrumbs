@@ -520,13 +520,14 @@ class Helper{
         
     }
     
-    func crumbVote(_ hasvoted: Int, crumb: CrumbMessage) {//what happens when a vote conflicts between cd and ck?, this just does ck atm
-        voteCKVote(crumb)
+    func crumbVote(_ hasvoted: Int, crumb: CrumbMessage, voteValue: Int) {//what happens when a vote conflicts between cd and ck?, this just does ck atm
+        print("voting")
+        voteCKVote(crumb, voteValue: voteValue)
         voteCoreDataVote(hasvoted, crumb: crumb)
     }
     
     //updates ck with new value
-    func voteCKVote(_ crumb: CrumbMessage){
+    func voteCKVote(_ crumb: CrumbMessage, voteValue: Int){
         
         let recorduuid = CKRecordID(recordName: (crumb.uRecordID)!)
         let container = CKContainer.default()
@@ -534,9 +535,9 @@ class Helper{
         
         publicData.fetch(withRecordID: recorduuid, completionHandler: {record, error in
             if error == nil{
-                let newvalue = (crumb.votes)!
+                let newvalue = record?.value(forKey: "votes") as! Int + voteValue
                 
-                record!.setValue(newvalue as CKRecordValue?, forKey: "votes")
+                record!.setObject(newvalue as CKRecordValue?, forKey: "votes")
                 
                 publicData.save(record!, completionHandler: {theRecord, error in
                     if error == nil{

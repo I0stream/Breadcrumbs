@@ -164,13 +164,30 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
             
             //sets the values for the labels in the cell, time value and location value
             cell.TextViewCellOutlet.text = crumbmsg.text
-
+            
             if crumbmsg.votes != 1{
+                //msgCell.VoteValueLabel.text = "\((viewbreadcrumb?.votes)!) votes"
+                cell.VoteButton.setTitle("\((crumbmsg.votes)!) votes", for: .normal)
+            } else {
+                cell.VoteButton.setTitle("\((crumbmsg.votes)!) vote", for: .normal)
+                
+                //msgCell.VoteValueLabel.text = "\((viewbreadcrumb?.votes)!) vote"
+            }
+            
+            /*if crumbmsg.votes != 1{
                 cell.VoteValue.text = "\(crumbmsg.votes!) votes"
             } else {
                 cell.VoteValue.text = "\(crumbmsg.votes!) vote"
-            }
+            }*/
             cell.YouTheUserLabel.text = crumbmsg.senderName
+            var textwidth = cell.YouTheUserLabel.intrinsicContentSize.width
+            let contentwidth = UIScreen.main.bounds.width - 93//screen width minus total constraints and item widths + 15 padding
+            if textwidth > contentwidth{
+                while textwidth > contentwidth {
+                    cell.YouTheUserLabel.font = cell.YouTheUserLabel.font.withSize((cell.YouTheUserLabel.font.pointSize-1))
+                    textwidth = cell.YouTheUserLabel.intrinsicContentSize.width
+                }
+            }
             //cell.YouTheUserLabel.font = UIFont.boldSystemFont(ofSize: 17)
             cell.TimeRemainingValueLabel.text = crumbmsg.timeRelative()//time is how long ago it was posted, dont see the point to change var name to something more explanatory right now
             //This is reused in yours
@@ -292,29 +309,34 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
         //let cell = YourTableView.dequeueReusableCell(withIdentifier: "YourMsgCell", for: indexPath) as! YourCrumbsTableViewCell
         
         let viewbreadcrumb = crumbmessages[indexPath.row]
-        
+        var votevalue = 0
+
         if viewbreadcrumb.calculate() > 0 { //alive
             if viewbreadcrumb.hasVoted == 1 && inscreen == false{//has voted before setting vote to zero this is bad because of past structure
                 inscreen = true
                 viewbreadcrumb.hasVoted = 0
+                votevalue = -1
                 viewbreadcrumb.votes! = (viewbreadcrumb.votes)! - 1
                 
             }else if viewbreadcrumb.hasVoted == 0 && inscreen == false{//has not voted before +1
                 inscreen = true
                 viewbreadcrumb.hasVoted = 1
+                votevalue = 1
                 viewbreadcrumb.votes!
                     = (viewbreadcrumb.votes)! + 1
             } else if viewbreadcrumb.hasVoted == 1 && inscreen == true{
                 viewbreadcrumb.hasVoted = 0
+                votevalue = -1
                 viewbreadcrumb.votes! = (viewbreadcrumb.votes)! - 1
                 
             }else if viewbreadcrumb.hasVoted == 0 && inscreen == true{
                 viewbreadcrumb.hasVoted = 1
+                votevalue = 1
                 viewbreadcrumb.votes!
                     = (viewbreadcrumb.votes)! + 1
             }
             
-            helperFunctions.crumbVote(viewbreadcrumb.hasVoted!, crumb: viewbreadcrumb )
+            helperFunctions.crumbVote(viewbreadcrumb.hasVoted!, crumb: viewbreadcrumb, voteValue: votevalue )
             
             DispatchQueue.main.async(execute: { () -> Void in
                 self.OthersTableView.reloadData()

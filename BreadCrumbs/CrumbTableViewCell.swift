@@ -23,7 +23,7 @@ class CrumbTableViewCell: UITableViewCell, UITextViewDelegate{
     
     @IBOutlet weak var ExitCrumbButton: UIButton!
     
-    @IBOutlet weak var VoteValueLabel: UILabel!
+    //@IBOutlet weak var SeenValue: UILabel!
     
     @IBOutlet weak var ReportButton: UIButton!
     
