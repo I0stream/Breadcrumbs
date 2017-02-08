@@ -78,7 +78,6 @@ class ChangeUserNameViewController: SettingsViewController, UITextFieldDelegate 
     }
     
     
-    
     @IBAction func cancelChange(_ sender: Any) {
         dismiss(animated: true, completion: nil)
     }
@@ -86,42 +85,48 @@ class ChangeUserNameViewController: SettingsViewController, UITextFieldDelegate 
     
     //the button action that changes the username
     @IBAction func ChangeNameButton(_ sender: AnyObject) {
-        if ChangeNameField.text?.characters.count > 16{
-            errorMessageLabel.text = "Username is too long by \((ChangeNameField.text?.characters.count)! - 16) characters"
-        }else if ChangeNameField.text?.characters.count < 1{
-            errorMessageLabel.text = "Username is too short"
-        }else{
-            
+        if ChangeNameField.text?.characters.count < 16 && ChangeNameField.text?.characters.count > 1{
             NSUserData.setValue(ChangeNameField.text, forKey: "userName")
             changeNameCK(ChangeNameField.text!)
             dismiss(animated: true, completion: nil)
+        }else if ChangeNameField.text?.characters.count < 1 {
+            
+            errorMessageLabel.text = "Please enter a longer username"
+            
+        }else if ChangeNameField.text?.characters.count > 15{
+            
+             errorMessageLabel.text = "Please enter a too long by \((ChangeNameField.text?.characters.count)! - 15) characters"
+            
         }
     }
     
-    //changes username in userinfo/user whatever
+    //changes username in /user whatever
+    
     func changeNameCK(_ userInput: String){
-        //take record id and use that and the new name to update ck
+        
         let container = CKContainer.default()
         let publicData = container.publicCloudDatabase
+        let CKuserID: CKRecordID = CKRecordID(recordName: NSUserData.string(forKey: "recordID")!)//keychain
         
-        let recordID = CKRecordID(recordName: NSUserData.string(forKey: "recordID")!)//keychain
+        let query = CKQuery(recordType: "UserInfo", predicate: NSPredicate(format: "%K == %@", "creatorUserRecordID" ,CKReference(recordID: CKuserID, action: CKReferenceAction.none)))
         
-        publicData.fetch(withRecordID: recordID, completionHandler: {record, error in
+        publicData.perform(query, inZoneWith: nil) {
+            results, error in
             if error == nil{
-                
-                record!.setObject(userInput as CKRecordValue?, forKey: "userName")
-                
-                publicData.save(record!, completionHandler: {theRecord, error in
-                    if error == nil{
-                        print("successful update!")
-                    }else{
-                        print(error.debugDescription)
-                    }
-                })
+                for userinfo in results! {//need to have this update if user has already signed in before
+                    userinfo.setObject(userInput as CKRecordValue?, forKey: "userName")
+                    publicData.save(userinfo, completionHandler: {theRecord, error in
+                        if error == nil{
+                            print("saved version")
+                        }else{
+                            print(error as Any)
+                        }
+                    })
+                }
             }else{
-                print(error.debugDescription)
+                print(error!)
             }
-        })
+        }
     }
 }
 

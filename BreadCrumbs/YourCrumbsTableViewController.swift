@@ -29,6 +29,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
     
     var cellHeights = [CGFloat?]()
     let heightspacer: CGFloat = UIScreen.main.bounds.height * 0.35
+    weak var timerload = Timer()
 
     
     //is indicator visible?
@@ -69,6 +70,12 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         YourTableView.rowHeight = UITableViewAutomaticDimension
         
 
+        
+        if (AppDelegate().timer1 == nil) && (AppDelegate().checkLocation()) {
+            print("running in sign in")
+            //every 60 seconds runs
+            timerload = Timer.scheduledTimer(timeInterval: 60.0, target: AppDelegate(), selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 30 sec for a msg
+        }
         //NotificationCenter.default.addObserver(self, selector: #selector(YourCrumbsTableViewController.reloadBasedOnRemoteNotif(_:recordID:)), name: Notification.Name(rawValue: "NotifLoad"), object: nil)
 
         

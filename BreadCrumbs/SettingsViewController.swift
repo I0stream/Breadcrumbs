@@ -9,8 +9,9 @@
 import UIKit
 import CloudKit
 
-class SettingsViewController: UIViewController{
+class SettingsViewController: UIViewController, UITableViewDelegate, UITableViewDataSource{
 
+    @IBOutlet weak var settingsTableView: UITableView!
     let NSUserData = AppDelegate().NSUserData
     var counter = 0
     var username: String { get {return NSUserData.string(forKey: "userName")!}}
@@ -18,14 +19,81 @@ class SettingsViewController: UIViewController{
     
     override func viewDidLoad() {
         super.viewDidLoad()
+        settingsTableView.delegate = self
+        settingsTableView.dataSource = self
         
     }
     
     
-    @IBAction func changeUsername(_ sender: AnyObject) {
-        performSegue(withIdentifier: "changeUsername", sender: sender)
+    func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
+        return 95
     }
-    @IBAction func RateAppButton(_ sender: Any) {
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        if indexPath.row == 0{
+            changeUsername()
+        }else if indexPath.row == 1{
+            //print("does not work in sim")
+            let url = NSURL(string : "itms-apps://itunes.apple.com/app/id1191632460")! as URL//change later
+            if #available(iOS 10.0, *) {
+                UIApplication.shared.open(url , options: ["yes" : "yes" as Any], completionHandler: { (true) in
+                    //print("sent to gmail")
+                })
+            }else{
+                UIApplication.shared.openURL(url)
+            }
+        }else if indexPath.row == 2{
+            //print("does not work in sim")
+            let email = "breadcrumbs.help@gmail.com"
+            let url = NSURL(string: "mailto:\(email)")
+            if #available(iOS 10.0, *) {
+                UIApplication.shared.open(url as! URL, options: ["yes" : "yes" as Any], completionHandler: { (true) in
+                    //print("sent to gmail")
+                })
+            }else {
+                UIApplication.shared.openURL(url as! URL)
+            }
+        }else if indexPath.row == 3{
+            let url = NSURL(string : "https://breadcrumbs.social/user-guidelines/")! as URL
+            if #available(iOS 10.0, *) {
+                UIApplication.shared.open(url , options: ["yes" : "yes" as Any], completionHandler: { (true) in
+                    //print("sent to gmail")
+                })
+            }
+        }else{
+            NSUserData.set(nil, forKey: "BlockedUsers")
+        }
+    }
+    func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
+        return 5
+    }
+    func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as! settingsTableViewCell
+
+        cell.selectionStyle = .none
+        
+        if indexPath.row == 0{
+            cell.settingLAbel.text = "Change Username"
+
+        }else if indexPath.row == 1{
+            cell.settingLAbel.text = " Rate The App"
+
+        }else if indexPath.row == 2{
+            cell.settingLAbel.text = "Customer Support"
+
+        }else if indexPath.row == 3{
+            cell.settingLAbel.text = "User Guidelines"
+        }else{
+            cell.settingLAbel.text = "Unblock All Users"
+        }
+        return cell
+    }
+    
+    
+   func changeUsername() {
+        performSegue(withIdentifier: "changeUsername", sender: self)
+    }
+/*    @IBAction func RateAppButton(_ sender: Any) {
         //print("does not work in sim")
         let url = NSURL(string : "itms-apps://itunes.apple.com/app/id1191632460")! as URL//change later
         if #available(iOS 10.0, *) {
@@ -61,5 +129,5 @@ class SettingsViewController: UIViewController{
     @IBAction func unblockAllUsers(_ sender: Any) {
         
         NSUserData.set(nil, forKey: "BlockedUsers")
-    }
+    }*/
 }

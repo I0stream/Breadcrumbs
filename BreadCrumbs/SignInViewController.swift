@@ -23,7 +23,6 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     @IBOutlet weak var ErrorDisp: UILabel!
     
     weak var timer2 = Timer()
-    weak var timerload = Timer()
 
     
     override func viewDidLoad() {
@@ -37,7 +36,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         
         NotificationCenter.default.addObserver(self, selector: #selector(SignInViewController.loadList(_:)),name:NSNotification.Name(rawValue: "ReloadSignIn"), object: nil)
         ErrorDisp.isHidden = true
-        self.timer2 = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(SignInViewController.requestloc), userInfo: nil, repeats: false)
+        self.timer2 = Timer.scheduledTimer(timeInterval: 0.5, target: self, selector: #selector(SignInViewController.requestloc), userInfo: nil, repeats: false)
 
     }
     func requestloc(){
@@ -49,7 +48,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     
     @IBAction func signUpAction(_ sender: UIButton) {
         
-        if isICloudContainerAvailable() && setUserNameTextField.text?.characters.count > 0 && setUserNameTextField.text?.characters.count < 17 && NSUserData.bool(forKey: "ckAccountStatus") && currentReachabilityStatus != .notReachable && AppDelegate().isBanned(){
+        if isICloudContainerAvailable() && setUserNameTextField.text?.characters.count > 0 && setUserNameTextField.text?.characters.count < 16 && NSUserData.bool(forKey: "ckAccountStatus") && currentReachabilityStatus != .notReachable && AppDelegate().isBanned(){
             
             let time = Date()
 
@@ -75,11 +74,6 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
             }
             AppDelegate().initLocationManager()
             
-            if (AppDelegate().timer1 == nil) && (checkLocation()) {
-                print("running in sign in")
-                //every 60 seconds runs
-                timerload = Timer.scheduledTimer(timeInterval: 60.0, target: AppDelegate(), selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 30 sec for a msg
-            }
             helperFunctions.cloudkitSub()
 
             self.resignFirstResponder()
@@ -98,7 +92,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     
     //length error, cloud error, internet error
     func errorTest(){
-        if isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && currentReachabilityStatus != .notReachable && setUserNameTextField.text?.characters.count > 0 && setUserNameTextField.text?.characters.count < 17{//success
+        if isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && currentReachabilityStatus != .notReachable && setUserNameTextField.text?.characters.count > 0 && setUserNameTextField.text?.characters.count < 16{//success
             //print("a user is signed into icloud")
             signUpButton.isEnabled = true
             ErrorDisp.isHidden = true
@@ -113,9 +107,9 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
             
             failMessage(text: "Please enter a longer username")
             
-        }else if setUserNameTextField.text?.characters.count > 16{
+        }else if setUserNameTextField.text?.characters.count > 15{
             
-            failMessage(text: "Please enter a longer username")
+            failMessage(text: "Please enter a too long by \((setUserNameTextField.text?.characters.count)! - 15) characters")
             
         }
     }

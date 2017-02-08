@@ -425,8 +425,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             //UPDATE VOTES HERE
             //start load and store if not already
             
-            if SignInViewController().timerload != nil{
-                SignInViewController().timerload?.invalidate()
+            if YourCrumbsTableViewController().timerload != nil{
+                YourCrumbsTableViewController().timerload?.invalidate()
             }
             
             

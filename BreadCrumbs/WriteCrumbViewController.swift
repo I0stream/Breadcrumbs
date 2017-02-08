@@ -253,30 +253,29 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     
     func UpdateCrumbCount(_ cCount: Int){
         
-        let recordID = NSUserData.string(forKey: "recordID")!//keychain
-        
-        let specificID = CKRecordID(recordName: "\(recordID)")
-        
         let container = CKContainer.default()
         let publicData = container.publicCloudDatabase
+        let CKuserID: CKRecordID = CKRecordID(recordName: NSUserData.string(forKey: "recordID")!)//keychain
         
+        let query = CKQuery(recordType: "UserInfo", predicate: NSPredicate(format: "%K == %@", "creatorUserRecordID" ,CKReference(recordID: CKuserID, action: CKReferenceAction.none)))
         
-        publicData.fetch(withRecordID: specificID, completionHandler: {record, error in
+        publicData.perform(query, inZoneWith: nil) {
+            results, error in
             if error == nil{
-                record!.setObject(cCount as CKRecordValue?, forKey: "crumbCount")
-                //print("updated crumbcount, check cloud database")
-                
-                publicData.save(record!, completionHandler: {theRecord, error in
+                for userinfo in results! {//need to have this update if user has already signed in before
+                    userinfo.setValue(cCount, forKey: "crumbCount")
+                    publicData.save(userinfo, completionHandler: {theRecord, error in
                     if error == nil{
                         print("saved version")
                     }else{
                         print(error as Any)
                     }
                 })
+                }
             }else{
-                print("error")
+                print(error!)
             }
-        })
+        }
         
     }
     
