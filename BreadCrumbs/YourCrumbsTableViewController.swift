@@ -74,7 +74,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         if (AppDelegate().timer1 == nil) && (AppDelegate().checkLocation()) {
             print("running in your crumbs")
             //every 60 seconds runs
-            timerload = Timer.scheduledTimer(timeInterval: 60.0, target: AppDelegate(), selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 30 sec for a msg
+            timerload = Timer.scheduledTimer(timeInterval: 60, target: AppDelegate(), selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 30 sec for a msg
         }
         //NotificationCenter.default.addObserver(self, selector: #selector(YourCrumbsTableViewController.reloadBasedOnRemoteNotif(_:recordID:)), name: Notification.Name(rawValue: "NotifLoad"), object: nil)
 

@@ -194,12 +194,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         var locAge = 31.0
 
         if currentUserLoc != nil{
-            locAge = Double((currentUserLoc?.timestamp.timeIntervalSinceNow)!)
+            locAge = -Double((currentUserLoc?.timestamp.timeIntervalSinceNow)!)
         }
         
         if currentUserLoc != nil && ((locAge) < 30.0 ){
             
-            let radiusKm = 50 / 1000.0//30=~100ft,40=131ft
+            let radiusKm = 70 / 1000.0//30=~100ft,40=131ft
             let predicate: NSPredicate = NSPredicate(format: "distanceToLocation:fromLocation:(%K,%@) < %f", "location", currentUserLoc!, radiusKm)
             let query = CKQuery(recordType: "CrumbMessage", predicate: predicate)
             helperfunctions.loadIcloudMessageToCoreData(query)

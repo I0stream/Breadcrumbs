@@ -364,7 +364,7 @@ class Helper{
             //commentsToLoad
             var i = 0
             while  i <= (fmComment.count - 1){//loops through all of coredata store
-                if (fmComment[i].message?.recorduuid)! == uniqueRecordID && fmComment[i].message?.markedForDelete == 0 && blockedUsertest(senderID: fmComment[i].userID!){//compares sendername of user's to msgs and returns user's msgs
+                if (fmComment[i].message?.recorduuid)! == uniqueRecordID && fmComment[i].markedForDelete == 0 && blockedUsertest(senderID: fmComment[i].userID!){//compares sendername of user's to msgs and returns user's msgs
 
                     let fmtext = fmComment[i].text! as String
                     let fmsenderName = fmComment[i].username! as String
