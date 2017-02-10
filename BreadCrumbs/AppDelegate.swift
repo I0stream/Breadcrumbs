@@ -35,6 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         //helperfunctions.cloudkitSub()
 
+        
         // Register with APNs
         application.registerForRemoteNotifications()
         
@@ -45,6 +46,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             getUserInfo()
 
         }
+//        helperfunctions.cloudkitSub()//subscribe to upvotes
+//        helperfunctions.commentsub()//subscribe to comments
         
         //application.applicationIconBadgeNumber = 0
 
@@ -64,6 +67,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             self.window?.makeKeyAndVisible()
             
             initLocationManager()
+            
+            if (timer1 == nil) && (checkLocation()) {
+                print("running in appdel crumbs")
+                //every 60 seconds runs
+                timer1 = Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 30 sec for a msg
+            }
 
             AppDelegate().NSUserData.setValue(0, forKey: "limitArea")
             
@@ -73,7 +82,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             }
             
             //60 seconds
-            self.timer1 = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(AppDelegate.loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 60 sec for a msg
+            //self.timer1 = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(AppDelegate.loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 60 sec for a msg
             CDStack.saveContext()
             
         } else if !isBanned(){
@@ -96,12 +105,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                         print("received iCloudID \(userID)")
                         self.NSUserData.setValue(userID, forKey: "recordID")//switch to keychain?
                         self.getUserInfo()
+                        self.NSUserData.setValue(Date(), forKey: "SinceLastCheck")
                         //checks crumbcount and populates it, populates premium with most recent value
                     } else {
                         print("Fetched iCloudID was nil")
                     }
                 }
             }
+            
+            
             self.window = UIWindow(frame: UIScreen.main.bounds)
             
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -115,6 +127,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         return true
     }
 
+    
     func TestIfUserSignedIn()-> Bool{
         if isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && NSUserData.string(forKey: "userName") != nil && NSUserData.string(forKey: "recordID") != nil && NSUserData.string(forKey: "didAgreeToPolAndEULA") == "Agree" && isBanned() {
            return true
@@ -168,7 +181,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                     let premiumStatus = userinfo["premiumStatus"] as! Bool
                     let recordName = userinfo.recordID.recordName
                     let banned = userinfo["Banned"] as! String
+                    let agree = userinfo["Agreements"] as! String
+                    let crumbcount = userinfo["crumbCount"] as! Int
                     
+                    
+                    
+                    self.NSUserData.setValue(1, forKey: "ExplainerCrumb")
+                    self.NSUserData.setValue(crumbcount, forKey: "crumbCount")// let cCount = NSUserData.integerForKey("crumbCount")
+                    self.NSUserData.setValue(agree, forKey: "didAgreeToPolAndEULA")
                     self.NSUserData.setValue(userName, forKey: "userName")
                     self.NSUserData.setValue(premiumStatus, forKey: "premiumStatus")
                     self.NSUserData.setValue(recordName, forKey: "recordName")
@@ -188,11 +208,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     //does not run in background, gets queued then runs after returning to foreground, try p
     func loadAndStoreiCloudMsgsBasedOnLoc(){// load icloud msgs; need to check if msg is already loaded & store loaded msgs to persist between views and app instances
         //I need to wait before running this stuff get better accuracy data ->
+        
         self.locationManager.startUpdatingLocation()
         
         let currentUserLoc = bestCurrent
         var locAge = 31.0
-
+        
         if currentUserLoc != nil{
             locAge = -Double((currentUserLoc?.timestamp.timeIntervalSinceNow)!)
         }
@@ -205,16 +226,41 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             helperfunctions.loadIcloudMessageToCoreData(query)
             
             helperfunctions.testStoredMsgsInArea(currentUserLoc!)
-
+            
             print("load and store has run")
             return
             
         }else if currentUserLoc == nil{
+            print("location failure")
             return
-        }else{
-            loadAndStoreiCloudMsgsBasedOnLoc()
         }
     }
+    
+    func lookForMessagesRefresh(){// load icloud msgs; need to check if msg is already loaded & store loaded msgs to persist between views and app instances
+        //I need to wait before running this stuff get better accuracy data ->
+        
+        
+        let currentUserLoc = locationManager.location
+
+        
+        if currentUserLoc != nil{
+            
+            let radiusKm = 80 / 1000.0//30=~100ft,40=131ft
+            let predicate: NSPredicate = NSPredicate(format: "distanceToLocation:fromLocation:(%K,%@) < %f", "location", currentUserLoc!, radiusKm)
+            let query = CKQuery(recordType: "CrumbMessage", predicate: predicate)
+            helperfunctions.loadIcloudMessageToCoreData(query)
+            
+            helperfunctions.testStoredMsgsInArea(currentUserLoc!)
+            
+            print("lookForMessagesRefresh just ran")
+            return
+            
+        }else if currentUserLoc == nil{
+            print("location failure")
+            return
+        }
+    }
+    
     
     //MARK: Location Stuff
     
@@ -228,6 +274,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             self.locationManager.requestAlwaysAuthorization()
             self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
             self.locationManager.allowsBackgroundLocationUpdates = true
+            self.locationManager.startUpdatingLocation()
         //})
     }
     
@@ -330,14 +377,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             let timeElapsedh = Int((-Lastdate!.timeIntervalSinceNow + oldExcess!) / 3600)//converts nsdate to time elapsed in hours
             let excess = round((-Lastdate!.timeIntervalSinceNow + oldExcess!).truncatingRemainder(dividingBy: 3600))
             
-            //print("hours elapsed:\(timeElapsedh) extra seconds stored:\(round(oldExcess!)) s")
-            
+           // print("hours elapsed:\(timeElapsedh) extra seconds stored:\(round(oldExcess!)) s")
             if timeElapsedh + cCount <= 7 && timeElapsedh >= 1 {
                 cCount = cCount + timeElapsedh
                 self.NSUserData.setValue(cCount, forKey: "crumbCount")
-            }else if timeElapsedh > 7 {
+                UpdateCrumbCount(cCount)
+            }else if cCount + timeElapsedh > 7 {
                 cCount = 7
                 NSUserData.setValue(cCount, forKey: "crumbCount")
+                UpdateCrumbCount(cCount)
             }
             
             self.NSUserData.setValue(excess, forKey: "excesstime")//unused seconds from this check
@@ -347,6 +395,33 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         }
      
      }
+    func UpdateCrumbCount(_ cCount: Int){
+        
+        let container = CKContainer.default()
+        let publicData = container.publicCloudDatabase
+        let CKuserID: CKRecordID = CKRecordID(recordName: NSUserData.string(forKey: "recordID")!)//keychain
+        
+        let query = CKQuery(recordType: "UserInfo", predicate: NSPredicate(format: "%K == %@", "creatorUserRecordID" ,CKReference(recordID: CKuserID, action: CKReferenceAction.none)))
+        
+        publicData.perform(query, inZoneWith: nil) {
+            results, error in
+            if error == nil{
+                for userinfo in results! {//need to have this update if user has already signed in before
+                    userinfo.setValue(cCount, forKey: "crumbCount")
+                    publicData.save(userinfo, completionHandler: {theRecord, error in
+                        if error == nil{
+                            print("updated crumbcount")
+                        }else{
+                            print(error as Any)
+                        }
+                    })
+                }
+            }else{
+                print(error!)
+            }
+        }
+        
+    }
     
     // Location Manager Delegate stuff
     //***********************************************************************************************************************//
@@ -397,7 +472,13 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         // Use this method to release shared resources, save user data, invalidate timers, and store enough application state information to restore your application to its current state in case it is terminated later.
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
         
-        self.NSUserData.setValue(0, forKey: "counterLoc")
+        //self.NSUserData.setValue(0, forKey: "counterLoc")
+        if (timer1 == nil) && (checkLocation()) {
+            print("running in appdel crumbs")
+            //every 60 seconds runs
+            timer1 = Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 30 sec for a msg
+        }
+        
         AddCrumbCount()
         CDStack.saveContext()
 
@@ -417,38 +498,42 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         }
         
         if TestIfUserSignedIn(){
+            
+            AddCrumbCount()
+            
             getUserInfo()
-
-            loadAndStoreiCloudMsgsBasedOnLoc()//not this
-            //UPDATE VOTES HERE
-            //start load and store if not already
+            
+            initLocationManager()
+            
+            if (timer1 == nil) && (checkLocation()) {
+                print("running in appdel crumbs")
+                //every 60 seconds runs
+                timer1 = Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 30 sec for a msg
+            }
+            
+            helperfunctions.updateTableViewVoteValues()//updates all votes
+            helperfunctions.checkMarkedForDeleteCD()//deletes old markeds
             
             if YourCrumbsTableViewController().timerload != nil{
                 YourCrumbsTableViewController().timerload?.invalidate()
             }
             
             
-            if (AppDelegate().timer1 == nil) && (checkLocation()) {
+/*            if (AppDelegate().timer1 == nil) && (checkLocation()) {
                 print("running in signed in did becom active")
                 self.timer1 = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 60 sec for a msg
-            }
+            }*/
 
-            helperfunctions.updateTableViewVoteValues()//updates all votes
-            helperfunctions.checkMarkedForDeleteCD()//deletes old markeds
+
             
             /*no let us sit down and I shall tell ye a story. As I was writing updatetableviewcomments something strange happened. The entire app broke. Somehow, I had failed to notice that the update to ios 10 and swift 3 made inert my coredata code and brought to light some threading issues I had programmed. I am indeed an inexperienced ios programmer. I went from lead to lead, breaking the app one way and another trying to figure out the why and the what that caused my app to fail. Initially i thought it was my datamodel, and/or that my nsobject classes were getting confused with older versions of themselves. then after that debaucle I started reading about managed object contexts and how they work, after fucking with that thinking it was the core problem(it was really just a symptom) I discovered threads, and after learning how they worked; I could see that lots of my coredata code was sitting in completion handlers which run in a thread other than the main one. from there debuging all my poorly written code has been relatively easy. */
             
             //if i figure out subscriptions, this will be unnecessary
-            helperfunctions.updateTableViewcomments()//this fucks my shit up so hard
+            //helperfunctions.updateTableViewcomments()//this fucks my shit up so hard
             
             //should use delegation or something
             NotificationCenter.default.post(name: Notification.Name(rawValue: "load"), object: nil)//reloads crmessages from cd everywhere
-            AddCrumbCount()
-            /*if !checkLocation(){
-                
-            }*/
-        //isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && NSUserData.string(forKey: "userName") != nil && NSUserData.string(forKey: "recordID") != nil
-        //is icloud enabled, is username set
+
         } else if !isBanned(){
             self.window = UIWindow(frame: UIScreen.main.bounds)
             
@@ -522,6 +607,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                         print("received iCloudID \(userID)")
                         self.NSUserData.setValue(userID, forKey: "recordID")//switch to keychain?
                         self.getUserInfo()
+                        
+                        self.NSUserData.setValue(Date(), forKey: "SinceLastCheck")
+
                         //checks crumbcount and populates it, populates premium with most recent value
                     } else {
                         print("Fetched iCloudID was nil")
@@ -564,17 +652,23 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
         //let alertBody = cloudKitNotification.alertBody//123
         //print(alertBody!)
-        
+        print("recieved notif")
         if cloudKitNotification.notificationType == .query {
-            let recordID = (cloudKitNotification as! CKQueryNotification).recordID
-            let voteValue = (cloudKitNotification as! CKQueryNotification).recordFields?.first?.value as? Int
-            
-            helperfunctions.updateCrumbFromSub(recorduuid: recordID!, NewVote: voteValue)
-            
-            //        AppDelegate().notify(title: "New Comment" ,body: "New comment posted in one of your Crumbs!",crumbID: recorduuid, userId: name)
-            
-            
-            
+            if cloudKitNotification.alertBody == "Somebody upvoted on one of your Crumbs, Congrats!"{
+                let recordID = (cloudKitNotification as! CKQueryNotification).recordID
+                let voteValue = (cloudKitNotification as! CKQueryNotification).recordFields?.first?.value as? Int
+                
+                helperfunctions.updateCrumbFromSub(recorduuid: recordID!, NewVote: voteValue)
+                
+            }else if cloudKitNotification.alertBody == "Someone commented on your Crumb check it out!"{
+                let recordID = (cloudKitNotification as! CKQueryNotification).recordFields?.first?.value as? CKReference
+                //print((cloudKitNotification as! CKQueryNotification).recordFields)
+                if let id = recordID?.recordID{
+                    helperfunctions.getcommentcktocd(ckidToTest: id)
+                }else{
+                    helperfunctions.updateTableViewcomments()//updates all
+                }
+            }
             completionHandler(.newData)
         }
         
@@ -582,7 +676,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     
     //user Notification funcs function for load and store
     
-    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+    /*func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         
         
         let dictionary = response.notification.request.content.userInfo
@@ -633,7 +727,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             }
         }
         
-    }
+    }*/
     
     func notify(title: String ,body: String, crumbID: String, userId: String) {//used in load and store
         let requestIdentifier = "ARequestId" //identifier is to cancel the notification request

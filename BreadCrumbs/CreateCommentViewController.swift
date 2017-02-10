@@ -145,7 +145,7 @@ class CreateCommentViewController: UIViewController, UITextViewDelegate {
         commentRecord.setValue(comment.username, forKey: "userName")
         commentRecord.setValue(comment.text, forKey: "text")
         commentRecord.setValue(comment.userID, forKey: "senderuuid")
-        
+        commentRecord.setValue(viewbreadcrumb?.senderuuid, forKey: "ownerID")
         
         //var ref = CKReference(record: listRecord, action: .DeleteSelf)
         //itemRecord.setObject(ref, forKey: "owningList")

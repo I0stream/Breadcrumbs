@@ -151,8 +151,11 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
             let msgCell = tableView.dequeueReusableCell(withIdentifier: "YourMsgCell", for: indexPath) as! CrumbTableViewCell
             
             //report button
+        
+            
+            
             if viewbreadcrumb?.senderuuid == userSelf{
-                msgCell.ReportButton.isHidden = true
+                msgCell.ReportButton.isHidden = true///////////////////////
                 msgCell.ReportButton.isEnabled = false
             }else if viewbreadcrumb?.senderuuid != userSelf{
                 msgCell.ReportButton.tag = indexPath.row

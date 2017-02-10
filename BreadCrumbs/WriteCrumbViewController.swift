@@ -251,33 +251,6 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     
     //MARK: ICloud and Coredata
     
-    func UpdateCrumbCount(_ cCount: Int){
-        
-        let container = CKContainer.default()
-        let publicData = container.publicCloudDatabase
-        let CKuserID: CKRecordID = CKRecordID(recordName: NSUserData.string(forKey: "recordID")!)//keychain
-        
-        let query = CKQuery(recordType: "UserInfo", predicate: NSPredicate(format: "%K == %@", "creatorUserRecordID" ,CKReference(recordID: CKuserID, action: CKReferenceAction.none)))
-        
-        publicData.perform(query, inZoneWith: nil) {
-            results, error in
-            if error == nil{
-                for userinfo in results! {//need to have this update if user has already signed in before
-                    userinfo.setValue(cCount, forKey: "crumbCount")
-                    publicData.save(userinfo, completionHandler: {theRecord, error in
-                    if error == nil{
-                        print("saved version")
-                    }else{
-                        print(error as Any)
-                    }
-                })
-                }
-            }else{
-                print(error!)
-            }
-        }
-        
-    }
     
     func saveToCloudThenCD(_ crumbmessage: CrumbMessage?){
         
@@ -381,7 +354,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
                 //print(cCounter)
                 
                 NSUserData.setValue(cCounter, forKey: "crumbCount")
-                self.UpdateCrumbCount(cCounter)
+                AppDelegate().UpdateCrumbCount(cCounter)
                 
                 let senderUser = NSUserData.string(forKey: "userName")!
                 let date = Date()

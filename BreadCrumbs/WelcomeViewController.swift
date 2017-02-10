@@ -30,7 +30,15 @@ class WelcomeViewController: UIViewController {
     @IBAction func StartButton(_ sender: Any) {
         //let vc = storyboard?.instantiateViewController(withIdentifier: "pgManager") as! PageManagerViewController
         //ShowPg
-        performSegue(withIdentifier: "ShowPg", sender: self)
+        
+        if  !(AppDelegate().isBanned()){
+            performSegue(withIdentifier: "TrickyDick", sender: self)
+        }
+        else if AppDelegate().TestIfUserSignedIn(){
+            performSegue(withIdentifier: "AccountAlready", sender: self)
+        } else{
+            performSegue(withIdentifier: "ShowPg", sender: self)
+        }
     }
     /*
     // MARK: - Navigation

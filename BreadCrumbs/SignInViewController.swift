@@ -63,8 +63,9 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
             ckUserinfoTest(username: setUserNameTextField.text!)
             AppDelegate().initLocationManager()
             
-            helperFunctions.cloudkitSub()
-
+            helperFunctions.cloudkitSub()//subscribe to upvotes
+            helperFunctions.commentsub()//subscribe to comments
+            
             self.resignFirstResponder()
             
             
@@ -209,6 +210,8 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         
         let record = CKRecord(recordType: "UserInfo")
         
+        
+        record.setValue("Agree", forKey: "Agreements")
         record.setValue(username, forKey: "userName")
         record.setValue(7, forKey: "crumbCount")
         record.setValue(0, forKey: "premiumStatus")
@@ -243,13 +246,18 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
                     let prem = inf?.value(forKey: "premiumStatus") as! Int
                     let ban = inf?.value(forKey: "Banned") as! String
                     
+                    let agree = inf?.value(forKey: "Agreements") as! String
+                    
                     let time = Date()
-
+                    
+                    self.NSUserData.setValue(agree, forKey: "didAgreeToPolAndEULA")
                     self.NSUserData.setValue(self.setUserNameTextField.text, forKey: "userName")
                     self.NSUserData.setValue(crumbcount, forKey: "crumbCount")// let cCount = NSUserData.integerForKey("crumbCount")
                     self.NSUserData.setValue(time, forKey: "SinceLastCheck")
                     self.NSUserData.setValue(ban, forKey: "banned")
                     self.NSUserData.setValue(prem, forKey: "premiumStatus")
+                    self.NSUserData.setValue(1, forKey: "ExplainerCrumb")
+
                     
                     publicData.save(inf!, completionHandler: { record, error in
                         if error != nil {

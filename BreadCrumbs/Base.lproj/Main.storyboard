@@ -1964,10 +1964,14 @@
                             <constraint firstAttribute="trailing" secondItem="fx9-lQ-KlL" secondAttribute="trailing" id="zYg-0G-THq"/>
                         </constraints>
                     </view>
+                    <connections>
+                        <segue destination="gR9-fO-pA8" kind="show" identifier="AccountAlready" id="5pA-hJ-Hwz"/>
+                        <segue destination="nQh-cm-GnO" kind="show" identifier="TrickyDick" id="JlV-Aa-tOo"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="F8X-Eh-Eo5" userLabel="First Responder" sceneMemberID="firstResponder"/>
             </objects>
-            <point key="canvasLocation" x="-4658" y="-1974"/>
+            <point key="canvasLocation" x="-4659" y="-1974"/>
         </scene>
         <!--ReportMessage-->
         <scene sceneID="taU-BF-hHN">
@@ -2430,9 +2434,10 @@
         <image name="you" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
+        <segue reference="5pA-hJ-Hwz"/>
         <segue reference="w23-IQ-pCl"/>
-        <segue reference="SqE-w9-VHj"/>
         <segue reference="Hxq-ak-7Ch"/>
+        <segue reference="SqE-w9-VHj"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.3529411764705882" green="0.68235294117647061" blue="1" alpha="1" colorSpace="calibratedRGB"/>
 </document>

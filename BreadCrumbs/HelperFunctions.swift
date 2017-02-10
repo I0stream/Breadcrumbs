@@ -523,6 +523,7 @@ class Helper{
     func crumbVote(_ hasvoted: Int, crumb: CrumbMessage, voteValue: Int) {//what happens when a vote conflicts between cd and ck?, this just does ck atm
         print("voting")
         voteCKVote(crumb, voteValue: voteValue)
+        
         voteCoreDataVote(hasvoted, crumb: crumb)
     }
     
@@ -535,9 +536,27 @@ class Helper{
         
         publicData.fetch(withRecordID: recorduuid, completionHandler: {record, error in
             if error == nil{
-                let newvalue = record?.value(forKey: "votes") as! Int + voteValue
                 
-                record!.setObject(newvalue as CKRecordValue?, forKey: "votes")
+                
+                let ckvotes = record?.value(forKey: "votes") as! Int
+                let cdvotes = crumb.votes
+                
+                if ckvotes < 0{
+                    if voteValue > 0{
+                        record!.setObject(voteValue as CKRecordValue?, forKey: "votes")
+                    }else {
+                        record!.setObject(0 as CKRecordValue?, forKey: "votes")
+                    }
+                
+                }else if ckvotes < cdvotes!{
+                    let newvalue = ckvotes + voteValue
+                    record!.setObject(newvalue as CKRecordValue?, forKey: "votes")
+                }else {
+                    let newvalue = cdvotes! + voteValue
+                    record!.setObject(newvalue as CKRecordValue?, forKey: "votes")
+
+                }
+                
                 
                 publicData.save(record!, completionHandler: {theRecord, error in
                     if error == nil{
@@ -647,13 +666,37 @@ class Helper{
 
         let subscription = CKQuerySubscription(recordType: "CrumbMessage", predicate: predicate, options: [.firesOnRecordUpdate])
         let notificationInfo = CKNotificationInfo()
-        
         //I can grab which keys i need here, ckreference for comment & vote
         notificationInfo.desiredKeys = ["votes"]
-        //notificationInfo.alertBody = "An alert for reasons"
+        notificationInfo.alertBody = "Somebody upvoted on one of your Crumbs, Congrats!"
         notificationInfo.shouldBadge = false
         subscription.notificationInfo = notificationInfo
- 
+        
+        //notif is nil,
+        container.save(subscription, completionHandler: {(returnRecord, error) in
+            if let err = error {
+                print("subscription failed ", err.localizedDescription)
+            } else {
+                //print(returnRecord!)
+            }
+        })
+    }
+    
+    func commentsub(){
+        let container = CKContainer.default().publicCloudDatabase//privateCloudDatabase
+        //keychain
+        
+        let predicate = NSPredicate(format: "ownerID == %@", NSUserData.string(forKey: "recordID")!)//subscribes to comments htat have your id
+        
+        let subscription = CKQuerySubscription(recordType: "Comment", predicate: predicate, options: [.firesOnRecordCreation])
+        let notificationInfo = CKNotificationInfo()
+        notificationInfo.desiredKeys = ["ownerReference"]
+
+        notificationInfo.alertBody = "Someone commented on your Crumb check it out!"
+        notificationInfo.shouldBadge = false
+        
+        subscription.notificationInfo = notificationInfo
+        
         //notif is nil,
         container.save(subscription, completionHandler: {(returnRecord, error) in
             if let err = error {
@@ -665,28 +708,11 @@ class Helper{
     }
     
     
-    
-    
-    
     //update crumb obj, from remote notif receiver in appdel
     //only updates comments for your messages
     func updateCrumbFromSub(recorduuid: CKRecordID, NewVote: Int?){//will have updated vote here
         //print("updateCrumbFromSub")
-        
-        let testVote = getVoteToTest(recorduuid: recorduuid.recordName)
-        
-        //if vote is valid do stuff
-        if let vote = NewVote {
-            //if vote has not changed
-            if testVote == NewVote{//notification
-                getcommentcktocd(ckidToTest: recorduuid)
-                //tell view crumb to reload(have an indicator)
-            }else if testVote != NewVote{//no notification
-                self.updateCdVote(recorduuid.recordName, voteValue: vote)
-                
-            }
-        }
-        
+        self.updateCdVote(recorduuid.recordName, voteValue: NewVote!)
     }
     
     func getuserid(recorduuid: String) -> String?{

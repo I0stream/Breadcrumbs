@@ -225,7 +225,7 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
     //refresh table view
     func handleRefresh(_ refreshControl: UIRefreshControl) {
         DispatchQueue.main.async(execute: { () -> Void in
-            
+            AppDelegate().lookForMessagesRefresh()
             self.crumbmessages = self.helperFunctions.loadCoreDataMessage(false)!
             
             self.OthersTableView.reloadData()
