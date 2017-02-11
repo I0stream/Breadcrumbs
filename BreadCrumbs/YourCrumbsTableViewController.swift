@@ -70,8 +70,6 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         YourTableView.rowHeight = UITableViewAutomaticDimension
         
         //NotificationCenter.default.addObserver(self, selector: #selector(YourCrumbsTableViewController.reloadBasedOnRemoteNotif(_:recordID:)), name: Notification.Name(rawValue: "NotifLoad"), object: nil)
-
-        
     }
     
     

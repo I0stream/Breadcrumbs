@@ -11,6 +11,7 @@ import UIKit
 class AgreementViewController: UIViewController{
     let NSUserData = AppDelegate().NSUserData
 
+    @IBOutlet weak var explainlabelstuff: UILabel!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -26,7 +27,7 @@ class AgreementViewController: UIViewController{
         performSegue(withIdentifier: "NoAgree", sender: sender)
     }
     
-    
+/*
     @IBAction func PrivacyPolicy(_ sender: Any) {
         let url = NSURL(string : "https://breadcrumbs.social/privacy-policy/")! as URL
         if #available(iOS 10.0, *) {
@@ -34,8 +35,9 @@ class AgreementViewController: UIViewController{
                 //print("sent to gmail")
             })
         }
-    }
+    }*/
     @IBAction func Agreement(_ sender: Any) {
+        NSUserData.setValue(true, forKey: "didSegueAwayAgreement")
         let url = NSURL(string : "https://breadcrumbs.social/user-agreement/")! as URL
         if #available(iOS 10.0, *) {
             UIApplication.shared.open(url , options: ["yes" : "yes" as Any], completionHandler: { (true) in
@@ -45,6 +47,7 @@ class AgreementViewController: UIViewController{
     }
     
     @IBAction func UserGuidelines(_ sender: Any) {
+        NSUserData.setValue(true, forKey: "didSegueAwayAgreement")
         let url = NSURL(string : "https://breadcrumbs.social/user-guidelines/")! as URL
         if #available(iOS 10.0, *) {
             UIApplication.shared.open(url , options: ["yes" : "yes" as Any], completionHandler: { (true) in

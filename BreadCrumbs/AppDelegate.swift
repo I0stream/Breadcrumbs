@@ -497,6 +497,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
 
         }
         
+        let oneBigTest = isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && NSUserData.string(forKey: "didAgreeToPolAndEULA") == "Agree" && NSUserData.string(forKey: "welcomeValue") == "welcome"
+        
         if TestIfUserSignedIn(){
             
             AddCrumbCount()
@@ -544,6 +546,21 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             
             self.window?.rootViewController = initialViewController
             self.window?.makeKeyAndVisible()
+        }else if NSUserData.bool(forKey: "didSegueAwayAgreement") {
+            
+            NSUserData.setValue(false, forKey: "didSegueAwayAgreement")
+            
+            self.window = UIWindow(frame: UIScreen.main.bounds)
+            
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            
+            let initialViewController = storyboard.instantiateViewController(withIdentifier: "Agreement")
+            
+            self.window?.rootViewController = initialViewController
+            self.window?.makeKeyAndVisible()
+            print("Agreement")
+            
+            
         }else if (forKey: "didAgreeToPolAndEULA") != "Agree" && NSUserData.string(forKey: "welcomeValue") == "welcome"{
             if NSUserData.string(forKey: "recordID") == nil/*|| user != signedIn*/{//keychain
                 iCloudUserIDAsync() {
@@ -570,7 +587,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             print("sign in")
         
         
-        }else if isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && NSUserData.string(forKey: "didAgreeToPolAndEULA") == "Agree" && NSUserData.string(forKey: "welcomeValue") == "welcome"{
+        }else if oneBigTest{
             
             //gets and sets userrecordID
             if NSUserData.string(forKey: "recordID") == nil/*|| user != signedIn*/{//keychain
@@ -587,6 +604,19 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                 }
             }
             
+            NotificationCenter.default.post(name: Notification.Name(rawValue: "ReloadSignIn"), object: nil)
+            
+            self.window = UIWindow(frame: UIScreen.main.bounds)
+            
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            
+            let initialViewController = storyboard.instantiateViewController(withIdentifier: "SignIn")
+            
+            self.window?.rootViewController = initialViewController
+            self.window?.makeKeyAndVisible()
+        }else if NSUserData.bool(forKey: "didAuthorize"){
+        
+            NSUserData.setValue(false, forKey: "didAuthorize")
             NotificationCenter.default.post(name: Notification.Name(rawValue: "ReloadSignIn"), object: nil)
             
             self.window = UIWindow(frame: UIScreen.main.bounds)

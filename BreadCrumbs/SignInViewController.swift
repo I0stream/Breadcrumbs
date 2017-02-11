@@ -35,10 +35,15 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         
         NotificationCenter.default.addObserver(self, selector: #selector(SignInViewController.loadList(_:)),name:NSNotification.Name(rawValue: "ReloadSignIn"), object: nil)
         ErrorDisp.isHidden = true
-
+        //requestloc()
     }
     func requestloc(){
+        NSUserData.setValue(true, forKey: "didAuthorize")
         locationManager.requestAlwaysAuthorization()
+    }
+    override func viewDidAppear(_ animated: Bool) {
+        requestloc()
+
     }
     
     //MARK: Actions
@@ -68,6 +73,17 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
             
             self.resignFirstResponder()
             
+            NSUserData.setValue(0, forKey: "otherExplainer")
+            
+            //if if if if if if if okie doke
+            if NSUserData.integer(forKey: "otherExplainer") == 0{
+                let user = "Sabre"
+                let tex = "Hi! This is a BreadCrumb. It's a message that you can find in different places you go, wherever people have dropped them. You can start a conversation on any BreadCrumb by first tapping the message, then the comment button. Or drop your own crumb wherever you are by pressing the plus button."
+                let userId = "_abacd--_dfasdfsiaoucvxzmnwfehk"
+                WriteCrumbViewController().CrumbCDCK(text: tex, User: user, senderid: userId)
+                NSUserData.setValue(1, forKey: "otherExplainer")
+                
+            }
             
             performSegue(withIdentifier: "SignInSegue", sender: sender)//presents weird and i also want user to be able to access this and sign out/in again. cant change username after picking though. may need more view controllers
         }else if AppDelegate().isBanned(){
@@ -174,7 +190,6 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     
     func textFieldDidEndEditing(_ textField: UITextField) {
         AView.isHidden = false
-        requestloc()
         accountStatus()//does user have icloud drive enabled
         
         errorTest()

@@ -205,7 +205,7 @@ class Helper{
                         let fmvote = fetchedmsgsCD[i].votevalue! as Int
                         let fmrecorduuid = fetchedmsgsCD[i].recorduuid! as String
                         let fmhasVoted = fetchedmsgsCD[i].hasVoted as! Int
-                        let fmviewedOther = fetchedmsgsCD[i].viewedOther as! Int
+                        //let fmviewedOther = fetchedmsgsCD[i].viewedOther as! Int
                         let fmMarkedForDelete = fetchedmsgsCD[i].markedForDelete as! Int
                         //let fmcommentsArr = fetchedmsgsCD[i].comments! as [Comment]
                         
@@ -215,7 +215,7 @@ class Helper{
                         
                         fmCrumbMessageOther?.uRecordID = fmrecorduuid
                         fmCrumbMessageOther?.hasVoted = fmhasVoted
-                        fmCrumbMessageOther?.viewedOther = fmviewedOther
+                        //fmCrumbMessageOther?.viewedOther = fmviewedOther
                         fmCrumbMessageOther?.markedForDelete = fmMarkedForDelete
                         //fmCrumbMessageOther?.addressStr = fmaddressStr
                         
@@ -249,7 +249,7 @@ class Helper{
         messageMO.setValue(crumbmessage.senderuuid, forKey: "senderuuid")
         messageMO.setValue(crumbmessage.votes, forKey: "votevalue")
         messageMO.setValue(crumbmessage.uRecordID, forKey: "recorduuid")
-        messageMO.setValue(0, forKey: "viewedOther")//false
+        //messageMO.setValue(0, forKey: "viewedOther")//false
         messageMO.setValue(0, forKey: "hasVoted")//false
         messageMO.setValue(0, forKey: "markedForDelete")//false
         //messageMO.setValue(crumbmessage.addressStr, forKey: "addressStr")

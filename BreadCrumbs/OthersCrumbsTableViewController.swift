@@ -61,6 +61,8 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
 
         OthersTableView.rowHeight = UITableViewAutomaticDimension
         OthersTableView.estimatedRowHeight = 200
+        tabBarController?.tabBar.items![1].badgeValue = ""
+
     }
     /*override func viewDidDisappear(_ animated: Bool) {
         for crumbs in crumbmessages{
@@ -194,6 +196,11 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
             
             cell.VoteButton.tag = indexPath.row
             cell.VoteButton.addTarget(self, action: #selector(OthersCrumbsTableViewController.buttonActions), for: .touchUpInside)
+            
+            if crumbmsg.senderuuid == "_abacd--_dfasdfsiaoucvxzmnwfehk"{
+                cell.ReportButton.isHidden = true
+                cell.ReportButton.isEnabled = false
+            }
             cell.ReportButton.tag = indexPath.row
             cell.ReportButton.addTarget(self, action: #selector(OthersCrumbsTableViewController.report), for: .touchUpInside)
             if crumbmsg.calculate() > 0 {

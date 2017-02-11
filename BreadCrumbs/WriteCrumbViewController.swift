@@ -137,6 +137,8 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         }
         
         
+        
+        
         view.addGestureRecognizer(tap)
     }
 
@@ -349,42 +351,53 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     func addCrumbCDAndCK(_ sender: AnyObject?) {
         if postButtonOutlet === sender{
             if testMsg() == true && checkLocation() == true && AppDelegate().NSUserData.integer(forKey: "limitArea") == 0 {
-                
-                let cCounter: Int = Int(NSUserData.string(forKey: "crumbCount")!)! - 1
-                //print(cCounter)
-                
-                NSUserData.setValue(cCounter, forKey: "crumbCount")
-                AppDelegate().UpdateCrumbCount(cCounter)
-                
-                let senderUser = NSUserData.string(forKey: "userName")!
-                let date = Date()
-                
-                let curLoc = locationManager.location!
-                let locAge = curLoc.timestamp.timeIntervalSinceNow
-                
-                print("hori acc \(curLoc.horizontalAccuracy)")
-                print("age \(-locAge)")
-                
-                //create crumbMessage object
-                crumbmessage = CrumbMessage(text: crumbMessageTextView.text, senderName: senderUser, location: curLoc, timeDropped: date, timeLimit: currentTime, senderuuid: NSUserData.string(forKey: "recordID")!, votes: 0)
-                crumbmessage?.hasVoted = 0//keychain
-                
-                self.saveToCloudThenCD(self.crumbmessage)//saves both cd and ck
-                
-                self.NSUserData.setValue(Date(), forKey: "SinceLastCheck")
-                //NotificationCenter.default.post(name: Notification.Name(rawValue: "load"), object: nil)
-                //self.dismiss(animated: true, completion: nil)
-                
-                // })//NEED ERROR HANDLING HERE KEK yeah right dec 10
-                locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
 
-                
-            } else {
-                print("Tests did fail :(")/*I need to add an indicator and disable the post button if the
-                 tests are failing; like jesus it makes testing shit a pain in my ass whenever I sim it
-                 the loc services dont auto run half the time and then I have to dick around with it*/
+                let msgText = crumbMessageTextView.text
+                let senderUser = NSUserData.string(forKey: "userName")!
+                let senderid = NSUserData.string(forKey: "recordID")!
+                CrumbCDCK(text: msgText!, User: senderUser, senderid: senderid)
             }
         }
+    }
+    
+    func CrumbCDCK(text: String, User: String, senderid: String){
+        if checkLocation() == true{
+            if User == NSUserData.string(forKey: "recordID")!{
+                let cCounter: Int = Int(NSUserData.string(forKey: "crumbCount")!)! - 1
+            //print(cCounter)
+            
+                NSUserData.setValue(cCounter, forKey: "crumbCount")
+                AppDelegate().UpdateCrumbCount(cCounter)
+            }
+            
+            let date = Date()
+            
+            let curLoc = locationManager.location!
+            let locAge = curLoc.timestamp.timeIntervalSinceNow
+            
+            print("hori acc \(curLoc.horizontalAccuracy)")
+            print("age \(-locAge)")
+            
+            //create crumbMessage object
+            crumbmessage = CrumbMessage(text: text, senderName: User, location: curLoc, timeDropped: date, timeLimit: currentTime, senderuuid: senderid, votes: 0)
+            crumbmessage?.hasVoted = 0//keychain
+            
+            self.saveToCloudThenCD(self.crumbmessage)//saves both cd and ck
+            
+            self.NSUserData.setValue(Date(), forKey: "SinceLastCheck")
+            //NotificationCenter.default.post(name: Notification.Name(rawValue: "load"), object: nil)
+            //self.dismiss(animated: true, completion: nil)
+            
+            // })//NEED ERROR HANDLING HERE KEK yeah right dec 10
+            locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
+            
+            
+        } else {
+            print("Tests did fail :(")/*I need to add an indicator and disable the post button if the
+             tests are failing; like jesus it makes testing shit a pain in my ass whenever I sim it
+             the loc services dont auto run half the time and then I have to dick around with it*/
+        }
+
     }
     
     
