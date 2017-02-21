@@ -61,7 +61,7 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
 
         OthersTableView.rowHeight = UITableViewAutomaticDimension
         OthersTableView.estimatedRowHeight = 200
-        tabBarController?.tabBar.items![1].badgeValue = ""
+        tabBarController?.tabBar.items![1].badgeValue = nil
 
     }
     /*override func viewDidDisappear(_ animated: Bool) {
@@ -169,9 +169,9 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
             
             if crumbmsg.votes != 1{
                 //msgCell.VoteValueLabel.text = "\((viewbreadcrumb?.votes)!) votes"
-                cell.VoteButton.setTitle("\((crumbmsg.votes)!) votes", for: .normal)
+                cell.VoteButton.setTitle("\((crumbmsg.votes)) votes", for: .normal)
             } else {
-                cell.VoteButton.setTitle("\((crumbmsg.votes)!) vote", for: .normal)
+                cell.VoteButton.setTitle("\((crumbmsg.votes)) vote", for: .normal)
                 
                 //msgCell.VoteValueLabel.text = "\((viewbreadcrumb?.votes)!) vote"
             }
@@ -323,24 +323,24 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
                 inscreen = true
                 viewbreadcrumb.hasVoted = 0
                 votevalue = -1
-                viewbreadcrumb.votes! = (viewbreadcrumb.votes)! - 1
+                viewbreadcrumb.votes = (viewbreadcrumb.votes) - 1
                 
             }else if viewbreadcrumb.hasVoted == 0 && inscreen == false{//has not voted before +1
                 inscreen = true
                 viewbreadcrumb.hasVoted = 1
                 votevalue = 1
-                viewbreadcrumb.votes!
-                    = (viewbreadcrumb.votes)! + 1
+                viewbreadcrumb.votes
+                    = (viewbreadcrumb.votes) + 1
             } else if viewbreadcrumb.hasVoted == 1 && inscreen == true{
                 viewbreadcrumb.hasVoted = 0
                 votevalue = -1
-                viewbreadcrumb.votes! = (viewbreadcrumb.votes)! - 1
+                viewbreadcrumb.votes = (viewbreadcrumb.votes) - 1
                 
             }else if viewbreadcrumb.hasVoted == 0 && inscreen == true{
                 viewbreadcrumb.hasVoted = 1
                 votevalue = 1
-                viewbreadcrumb.votes!
-                    = (viewbreadcrumb.votes)! + 1
+                viewbreadcrumb.votes       
+                    = (viewbreadcrumb.votes) + 1
             }
             
             helperFunctions.crumbVote(viewbreadcrumb.hasVoted!, crumb: viewbreadcrumb, voteValue: votevalue )

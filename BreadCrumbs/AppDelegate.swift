@@ -17,20 +17,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
 
     var window: UIWindow?
     
+    let NSUserData = UserDefaults.standard//for storing states and numbers
+    
     var locationManager = CLLocationManager()//location stuff
     var seenError : Bool = false
     var locationFixAchieved : Bool = false
     var locationStatus : NSString = "Not Started"
-    
-    let NSUserData = UserDefaults.standard//for storing states and numbers
-    let helperfunctions = Helper()//contains various cd and ck functions
     var bestEffortAtLocation: CLLocation!//see didupdatelocation or whatever
-    
     var bestCurrent: CLLocation?
-    weak var timer1 = Timer()//for keeping track of load and store
+    
+    weak var timerRepeatLoadAndStore = Timer()//for keeping track of load and store
+    
+    let helperfunctions = Helper()//contains various cd and ck functions
     lazy var CDStack = CoreDataStack()//cd req functions
     
-    var iLoad = 0
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         //helperfunctions.cloudkitSub()
@@ -55,34 +55,31 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         //if so go to app
         // NSUserData.string(forKey: "didAgreeToPolAndEULA") == "Agree"
 
-        if TestIfUserSignedIn(){//keychain
+        if TestIfUserSignedIn(){//Signed in
             self.window = UIWindow(frame: UIScreen.main.bounds)
             
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            
             
             let initialViewController = storyboard.instantiateViewController(withIdentifier: "TabBarController") as! UITabBarController
             
             self.window?.rootViewController = initialViewController
             self.window?.makeKeyAndVisible()
             
+            UIApplication.shared.applicationIconBadgeNumber = 0
+            
             initLocationManager()
             
-            if (timer1 == nil) && (checkLocation()) {
-                print("running in appdel crumbs")
-                //every 60 seconds runs
-                timer1 = Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 30 sec for a msg
-            }
-
+            AddCrumbCount()//checks to see and if so adds more crumbs to users
+            
+            timerForLoadAndStore()//starts checking for messages with load and store if needed  
+            
             AppDelegate().NSUserData.setValue(0, forKey: "limitArea")
             
-            if NSUserData.object(forKey: "ExplainerCrumb") == nil {
-                NSUserData.setValue(0, forKey: "ExplainerCrumb")
+            if NSUserData.object(forKey: "badgeOther") == nil {
+                NSUserData.setValue(0, forKey: "badgeOther")
                 print("was empty")
             }
             
-            //60 seconds
-            //self.timer1 = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(AppDelegate.loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 60 sec for a msg
             CDStack.saveContext()
             
         } else if !isBanned(){
@@ -98,7 +95,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         }else {//if not go to sign in
             
             //gets and sets userrecordID
-            if NSUserData.string(forKey: "recordID") == nil/*|| user != signedIn*/{//keychain
+            if NSUserData.string(forKey: "recordID") == nil{//keychain
                 iCloudUserIDAsync() {
                     recordID, error in
                     if let userID = recordID?.recordName {
@@ -126,7 +123,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
         return true
     }
-
+    
     
     func TestIfUserSignedIn()-> Bool{
         if isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && NSUserData.string(forKey: "userName") != nil && NSUserData.string(forKey: "recordID") != nil && NSUserData.string(forKey: "didAgreeToPolAndEULA") == "Agree" && isBanned() {
@@ -186,7 +183,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                     
                     
                     
-                    self.NSUserData.setValue(1, forKey: "ExplainerCrumb")
+                    self.NSUserData.setValue(1, forKey: "badgeOther")
                     self.NSUserData.setValue(crumbcount, forKey: "crumbCount")// let cCount = NSUserData.integerForKey("crumbCount")
                     self.NSUserData.setValue(agree, forKey: "didAgreeToPolAndEULA")
                     self.NSUserData.setValue(userName, forKey: "userName")
@@ -201,6 +198,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
     }
     //MARK: save icloud msgs to coreData
+    
+    func timerForLoadAndStore(){
+        if (timerRepeatLoadAndStore == nil) && (checkLocation()) {
+            print("timerForLoadAndStore")
+            //checks icloud every 90 sec for a msg
+            timerRepeatLoadAndStore = Timer.scheduledTimer(timeInterval: 90, target: self, selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)
+        }
+    }
+    
     //constant checking for new msgs
     
     //this is the heart of the app
@@ -238,7 +244,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     
     func lookForMessagesRefresh(){// load icloud msgs; need to check if msg is already loaded & store loaded msgs to persist between views and app instances
         //I need to wait before running this stuff get better accuracy data ->
-        
         
         let currentUserLoc = locationManager.location
 
@@ -324,6 +329,40 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             return false
         }
     }
+    
+    // Location Manager Delegate stuff
+    
+    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
+        locationManager.stopUpdatingLocation()
+        print(error)
+    }
+    
+    /*I think this is his http://stackoverflow.com/a/24696878 */
+    
+    func locationManager(_ manager: CLLocationManager,
+                         didChangeAuthorization status: CLAuthorizationStatus) {
+        var shouldIAllow = false
+        
+        switch status {
+        case CLAuthorizationStatus.restricted:
+            locationStatus = "Restricted Access to location"
+        case CLAuthorizationStatus.denied:
+            locationStatus = "User denied access to location"
+        case CLAuthorizationStatus.notDetermined:
+            locationStatus = "Status not determined"
+        default:
+            locationStatus = "Allowed to location Access"
+            shouldIAllow = true
+        }
+        NotificationCenter.default.post(name: Notification.Name(rawValue: "LabelHasbeenUpdated"), object: nil)
+        if (shouldIAllow == true) {
+            NSLog("Location to Allowed")
+            // Start location services
+            locationManager.startUpdatingLocation()
+        } else {
+            NSLog("Denied access: \(locationStatus)")
+        }
+    }
     //***********************************************************************************************************************//
     
     //MARK: Further cloudkit functions
@@ -366,7 +405,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
         let Lastdate:Date? = NSUserData.object(forKey: "SinceLastCheck") as? Date
         
-        if cCount < 7 && Lastdate?.description != nil{//extra hour is sneeking its way in here soumehow
+        let crumblimit = 7
+        
+        if cCount < crumblimit && Lastdate?.description != nil{//extra hour is sneeking its way in here soumehow
             
             var oldExcess = NSUserData.object(forKey: "excesstime") as? Double//excess 'seconds' from last check
             
@@ -378,12 +419,12 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             let excess = round((-Lastdate!.timeIntervalSinceNow + oldExcess!).truncatingRemainder(dividingBy: 3600))
             
            // print("hours elapsed:\(timeElapsedh) extra seconds stored:\(round(oldExcess!)) s")
-            if timeElapsedh + cCount <= 7 && timeElapsedh >= 1 {
+            if timeElapsedh + cCount <= crumblimit && timeElapsedh >= 1 {
                 cCount = cCount + timeElapsedh
                 self.NSUserData.setValue(cCount, forKey: "crumbCount")
                 UpdateCrumbCount(cCount)
-            }else if cCount + timeElapsedh > 7 {
-                cCount = 7
+            }else if cCount + timeElapsedh > crumblimit {
+                cCount = crumblimit
                 NSUserData.setValue(cCount, forKey: "crumbCount")
                 UpdateCrumbCount(cCount)
             }
@@ -422,44 +463,111 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         }
         
     }
-    
-    // Location Manager Delegate stuff
-    //***********************************************************************************************************************//
 
+    //MARK: User Notifications
     
-    func locationManager(_ manager: CLLocationManager, didFailWithError error: Error) {
-        locationManager.stopUpdatingLocation()
-        print(error)
-    }
+    //remote Notification funcs for subscriptions
     
-    /*I think this is his http://stackoverflow.com/a/24696878 */
     
-    func locationManager(_ manager: CLLocationManager,
-                         didChangeAuthorization status: CLAuthorizationStatus) {
-        var shouldIAllow = false
+    //this func it pretty dumb, so I get a notif when a any breadcrumb changes(it includes the recordid)
+    //but it does not tell me what specific value has changed
+    //so i just update the only two that can, comment and vote
+    //at least to my knowledge this is how it works
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         
-        switch status {
-        case CLAuthorizationStatus.restricted:
-            locationStatus = "Restricted Access to location"
-        case CLAuthorizationStatus.denied:
-            locationStatus = "User denied access to location"
-        case CLAuthorizationStatus.notDetermined:
-            locationStatus = "Status not determined"
-        default:
-            locationStatus = "Allowed to location Access"
-            shouldIAllow = true
+        let cloudKitNotification = CKNotification.init(fromRemoteNotificationDictionary: userInfo as! [String : NSObject])
+        
+        //let alertBody = cloudKitNotification.alertBody//123
+        //print(alertBody!)
+        print("recieved notif")
+        if cloudKitNotification.notificationType == .query {
+            if cloudKitNotification.alertBody == "Somebody upvoted on one of your Crumbs, Congrats!"{
+                let recordID = (cloudKitNotification as! CKQueryNotification).recordID
+                let voteValue = (cloudKitNotification as! CKQueryNotification).recordFields?.first?.value as? Int
+                
+                helperfunctions.updateCrumbFromSub(recorduuid: recordID!, NewVote: voteValue)
+                
+            }else if cloudKitNotification.alertBody == "Someone commented on your Crumb check it out!"{
+                let recordID = (cloudKitNotification as! CKQueryNotification).recordFields?.first?.value as? CKReference
+                //print((cloudKitNotification as! CKQueryNotification).recordFields)
+                if let id = recordID?.recordID{
+                    helperfunctions.getcommentcktocd(ckidToTest: id)
+                }else{
+                    helperfunctions.updateTableViewcomments()//updates all
+                }
+            }
+            completionHandler(.newData)
         }
-        NotificationCenter.default.post(name: Notification.Name(rawValue: "LabelHasbeenUpdated"), object: nil)
-        if (shouldIAllow == true) {
-            NSLog("Location to Allowed")
-            // Start location services
-            locationManager.startUpdatingLocation()
-        } else {
-            NSLog("Denied access: \(locationStatus)")
+        
+    }
+    
+    //user Notification funcs function for load and store
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        
+        
+        let dictionary = response.notification.request.content.userInfo
+        let recordid = dictionary["RecordUuid"] as? String
+        let userid = dictionary["UserId"] as? String
+        
+        
+        if response.actionIdentifier == UNNotificationDefaultActionIdentifier && recordid != nil{
+            let storyboard = UIStoryboard(name: "Main", bundle: nil)
+            
+            let initialViewController = storyboard.instantiateViewController(withIdentifier: "TabBarController") as! UITabBarController
+            
+            if userid != NSUserData.string(forKey: "recordID"){//need to open into view crumbs but idk how
+                initialViewController.selectedIndex = 2
+                self.window?.rootViewController = initialViewController
+                
+                let others = initialViewController.selectedViewController as! OthersCrumbsTableViewController
+                
+                let segue = UIStoryboardSegue(identifier: "othersviewcrumb", source: others, destination: ViewCrumbViewController() as UIViewController)
+                
+                let upcoming = segue.destination as! ViewCrumbViewController
+                
+                let crumbmsg = helperfunctions.getSpecific(recorduuid: recordid!)
+                
+                upcoming.viewbreadcrumb = crumbmsg
+                
+                upcoming.delegate = others
+                
+            }
+        }
+        
+    }
+    
+    func notify(title: String ,body: String, crumbID: String, userId: String) {//used in load and store
+        let requestIdentifier = "ARequestId" //identifier is to cancel the notification request
+        print("notify run")
+        //use crumbid to know which viewcrumb to open
+        if #available(iOS 10.0, *) {
+            
+            let badgeNumber = UIApplication.shared.applicationIconBadgeNumber
+            
+            let content = UNMutableNotificationContent()
+            content.title = title
+            content.body = body
+            content.sound = UNNotificationSound.default()
+            content.userInfo = ["RecordUuid": crumbID, "UserId": userId]
+            let newbadge = 1 + badgeNumber
+            content.badge = newbadge as NSNumber?
+            
+            // Deliver the notification in five seconds.
+            let trigger = UNTimeIntervalNotificationTrigger.init(timeInterval: 5.0, repeats: false)
+            let request = UNNotificationRequest(identifier:requestIdentifier, content: content, trigger: trigger)
+            
+            UNUserNotificationCenter.current().delegate = self
+            UNUserNotificationCenter.current().add(request){(error) in
+                
+                print("notification sent")
+                if (error != nil){
+                    
+                    print(error?.localizedDescription ?? "error in notify")
+                }
+            }
         }
     }
-
-
     //MARK: misc stack
     //***********************************************************************************************************************//
 
@@ -473,11 +581,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
         
         //self.NSUserData.setValue(0, forKey: "counterLoc")
-        if (timer1 == nil) && (checkLocation()) {
-            print("running in appdel crumbs")
-            //every 60 seconds runs
-            timer1 = Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 30 sec for a msg
-        }
+        timerForLoadAndStore()//starts checking for messages with load and store if needed
         
         AddCrumbCount()
         CDStack.saveContext()
@@ -501,17 +605,16 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
         if TestIfUserSignedIn(){
             
+            UIApplication.shared.applicationIconBadgeNumber = 0
+
+            
             AddCrumbCount()
             
             getUserInfo()
             
             initLocationManager()
             
-            if (timer1 == nil) && (checkLocation()) {
-                print("running in appdel crumbs")
-                //every 60 seconds runs
-                timer1 = Timer.scheduledTimer(timeInterval: 60, target: self, selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 30 sec for a msg
-            }
+            timerForLoadAndStore()//starts checking for messages with load and store if needed
             
             helperfunctions.updateTableViewVoteValues()//updates all votes
             helperfunctions.checkMarkedForDeleteCD()//deletes old markeds
@@ -520,11 +623,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                 YourCrumbsTableViewController().timerload?.invalidate()
             }
             
-            
-/*            if (AppDelegate().timer1 == nil) && (checkLocation()) {
-                print("running in signed in did becom active")
-                self.timer1 = Timer.scheduledTimer(timeInterval: 60.0, target: self, selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)//checks icloud every 60 sec for a msg
-            }*/
 
 
             
@@ -665,145 +763,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
         CDStack.saveContext()
         //self.saveContext()
-    }
-
-    //MARK: User Notifications
-    
-    //remote Notification funcs for subscriptions
-    
-    
-    //this func it pretty dumb, so I get a notif when a any breadcrumb changes(it includes the recordid)
-    //but it does not tell me what specific value has changed
-    //so i just update the only two that can, comment and vote
-    //at least to my knowledge this is how it works
-    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        
-        let cloudKitNotification = CKNotification.init(fromRemoteNotificationDictionary: userInfo as! [String : NSObject])
-        
-        //let alertBody = cloudKitNotification.alertBody//123
-        //print(alertBody!)
-        print("recieved notif")
-        if cloudKitNotification.notificationType == .query {
-            if cloudKitNotification.alertBody == "Somebody upvoted on one of your Crumbs, Congrats!"{
-                let recordID = (cloudKitNotification as! CKQueryNotification).recordID
-                let voteValue = (cloudKitNotification as! CKQueryNotification).recordFields?.first?.value as? Int
-                
-                helperfunctions.updateCrumbFromSub(recorduuid: recordID!, NewVote: voteValue)
-                
-            }else if cloudKitNotification.alertBody == "Someone commented on your Crumb check it out!"{
-                let recordID = (cloudKitNotification as! CKQueryNotification).recordFields?.first?.value as? CKReference
-                //print((cloudKitNotification as! CKQueryNotification).recordFields)
-                if let id = recordID?.recordID{
-                    helperfunctions.getcommentcktocd(ckidToTest: id)
-                }else{
-                    helperfunctions.updateTableViewcomments()//updates all
-                }
-            }
-            completionHandler(.newData)
-        }
-        
-    }
-    
-    //user Notification funcs function for load and store
-    
-    /*func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        
-        
-        let dictionary = response.notification.request.content.userInfo
-        let recordid = dictionary["RecordUuid"] as? String
-        let userid = dictionary["UserId"] as? String
-        
-        
-        if response.actionIdentifier == UNNotificationDefaultActionIdentifier && recordid != nil{
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            
-            let initialViewController = storyboard.instantiateViewController(withIdentifier: "TabBarController") as! UITabBarController
-            
-            if userid == NSUserData.string(forKey: "recordID"){//need to open into view crumbs but idk how
-                initialViewController.selectedIndex = 1
-                //initialViewController
-                self.window?.rootViewController = initialViewController
-                
-                let yours = initialViewController.selectedViewController as! YourCrumbsTableViewController
-
-                let segue = UIStoryboardSegue(identifier: "yourMsgSegue", source: yours, destination: ViewCrumbViewController() as UIViewController)
-
-                let upcoming = segue.destination as! ViewCrumbViewController
-                
-                let crumbmsg = helperfunctions.getSpecific(recorduuid: recordid!)
-                
-                upcoming.viewbreadcrumb = crumbmsg
-                
-                let destVC = segue.destination as! ViewCrumbViewController
-                destVC.delegate = yours
-                
-                
-            } else if userid != NSUserData.string(forKey: "recordID"){//need to open into view crumbs but idk how
-                initialViewController.selectedIndex = 2
-                self.window?.rootViewController = initialViewController
-
-                let others = initialViewController.selectedViewController as! OthersCrumbsTableViewController
-                
-                let segue = UIStoryboardSegue(identifier: "othersviewcrumb", source: others, destination: ViewCrumbViewController() as UIViewController)
-                
-                let upcoming = segue.destination as! ViewCrumbViewController
-                
-                let crumbmsg = helperfunctions.getSpecific(recorduuid: recordid!)
-                
-                upcoming.viewbreadcrumb = crumbmsg
-                
-                upcoming.delegate = others
-                
-            }
-        }
-        
-    }*/
-    
-    func notify(title: String ,body: String, crumbID: String, userId: String) {//used in load and store
-        let requestIdentifier = "ARequestId" //identifier is to cancel the notification request
-        print("notify run")
-        //use crumbid to know which viewcrumb to open
-        if #available(iOS 10.0, *) {
-            
-            let content = UNMutableNotificationContent()
-            content.title = title
-            content.body = body
-            content.sound = UNNotificationSound.default()
-            content.userInfo = ["RecordUuid": crumbID, "UserId": userId]
-            
-            // Deliver the notification in five seconds.
-            let trigger = UNTimeIntervalNotificationTrigger.init(timeInterval: 5.0, repeats: false)
-            let request = UNNotificationRequest(identifier:requestIdentifier, content: content, trigger: trigger)
-            
-            UNUserNotificationCenter.current().delegate = self
-            UNUserNotificationCenter.current().add(request){(error) in
-                
-            print("notification sent")
-                if (error != nil){
-                    
-                    print(error?.localizedDescription ?? "error in notify")
-                }
-            }
-        } /*else {
-            guard let settings = UIApplication.shared.currentUserNotificationSettings else { return }
-            
-            if settings.types == UIUserNotificationType() {
-                let ac = UIAlertController(title: "Can't schedule", message: "Either we don't have permission to schedule notifications, or we haven't asked yet.", preferredStyle: .alert)
-                ac.addAction(UIAlertAction(title: "OK", style: .default, handler: nil))
-                return
-            }
-            
-            let notification = UILocalNotification()
-            notification.fireDate = Date(timeIntervalSinceNow: 5)
-            notification.alertBody = body
-            notification.alertAction = "Confirm"
-            notification.soundName = UILocalNotificationDefaultSoundName
-            //notification.userInfo = ["CustomField1": "w00t"]
-            UIApplication.shared.scheduleLocalNotification(notification)
-            
-            print("ping notif")//ping notif
-            NotificationCenter.default.post(name: Notification.Name(rawValue: "loadOthers"), object: nil)//loads new msgs from cd
-        }*/
     }
 }
 

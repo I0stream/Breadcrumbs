@@ -69,6 +69,11 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         YourTableView.estimatedRowHeight = 200
         YourTableView.rowHeight = UITableViewAutomaticDimension
         
+        /*if NSUserData.integer(forKey: "otherExplainer") == 0{
+            tabBarController?.tabBar.items![1].badgeValue = ""
+            NSUserData.setValue(1, forKey: "otherExplainer")
+        }*/
+        
         //NotificationCenter.default.addObserver(self, selector: #selector(YourCrumbsTableViewController.reloadBasedOnRemoteNotif(_:recordID:)), name: Notification.Name(rawValue: "NotifLoad"), object: nil)
     }
     
@@ -177,9 +182,9 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
             }
             if crumbmsg.votes != 1{
                 //msgCell.VoteValueLabel.text = "\((viewbreadcrumb?.votes)!) votes"
-                cell.VoteButton.setTitle("\((crumbmsg.votes)!) votes", for: .normal)
+                cell.VoteButton.setTitle("\((crumbmsg.votes)) votes", for: .normal)
             } else {
-                cell.VoteButton.setTitle("\((crumbmsg.votes)!) vote", for: .normal)
+                cell.VoteButton.setTitle("\((crumbmsg.votes)) vote", for: .normal)
                 
                 //msgCell.VoteValueLabel.text = "\((viewbreadcrumb?.votes)!) vote"
             }
@@ -299,25 +304,25 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
                 inscreen = true
                 viewbreadcrumb.hasVoted = 0
                 votevalue = -1
-                viewbreadcrumb.votes! = (viewbreadcrumb.votes)! - 1
+                viewbreadcrumb.votes = (viewbreadcrumb.votes) - 1
                 
             }else if viewbreadcrumb.hasVoted == 0 && inscreen == false{//has not voted before +1
                 inscreen = true
                 viewbreadcrumb.hasVoted = 1
                 votevalue = 1
-                viewbreadcrumb.votes!
-                    = (viewbreadcrumb.votes)! + 1
+                viewbreadcrumb.votes
+                    = (viewbreadcrumb.votes) + 1
             } else if viewbreadcrumb.hasVoted == 1 && inscreen == true{
                 viewbreadcrumb.hasVoted = 0
                 votevalue = -1
 
-                viewbreadcrumb.votes! = (viewbreadcrumb.votes)! - 1
+                viewbreadcrumb.votes = (viewbreadcrumb.votes) - 1
                 
             }else if viewbreadcrumb.hasVoted == 0 && inscreen == true{
                 viewbreadcrumb.hasVoted = 1
                 votevalue = 1
-                viewbreadcrumb.votes!
-                    = (viewbreadcrumb.votes)! + 1
+                viewbreadcrumb.votes
+                    = (viewbreadcrumb.votes) + 1
             }
             
             

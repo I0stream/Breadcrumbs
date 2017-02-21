@@ -414,23 +414,23 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
             inscreen = true
             viewbreadcrumb?.hasVoted = 0
             votevalue = -1
-            viewbreadcrumb?.votes! = (viewbreadcrumb?.votes)! - 1
+            viewbreadcrumb?.votes = (viewbreadcrumb?.votes)! - 1
             
         }else if viewbreadcrumb?.hasVoted == 0 && inscreen == false{//has not voted before +1
             inscreen = true
             viewbreadcrumb?.hasVoted = 1
             votevalue = 1
-            viewbreadcrumb?.votes!
+            viewbreadcrumb?.votes
                 = (viewbreadcrumb?.votes)! + 1
         } else if viewbreadcrumb?.hasVoted == 1 && inscreen == true{
             viewbreadcrumb?.hasVoted = 0
             votevalue = -1
-            viewbreadcrumb?.votes! = (viewbreadcrumb?.votes)! - 1
+            viewbreadcrumb?.votes = (viewbreadcrumb?.votes)! - 1
             
         }else if viewbreadcrumb?.hasVoted == 0 && inscreen == true{
             viewbreadcrumb?.hasVoted = 1
             votevalue = 1
-            viewbreadcrumb?.votes!
+            viewbreadcrumb?.votes
                 = (viewbreadcrumb?.votes)! + 1
         }
         if viewbreadcrumb?.hasVoted == 1{//resets color

@@ -78,7 +78,7 @@ class Helper{
                                 if let fetchResults = try self.getmoc().fetch(fetchRequest) as? [Message]{
                                     if fetchResults.isEmpty{
                                         
-
+                                        self.NSUserData.setValue(2, forKey: "otherExplainer")
                                         self.saveToCoreData(loadedMessage!)
                                     }
                                 }
@@ -548,11 +548,11 @@ class Helper{
                         record!.setObject(0 as CKRecordValue?, forKey: "votes")
                     }
                 
-                }else if ckvotes < cdvotes!{
+                }else if ckvotes < cdvotes{
                     let newvalue = ckvotes + voteValue
                     record!.setObject(newvalue as CKRecordValue?, forKey: "votes")
                 }else {
-                    let newvalue = cdvotes! + voteValue
+                    let newvalue = cdvotes + voteValue
                     record!.setObject(newvalue as CKRecordValue?, forKey: "votes")
 
                 }
@@ -594,7 +594,7 @@ class Helper{
         do {// change it, it not work y?
             let fetchedMsgs = try getmoc().fetch(fetchRequest)
             
-            fetchedMsgs.first?.setValue((crumb.votes!), forKey: "votevalue")
+            fetchedMsgs.first?.setValue((crumb.votes), forKey: "votevalue")
             fetchedMsgs.first?.setValue(hasvoted, forKey: "hasVoted")
             do {// save it!
                 try getmoc().save()

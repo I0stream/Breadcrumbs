@@ -14,7 +14,7 @@ class CrumbMessage{
     //MARK: Properties
     
     var senderuuid: String
-    var votes: Int?
+    var votes: Int
     var text: String
     var senderName: String
     var location: CLLocation
@@ -31,7 +31,7 @@ class CrumbMessage{
     
     //MARK: Initialization
     init?(text: String, senderName: String, location: CLLocation, timeDropped: Date
-        , timeLimit: Int, senderuuid: String, votes: Int?){
+        , timeLimit: Int, senderuuid: String, votes: Int){
         self.text = text
         self.senderName = senderName
         self.location = location

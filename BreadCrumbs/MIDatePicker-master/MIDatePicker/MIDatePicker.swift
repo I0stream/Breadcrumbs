@@ -77,27 +77,58 @@ class MIDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
     }
 
     // MARK: - IBAction
+    
+    
+    
+    // MARK: - Public
+    func show(inVC parentVC: UIViewController, row: Int, completion: (() -> ())? = nil) {
+        //picker?.showsSelectionIndicator = true
+        
+        parentVC.view.endEditing(true)
+        
+        setup(parentVC, row: row)
+        move(true)
+        
+        UIView.animate(
+            withDuration: config.animationDuration, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 5, options: .curveEaseIn, animations: {
+                
+                parentVC.view.layoutIfNeeded()
+                self.overlayButton.alpha = 1
+                
+        }, completion: { (finished) in
+            completion?()
+        }
+        )
+        
+    }
+    
     @IBAction func confirmButtonDidTapped(_ sender: AnyObject) {
         //config.startDate = datePicker.date
         
         dismiss()
         delegate?.miDatePicker(self, didSelect: (picker?.selectedRow(inComponent: 0))!)
-        //delegate?.miDatePicker(self, didSelect: datePicker.date)
+    }
+    func dismiss(_ completion: (() -> ())? = nil) {
+        
+        move(false)
+        
+        UIView.animate(
+            withDuration: config.animationDuration, animations: {
+                
+                self.layoutIfNeeded()
+                self.overlayButton.alpha = 0
+                
+        }, completion: { (finished) in
+            completion?()
+            self.removeFromSuperview()
+            self.overlayButton.removeFromSuperview()
+        }
+        )
         
     }
     
-    @IBAction func BackArrowTapped(_ sender: Any) {
-        delegate?.miDatePicker(self, moveSelect: (picker?.selectRow(((picker?.selectedRow(inComponent: 0))!-1), inComponent: 0, animated: true))!)
-
-    }
-    @IBAction func ForwardArrowTapped(_ sender: Any) {
-            delegate?.miDatePicker(self, moveSelect: (picker?.selectRow(((picker?.selectedRow(inComponent: 0))!+1), inComponent: 0, animated: true))!)
-    }
-    
-
-    
     // MARK: - Private
-    fileprivate func setup(_ parentVC: UIViewController) {
+    fileprivate func setup(_ parentVC: UIViewController, row: Int) {
         
         // Loading configuration
         
@@ -106,15 +137,13 @@ class MIDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
         //}
         picker?.delegate = self
         picker?.dataSource = self
+        picker?.selectRow(row, inComponent: 0, animated: false)
+
         picker?.showsSelectionIndicator = true
-        
-        headerViewHeightConstraint.constant = config.headerHeight
-        
-        
+
         confirmButton.setTitle(config.confirmButtonTitle, for: UIControlState())
         
-        //confirmButton.setTitleColor(config.confirmButtonColor, forState: .Normal)
-        //cancelButton.setTitleColor(config.cancelButtonColor, forState: .Normal)
+        headerViewHeightConstraint.constant = config.headerHeight
         
         headerView.backgroundColor = config.headerBackgroundColor
         backgroundView.backgroundColor = config.contentBackgroundColor
@@ -165,45 +194,12 @@ class MIDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
     fileprivate func move(_ goUp: Bool) {
         bottomConstraint.constant = goUp ? config.bouncingOffset : config.contentHeight + config.headerHeight
     }
-    
-    // MARK: - Public
-    func show(inVC parentVC: UIViewController, completion: (() -> ())? = nil) {
-        //picker?.showsSelectionIndicator = true
-
-        parentVC.view.endEditing(true)
-        
-        setup(parentVC)
-        move(true)
-        
-        UIView.animate(
-            withDuration: config.animationDuration, delay: 0, usingSpringWithDamping: 0.7, initialSpringVelocity: 5, options: .curveEaseIn, animations: {
-                
-                parentVC.view.layoutIfNeeded()
-                self.overlayButton.alpha = 1
-                
-            }, completion: { (finished) in
-                completion?()
-            }
-        )
+    @IBAction func BackArrowTapped(_ sender: Any) {
+        delegate?.miDatePicker(self, moveSelect: (picker?.selectRow(((picker?.selectedRow(inComponent: 0))!-1), inComponent: 0, animated: true))!)
         
     }
-    func dismiss(_ completion: (() -> ())? = nil) {
-        
-        move(false)
-        
-        UIView.animate(
-            withDuration: config.animationDuration, animations: {
-                
-                self.layoutIfNeeded()
-                self.overlayButton.alpha = 0
-                
-            }, completion: { (finished) in
-                completion?()
-                self.removeFromSuperview()
-                self.overlayButton.removeFromSuperview()
-            }
-        )
-        
+    @IBAction func ForwardArrowTapped(_ sender: Any) {
+        delegate?.miDatePicker(self, moveSelect: (picker?.selectRow(((picker?.selectedRow(inComponent: 0))!+1), inComponent: 0, animated: true))!)
     }
     
 }

@@ -103,7 +103,6 @@ class ReportMenuViewController: UIViewController {
             blockedUsers!.append(userToBlock!)
         }
         NSUserData.set(blockedUsers, forKey: "BlockedUsers")
-        //NSUserData.set
         //dismiss 
         if typeToReport == "crumbmessage"{
             //reload view others

@@ -43,7 +43,7 @@ fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
 }
 
 
-class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocationManagerDelegate, MIDatePickerDelegate, UNUserNotificationCenterDelegate {
+class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocationManagerDelegate, MIDatePickerDelegate, UNUserNotificationCenterDelegate{
     
     //MARK: Variables
     var msgCharCount:Int = 0
@@ -56,12 +56,12 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     //let managedObjectContext = AppDelegate().getContext() //broke
 
     //weak var delegate: updateViewDelegate?
-    var currentTime = 4
+    var currentTime: Int?
     
     let datePicker = MIDatePicker.getFromNib()
 
     
-    weak var timer = Timer()
+    weak var DeAnimateTimer = Timer()
     
     //MARK: Properties
     
@@ -75,12 +75,11 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     
     override func viewDidLoad() {
         super.viewDidLoad()
-        //NSUserData.setValue(0, forKey: "ExplainerCrumb")
         
         self.locationManager.startUpdatingLocation()
-        
+        locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
+
         datePicker.delegate = self
-        
         // Handle the text field’s user input through delegate callbacks.
         self.crumbMessageTextView.delegate = self
         textViewDidChange(crumbMessageTextView)
@@ -113,18 +112,30 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
 
         }
         
+        if NSUserData.integer(forKey: "LastPickedTime") == 0{
+            currentTime = 48
+            pickeroutlet.setTitle("\(currentTime!) hours", for: UIControlState())
+        }else{
+            currentTime = NSUserData.integer(forKey: "LastPickedTime")
+            pickeroutlet.setTitle("\(currentTime!) hours", for: UIControlState())
+
+
+        }
+        
+        
+        
         //show crumbcount explainer only once; maybe later have a ? mark button to show explainer
-        if NSUserData.value(forKey: "ExplainerCrumb") as! Int == 0{
+        if NSUserData.value(forKey: "badgeOther") as! Int == 0{
             //display explainer
             CrumbcountExplainerView.isHidden = false
             
-            NSUserData.setValue(1, forKey: "ExplainerCrumb")
+            NSUserData.setValue(1, forKey: "badgeOther")
         }
         
         //limit crumbs in area
         if currentReachabilityStatus == .notReachable{//internet down
             animateInfoBar("Internet is unavailable")
-            timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(checkToDeAnimate), userInfo: nil, repeats: true)
+            DeAnimateTimer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(checkToDeAnimate), userInfo: nil, repeats: true)
         }else if checkLocation() {//
             helperfunctions.testStoredMsgsInArea(locationManager.location!)
             if NSUserData.integer(forKey: "limitArea") == 1{
@@ -133,10 +144,8 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         }else if checkLocation() == false{//this is the code i am most proud of, animation is so good
             animateInfoBar("Location is down")
             
-            timer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(checkToDeAnimate), userInfo: nil, repeats: true)
+            DeAnimateTimer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(checkToDeAnimate), userInfo: nil, repeats: true)
         }
-        
-        
         
         
         view.addGestureRecognizer(tap)
@@ -145,100 +154,14 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     func miDatePicker(_ amDatePicker: MIDatePicker, didSelect time: Int) {
         // Do something when the user has confirmed a selected date
         currentTime = pickerTimeLimit[time]
-        pickeroutlet.setTitle("\(currentTime) hours", for: UIControlState())
-        print(currentTime)
+        pickeroutlet.setTitle("\(currentTime!) hours", for: UIControlState())
     }
-    func miDatePicker(_ amDatePicker: MIDatePicker, moveSelect: Void) {
-    }
-
-
-    func numberOfComponentsInPickerView(_ pickerView: UIPickerView) -> Int {
-     return 1
-    }
-    func pickerView(_ pickerView: UIPickerView, numberOfRowsInComponent component: Int) -> Int {
-        return datePicker.config.times.count
-    }
-    func pickerView(_ pickerView: UIPickerView, titleForRow row: Int, forComponent component: Int) -> String? {
-        return datePicker.config.times[row]
-    }
+    func miDatePicker(_ amDatePicker: MIDatePicker, moveSelect: Void) {}
     
     @IBAction func ShowPicker(_ sender: AnyObject) {
-        datePicker.show(inVC: self)
-    }
-    //MARK: timer
-    func checkToDeAnimate(){
-        if checkLocation() == true{
-            UNanimateInfoBar()
-            timer?.invalidate()
-        }
+        datePicker.show(inVC: self, row: pickerTimeLimit.index(of: currentTime!)!)
     }
     
-    //MARK: Subview
-    
-    func animateInfoBar(_ alert: String){
-        let duration = 0.5
-        let delay = 0.5
-        let options = UIViewAnimationOptions.transitionCurlDown
-        let damping:CGFloat = 1 // set damping ration
-        let velocity:CGFloat = 1.0
-        self.makeSubViewIndicator(alert)
-        UIView.animate(withDuration: duration, delay: delay, usingSpringWithDamping: damping, initialSpringVelocity: velocity, options: options, animations: {
-            self.view.viewWithTag(5)!.frame = CGRect(x: 0, y:((self.view.viewWithTag(1)!.frame.size.height)), width: (self.view.frame.size.width), height: 20)
-            
-        }) { (true) in
-        }
-        //makeSubViewIndicator("Location is down")
-    }
-    func UNanimateInfoBar(){
-        
-        let duration = 1.0
-        let delay = 0.0
-        let options = UIViewAnimationOptions.transitionCurlUp
-        let damping:CGFloat = 1 // set damping ration
-        let velocity:CGFloat = 1.0
-        
-        UIView.animate(withDuration: duration, delay: delay, usingSpringWithDamping: damping, initialSpringVelocity: velocity, options: options, animations: {
-            self.removeInfoBarView()
-        }) { (true) in
-            self.view.viewWithTag(5)!.removeFromSuperview()
-            
-        }
-        //makeSubViewIndicator("Location is down")
-        
-        
-    }
-    
-    func makeSubViewIndicator(_ text: String){
-        view.viewWithTag(2)?.transform.ty = (view.viewWithTag(2)?.transform.ty)! + 20
-        //view.viewWithTag(34)?.transform.ty = (view.viewWithTag(34)?.transform.ty)! + 20
-        view.viewWithTag(26)?.transform.ty = (view.viewWithTag(26)?.transform.ty)! + 20
-
-        let labelAnimate = UITextField(frame: CGRect(x: 0, y:((self.view.viewWithTag(1)!.frame.size.height)), width: (view.frame.size.width), height: 20))
-        labelAnimate.isUserInteractionEnabled = false
-        labelAnimate.text = text
-        labelAnimate.textColor = UIColor.white
-        labelAnimate.textAlignment = NSTextAlignment.center
-        labelAnimate.tag = 4
-        
-        //rectangle
-        let backgroundrect = UIView()
-        backgroundrect.frame = CGRect(x: 0, y:((self.view.viewWithTag(1)!.frame.size.height)), width: (view.frame.size.width), height: 20)
-        backgroundrect.backgroundColor = UIColor(red: 90/255, green: 174/255, blue: 255/255, alpha: 1)
-        
-        backgroundrect.tag = 5
-        
-        view.addSubview(backgroundrect)
-        view.addSubview(labelAnimate)
-    }
-    func removeInfoBarView(){
-        self.view.viewWithTag(5)!.frame = CGRect(x: 0, y:(self.view.viewWithTag(1)!.frame.size.height), width: (view.frame.size.width), height: 0)
-        self.view.viewWithTag(26)?.transform.ty = (view.viewWithTag(26
-            )?.transform.ty)! - 20//text
-        //view.viewWithTag(34)?.transform.ty = (view.viewWithTag(34)?.transform.ty)! - 20//textbox
-        view.viewWithTag(2)?.transform.ty = (view.viewWithTag(2)?.transform.ty)! - 20
-
-        self.view.viewWithTag(4)!.removeFromSuperview()
-    }
     
     
     func dismissKeyboard() {
@@ -288,14 +211,13 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     func saveToCoreDataWrite(_ crumbmessage: CrumbMessage){//it has to do with threading
         //create Message: NSManagedObject
         DispatchQueue.main.async(execute: { () -> Void in
-
-        if #available(iOS 10.0, *) {
+            if #available(iOS 10.0, *) {
                 //guard let appDelegate = UIApplication.shared.delegate as? AppDelegate else {
                 //    return
                 //}
                 //let moc = appDelegate.persistentContainer.viewContext
                 let moc = AppDelegate().CDStack.mainContext
-
+                
                 let entity = NSEntityDescription.entity(forEntityName: "Message", in: moc)!
                 
                 let message = Message(entity: entity, insertInto: moc)
@@ -319,32 +241,12 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
                     print(error)
                     print("cd error in write crumbs")
                 }
-
-        }/*else{
-            let message = NSEntityDescription.insertNewObject(forEntityName: "Message", into: AppDelegate().managedObjectContext) as! BreadCrumbs.Message
-        
-            message.setValue(crumbmessage.text, forKey: "text")
-            message.setValue(crumbmessage.senderName, forKey: "senderName")
-            message.setValue(crumbmessage.timeDropped, forKey: "timeDropped")
-            message.setValue(crumbmessage.timeLimit, forKey: "timeLimit")
-            message.initFromLocation(crumbmessage.location)
-            message.setValue(crumbmessage.senderuuid, forKey: "senderuuid")
-            message.setValue(crumbmessage.votes, forKey: "votevalue")
-            message.setValue(crumbmessage.uRecordID, forKey: "recorduuid")
-        //messageMO.setValue(crumbmessage.addressStr, forKey: "addressStr")
-            do {
-                try message.managedObjectContext?.save()
-                //print("saved to coredata")
-            } catch {
-                print(error)
-                print("cd error in write crumbs")
                 
             }
-        }*/
         })
     }
     override func viewWillDisappear(_ animated: Bool) {
-        timer?.invalidate()
+        DeAnimateTimer?.invalidate()
     }
     
     //add crumb to coredata
@@ -362,7 +264,8 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     
     func CrumbCDCK(text: String, User: String, senderid: String){
         if checkLocation() == true{
-            if User == NSUserData.string(forKey: "recordID")!{
+            
+            if senderid == NSUserData.string(forKey: "recordID")!{
                 let cCounter: Int = Int(NSUserData.string(forKey: "crumbCount")!)! - 1
             //print(cCounter)
             
@@ -379,17 +282,13 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
             print("age \(-locAge)")
             
             //create crumbMessage object
-            crumbmessage = CrumbMessage(text: text, senderName: User, location: curLoc, timeDropped: date, timeLimit: currentTime, senderuuid: senderid, votes: 0)
+            crumbmessage = CrumbMessage(text: text, senderName: User, location: curLoc, timeDropped: date, timeLimit: currentTime!, senderuuid: senderid, votes: 0)
             crumbmessage?.hasVoted = 0//keychain
             
-            self.saveToCloudThenCD(self.crumbmessage)//saves both cd and ck
-            
             self.NSUserData.setValue(Date(), forKey: "SinceLastCheck")
-            //NotificationCenter.default.post(name: Notification.Name(rawValue: "load"), object: nil)
-            //self.dismiss(animated: true, completion: nil)
+            self.NSUserData.setValue(currentTime!, forKey: "LastPickedTime")
             
-            // })//NEED ERROR HANDLING HERE KEK yeah right dec 10
-            locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
+            self.saveToCloudThenCD(self.crumbmessage)//saves both cd and ck
             
             
         } else {
@@ -468,10 +367,6 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     //change text color to black when user begins editing textView and disable post button
     func textViewDidBeginEditing(_ textView: UITextView) {
         
-        //disable save button if editing
-        //postButtonOutlet.enabled = false
-        locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
-        
         if crumbMessageTextView.textColor == UIColor.lightGray {
             crumbMessageTextView.text = nil
             crumbMessageTextView.textColor = UIColor.black
@@ -484,15 +379,14 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     }
     //track chars in msgview and highlight dat sheeit
     func textViewDidChange(_ textView: UITextView) {
-        if crumbMessageTextView.text != "What do you think?"{
+        if crumbMessageTextView.text != "What do you think?"{            
+            
             msgCharCount = crumbMessageTextView.text.characters.count
             charLabelCount.text = String(256 - msgCharCount)
         } else {
             charLabelCount.text = String(256)
         }
         if crumbMessageTextView.text.characters.count >= 256 {
-            //TODO: highlight >:( number indicating too long
-            //will doo soon ------------
             charLabelCount.textColor = UIColor(red: 1, green: 0, blue: 0, alpha: 1)
         }else{
             charLabelCount.textColor = UIColor(red: 162/255, green: 162/255, blue: 162/255, alpha: 1)
@@ -516,21 +410,100 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         return true
     }
     
+
+    
     
     //MARK: Navigation
     //cancel writecrumb and return to yourcrumbtableview
     @IBAction func CancelPost(_ sender: AnyObject) {
         dismiss(animated: true, completion: nil)
         self.locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
-
+        self.NSUserData.setValue(currentTime!, forKey: "LastPickedTime")
     }
     @IBAction func PostMessage(_ sender: AnyObject) {
         addCrumbCDAndCK(sender)
         postButtonOutlet.isEnabled = false
-        self.locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
+        locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
     }
 }
-/*
-protocol updateViewDelegate: class{
-    func addNewMessage(_ newCrumb: CrumbMessage)
+
+/*extension WriteCrumbViewController{
+
 }*/
+extension WriteCrumbViewController{//MARK: Alarm info bar
+    //MARK: timer
+    func checkToDeAnimate(){
+        if checkLocation() == true{
+            locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
+            UNanimateInfoBar()
+            DeAnimateTimer?.invalidate()
+        }
+    }
+    
+    //MARK: Subview
+    
+    func animateInfoBar(_ alert: String){
+        let duration = 0.5
+        let delay = 0.5
+        let options = UIViewAnimationOptions.transitionCurlDown
+        let damping:CGFloat = 1 // set damping ration
+        let velocity:CGFloat = 1.0
+        self.makeSubViewIndicator(alert)
+        UIView.animate(withDuration: duration, delay: delay, usingSpringWithDamping: damping, initialSpringVelocity: velocity, options: options, animations: {
+            self.view.viewWithTag(5)!.frame = CGRect(x: 0, y:((self.view.viewWithTag(1)!.frame.size.height)), width: (self.view.frame.size.width), height: 20)
+            
+        }) { (true) in
+        }
+        //makeSubViewIndicator("Location is down")
+    }
+    func UNanimateInfoBar(){
+        
+        let duration = 1.0
+        let delay = 0.0
+        let options = UIViewAnimationOptions.transitionCurlUp
+        let damping:CGFloat = 1 // set damping ration
+        let velocity:CGFloat = 1.0
+        
+        UIView.animate(withDuration: duration, delay: delay, usingSpringWithDamping: damping, initialSpringVelocity: velocity, options: options, animations: {
+            self.removeInfoBarView()
+        }) { (true) in
+            self.view.viewWithTag(5)!.removeFromSuperview()
+            
+        }
+        //makeSubViewIndicator("Location is down")
+        
+        
+    }
+    
+    func makeSubViewIndicator(_ text: String){
+        view.viewWithTag(2)?.transform.ty = (view.viewWithTag(2)?.transform.ty)! + 20
+        //view.viewWithTag(34)?.transform.ty = (view.viewWithTag(34)?.transform.ty)! + 20
+        view.viewWithTag(26)?.transform.ty = (view.viewWithTag(26)?.transform.ty)! + 20
+        
+        let labelAnimate = UITextField(frame: CGRect(x: 0, y:((self.view.viewWithTag(1)!.frame.size.height)), width: (view.frame.size.width), height: 20))
+        labelAnimate.isUserInteractionEnabled = false
+        labelAnimate.text = text
+        labelAnimate.textColor = UIColor.white
+        labelAnimate.textAlignment = NSTextAlignment.center
+        labelAnimate.tag = 4
+        
+        //rectangle
+        let backgroundrect = UIView()
+        backgroundrect.frame = CGRect(x: 0, y:((self.view.viewWithTag(1)!.frame.size.height)), width: (view.frame.size.width), height: 20)
+        backgroundrect.backgroundColor = UIColor(red: 90/255, green: 174/255, blue: 255/255, alpha: 1)
+        
+        backgroundrect.tag = 5
+        
+        view.addSubview(backgroundrect)
+        view.addSubview(labelAnimate)
+    }
+    func removeInfoBarView(){
+        self.view.viewWithTag(5)!.frame = CGRect(x: 0, y:(self.view.viewWithTag(1)!.frame.size.height), width: (view.frame.size.width), height: 0)
+        self.view.viewWithTag(26)?.transform.ty = (view.viewWithTag(26
+            )?.transform.ty)! - 20//text
+        //view.viewWithTag(34)?.transform.ty = (view.viewWithTag(34)?.transform.ty)! - 20//textbox
+        view.viewWithTag(2)?.transform.ty = (view.viewWithTag(2)?.transform.ty)! - 20
+        
+        self.view.viewWithTag(4)!.removeFromSuperview()
+    }
+}

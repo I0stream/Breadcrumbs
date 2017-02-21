@@ -33,7 +33,6 @@ class CrumbTableViewCell: UITableViewCell, UITextViewDelegate{
     //@IBOutlet weak var countdownLabel: UILabel!
     
     var viewbreadcrumb: CrumbMessage?
-    var timer = Timer()
     
     
     override func awakeFromNib() {

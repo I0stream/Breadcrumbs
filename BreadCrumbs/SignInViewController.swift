@@ -73,15 +73,15 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
             
             self.resignFirstResponder()
             
-            NSUserData.setValue(0, forKey: "otherExplainer")
+            NSUserData.setValue(2, forKey: "otherExplainer")
             
             //if if if if if if if okie doke
-            if NSUserData.integer(forKey: "otherExplainer") == 0{
+            if NSUserData.integer(forKey: "otherExplainer") == 2{
                 let user = "Sabre"
                 let tex = "Hi! This is a BreadCrumb. It's a message that you can find in different places you go, wherever people have dropped them. You can start a conversation on any BreadCrumb by first tapping the message, then the comment button. Or drop your own crumb wherever you are by pressing the plus button."
                 let userId = "_abacd--_dfasdfsiaoucvxzmnwfehk"
                 WriteCrumbViewController().CrumbCDCK(text: tex, User: user, senderid: userId)
-                NSUserData.setValue(1, forKey: "otherExplainer")
+                //NSUserData.setValue(1, forKey: "otherExplainer")
                 
             }
             
@@ -218,7 +218,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         NSUserData.setValue(7, forKey: "crumbCount")// let cCount = NSUserData.integerForKey("crumbCount")
         NSUserData.setValue(time, forKey: "SinceLastCheck")
         NSUserData.setValue(0, forKey: "premiumStatus")
-        NSUserData.setValue(0, forKey: "ExplainerCrumb")
+        NSUserData.setValue(0, forKey: "badgeOther")
         
         let container = CKContainer.default()
         let publicData = container.publicCloudDatabase
@@ -271,7 +271,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
                     self.NSUserData.setValue(time, forKey: "SinceLastCheck")
                     self.NSUserData.setValue(ban, forKey: "banned")
                     self.NSUserData.setValue(prem, forKey: "premiumStatus")
-                    self.NSUserData.setValue(1, forKey: "ExplainerCrumb")
+                    self.NSUserData.setValue(1, forKey: "badgeOther")
 
                     
                     publicData.save(inf!, completionHandler: { record, error in
