@@ -28,6 +28,8 @@
 	<true/>
 	<key>NSLocationAlwaysUsageDescription</key>
 	<string>For sending and receiving location based messages</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Allow photo</string>
 	<key>UIApplicationExitsOnSuspend</key>
 	<false/>
 	<key>UIBackgroundModes</key>

@@ -17,6 +17,7 @@ import CoreLocation
 import CoreData
 import UserNotifications
 import SystemConfiguration
+import MobileCoreServices
 
 // FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
 // Consider refactoring the code to use the non-optional operators.
@@ -43,7 +44,7 @@ fileprivate func > <T : Comparable>(lhs: T?, rhs: T?) -> Bool {
 }
 
 
-class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocationManagerDelegate, MIDatePickerDelegate, UNUserNotificationCenterDelegate{
+class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocationManagerDelegate, MIDatePickerDelegate, UNUserNotificationCenterDelegate, UIImagePickerControllerDelegate, UINavigationControllerDelegate{
     
     //MARK: Variables
     var msgCharCount:Int = 0
@@ -73,6 +74,12 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     @IBOutlet weak var postButtonOutlet: UIButton!
     @IBOutlet weak var CrumbcountExplainerView: UIView!
     
+    
+    @IBOutlet weak var UiViewImageContainer: UIView!
+    @IBOutlet weak var imageContainerUIImage: UIImageView!
+    var uploadedPhoto: UIImage?
+    
+    
     override func viewDidLoad() {
         super.viewDidLoad()
         
@@ -93,6 +100,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         
         
         submitView.isHidden = true
+        UiViewImageContainer.isHidden = true
         
         //fuck if I know, post button off unless pass tests
         postButtonEnabledIfTestsTrue()
@@ -149,8 +157,66 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         
         
         view.addGestureRecognizer(tap)
+        
     }
 
+    
+    
+    //not my code=>
+    
+    
+    
+    
+    @IBAction func UploadPhotoAction(sender: AnyObject) {
+        if (UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.camera)){
+            let picker = UIImagePickerController()
+            picker.delegate = self
+            //picker.sourceType = UIImagePickerControllerSourceType.camera
+            //let mediaTypes: Array<AnyObject> = [kUTTypeImage]
+            //picker.mediaTypes = mediaTypes as! [String]
+            picker.allowsEditing = false //2
+            picker.sourceType = .photoLibrary //3
+            self.present(picker, animated: true, completion: nil)
+        }
+        else{
+            print("No Camera.")
+        }
+    }
+    
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+
+        
+        let photoPicked = info[UIImagePickerControllerOriginalImage] as! UIImage //2
+        imageContainerUIImage.contentMode = .scaleAspectFit
+        imageContainerUIImage.image = photoPicked
+        uploadedPhoto = photoPicked
+        
+        imageContainerUIImage.layer.cornerRadius = 5.0
+        imageContainerUIImage.clipsToBounds = true
+        
+        UiViewImageContainer.isHidden = false
+        
+        dismiss(animated: true, completion: nil)
+    }
+    func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
+        dismiss(animated: true, completion: nil)
+    }
+    
+    
+    //<=not my code
+    
+    
+    @IBAction func CancelPhotoOnMessage(_ sender: Any) {
+        UiViewImageContainer.isHidden = true
+        uploadedPhoto = nil
+        imageContainerUIImage.image = nil
+    }
+    
+    
+    
+    
+    
+    
     func miDatePicker(_ amDatePicker: MIDatePicker, didSelect time: Int) {
         // Do something when the user has confirmed a selected date
         currentTime = pickerTimeLimit[time]
@@ -265,25 +331,32 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     func CrumbCDCK(text: String, User: String, senderid: String){
         if checkLocation() == true{
             
+            
+            //update crumbcount value, maybe move this to savetocloud
             if senderid == NSUserData.string(forKey: "recordID")!{
                 let cCounter: Int = Int(NSUserData.string(forKey: "crumbCount")!)! - 1
-            //print(cCounter)
             
                 NSUserData.setValue(cCounter, forKey: "crumbCount")
                 AppDelegate().UpdateCrumbCount(cCounter)
             }
             
+            
+            //init date, location for the message obj
             let date = Date()
-            
             let curLoc = locationManager.location!
-            let locAge = curLoc.timestamp.timeIntervalSinceNow
-            
-            print("hori acc \(curLoc.horizontalAccuracy)")
-            print("age \(-locAge)")
+
             
             //create crumbMessage object
             crumbmessage = CrumbMessage(text: text, senderName: User, location: curLoc, timeDropped: date, timeLimit: currentTime!, senderuuid: senderid, votes: 0)
             crumbmessage?.hasVoted = 0//keychain
+            
+            if uploadedPhoto != nil{
+                print("photo uploaded")
+                //crumbmessage?.photo = uploadedPhoto!
+            }else {
+                print("no photo")
+            }
+            
             
             self.NSUserData.setValue(Date(), forKey: "SinceLastCheck")
             self.NSUserData.setValue(currentTime!, forKey: "LastPickedTime")

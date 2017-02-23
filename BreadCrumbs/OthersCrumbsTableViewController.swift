@@ -56,7 +56,9 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
         
         self.crumbmessages += helperFunctions.loadCoreDataMessage(false)!//false load others
         //pull to refresh observer
-
+        
+        AppDelegate().notify(title: "test", body: "test", crumbID: crumbmessages[0].uRecordID!, userId: crumbmessages[0].senderuuid)
+        
         self.OthersTableView.addSubview(self.refreshControl)
 
         OthersTableView.rowHeight = UITableViewAutomaticDimension

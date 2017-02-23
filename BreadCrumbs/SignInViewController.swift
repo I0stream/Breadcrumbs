@@ -65,32 +65,65 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
                     print("Fetched iCloudID was nil")
                 }
             }
-            ckUserinfoTest(username: setUserNameTextField.text!)
-            AppDelegate().initLocationManager()
+            //        createUserInfo(setUserNameTextField.text!)
+
             
-            helperFunctions.cloudkitSub()//subscribe to upvotes
-            helperFunctions.commentsub()//subscribe to comments
-            
-            self.resignFirstResponder()
-            
-            NSUserData.setValue(2, forKey: "otherExplainer")
-            
-            //if if if if if if if okie doke
-            if NSUserData.integer(forKey: "otherExplainer") == 2{
-                let user = "Sabre"
-                let tex = "Hi! This is a BreadCrumb. It's a message that you can find in different places you go, wherever people have dropped them. You can start a conversation on any BreadCrumb by first tapping the message, then the comment button. Or drop your own crumb wherever you are by pressing the plus button."
-                let userId = "_abacd--_dfasdfsiaoucvxzmnwfehk"
-                WriteCrumbViewController().CrumbCDCK(text: tex, User: user, senderid: userId)
-                //NSUserData.setValue(1, forKey: "otherExplainer")
-                
-            }
-            
-            performSegue(withIdentifier: "SignInSegue", sender: sender)//presents weird and i also want user to be able to access this and sign out/in again. cant change username after picking though. may need more view controllers
-        }else if AppDelegate().isBanned(){
+            ckUniqueNameTest(username: setUserNameTextField.text!)
+            }else if AppDelegate().isBanned(){
             performSegue(withIdentifier: "BannedPage", sender: sender)
         }
         else{
             errorTest()
+        }
+    }
+    
+    func successSignIn(){
+        createUserInfo(setUserNameTextField.text!)
+        AppDelegate().initLocationManager()
+        
+        helperFunctions.cloudkitSub()//subscribe to upvotes
+        helperFunctions.commentsub()//subscribe to comments
+        
+        self.resignFirstResponder()
+        
+        NSUserData.setValue(2, forKey: "otherExplainer")
+        
+        //if if if if if if if okie doke
+        if NSUserData.integer(forKey: "otherExplainer") == 2{
+            let user = "Sabre"
+            let tex = "Hi! This is a BreadCrumb. It's a message that you can find in different places you go, wherever people have dropped them. You can start a conversation on any BreadCrumb by first tapping the message, then the comment button. Or drop your own crumb wherever you are by pressing the plus button."
+            let userId = "_abacd--_dfasdfsiaoucvxzmnwfehk"
+            WriteCrumbViewController().CrumbCDCK(text: tex, User: user, senderid: userId)
+            //NSUserData.setValue(1, forKey: "otherExplainer")
+            
+        }
+        
+        performSegue(withIdentifier: "SignInSegue", sender: nil)//presents weird and i also want user to be able to access this and sign out/in again. cant change username after picking though. may need more view controllers
+        
+    }
+    
+    func ckUniqueNameTest(username: String){
+        
+        let container = CKContainer.default()
+        let publicData = container.publicCloudDatabase
+        
+        let query = CKQuery(recordType: "UserInfo", predicate: NSPredicate(format: "%K == %@", "userName" ,username))
+        
+        publicData.perform(query, inZoneWith: nil) {
+            results, error in
+            if error == nil{
+                if results?.count == 1{
+                    print("Someone is using that username, please try a different one")
+                    self.failMessage(text: "Someone is using that username, please try a different one")
+                }else if (results?.isEmpty)!{
+                    print("no account found")
+                    self.successSignIn()
+                }
+                
+            }else{
+                self.failMessage(text: "An error occurred please try again later :(")
+                print(error!)
+            }
         }
     }
     
@@ -241,6 +274,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         })
         
     }
+    
     
     func ckUserinfoTest(username: String){
         let container = CKContainer.default()

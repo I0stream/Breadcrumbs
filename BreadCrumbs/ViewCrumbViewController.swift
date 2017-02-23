@@ -86,6 +86,11 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         mapView.camera.centerCoordinate = viewbreadcrumb!.location.coordinate
         mapView.camera.altitude = 1000
         
+        /*let cir:MKCircle = MKCircle(center: viewbreadcrumb!.location.coordinate, radius: CLLocationDistance(70)) //added this but nothing is displayed on map
+        
+        mapView.add(cir)*/
+
+        
         YourtableView.rowHeight = UITableViewAutomaticDimension
         YourtableView.estimatedRowHeight = 200
         
@@ -110,6 +115,13 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         }
     }
     
+    /*//http://stackoverflow.com/questions/32772498/how-to-add-a-circle-with-a-certain-radius-to-my-mkpointannotation-ios-swift
+    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        let overlayRenderer : MKCircleRenderer = MKCircleRenderer(overlay: overlay);
+        overlayRenderer.lineWidth = 1.0
+        overlayRenderer.strokeColor = UIColor.red
+        return overlayRenderer
+    }*/
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {

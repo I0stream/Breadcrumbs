@@ -175,26 +175,16 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
             //setColorVoteButton
             if crumbmsg.hasVoted == 1{//user has voted
                 cell.VoteButton.setTitleColor(bluecolor, for: .normal)
-                //cell.VoteButton.setTitleColor(normalColor, for: .selected)
+                cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartfilled"), for: .normal)
+
             }else if crumbmsg.hasVoted == 0{
+                cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartEmpty"), for: .normal)
                 cell.VoteButton.setTitleColor(normalColor, for: .normal)
-                //cell.VoteButton.setTitleColor(bluecolor, for: .selected)
             }
-            if crumbmsg.votes != 1{
-                //msgCell.VoteValueLabel.text = "\((viewbreadcrumb?.votes)!) votes"
-                cell.VoteButton.setTitle("\((crumbmsg.votes)) votes", for: .normal)
-            } else {
-                cell.VoteButton.setTitle("\((crumbmsg.votes)) vote", for: .normal)
-                
-                //msgCell.VoteValueLabel.text = "\((viewbreadcrumb?.votes)!) vote"
-            }
-            /*
+            
             //sets the values for the labels in the cell, time value and location value
-            if crumbmsg.votes != 1{
-                cell.VoteValue.text = "\(crumbmsg.votes!) votes"
-            } else {
-                cell.VoteValue.text = "\(crumbmsg.votes!) vote"
-            }*/
+
+            cell.VoteValue.text = "\(crumbmsg.votes)"
             cell.YouTheUserLabel.text = crumbmsg.senderName
             
             var textwidth = cell.YouTheUserLabel.intrinsicContentSize.width
@@ -269,7 +259,8 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
             
             self.helperFunctions.coreDataDeleteCrumb(id!/*, manx: AppDelegate().CDStack.mainContext*/)   //must use something other than urecordid
             
-            self.helperFunctions.cloudKitDeleteCrumb(CKRecordID(recordName: id!))
+            self.helperFunctions.cloudKitDeleteCrumb(CKRecordID(recordName: id!))//this is bad for battery, but it is better for my server so :| hmmmmmmmm
+            
             crumbmessages.remove(at: indexPath.row)
             tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
             reloadTables()

@@ -24,6 +24,7 @@ class CrumbMessage{
     var viewedOther: Int?
     var hasVoted: Int?
     var markedForDelete: Int?
+    var photo: UIImage?
     //var addressStr: String?
     //var commentsArr: [Comment]//array of comments
     

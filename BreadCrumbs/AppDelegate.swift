@@ -35,7 +35,25 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         //helperfunctions.cloudkitSub()
 
+        UNUserNotificationCenter.current().delegate = self
         
+        /*UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { (granted, error) in
+            if granted {
+                let clear = UNNotificationAction(identifier: "testing", title: "test", options: [])
+                let category : UNNotificationCategory = UNNotificationCategory.init(identifier: "CALLINNOTIFICATION", actions: [clear], intentIdentifiers: [], options: [])
+                
+                let center = UNUserNotificationCenter.current()
+                center.setNotificationCategories([category])
+
+            }
+        }
+        
+        let clear = UNNotificationAction(identifier: "testing", title: "test", options: [])
+        let category : UNNotificationCategory = UNNotificationCategory.init(identifier: "CALLINNOTIFICATION", actions: [clear], intentIdentifiers: [], options: [])
+        
+        let center = UNUserNotificationCenter.current()
+        center.setNotificationCategories([category])
+        */
         // Register with APNs
         application.registerForRemoteNotifications()
         
@@ -46,16 +64,26 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             getUserInfo()
 
         }
-//        helperfunctions.cloudkitSub()//subscribe to upvotes
-//        helperfunctions.commentsub()//subscribe to comments
+        application.applicationIconBadgeNumber = 0
         
-        //application.applicationIconBadgeNumber = 0
-
         //is icloud available? is icloud drive available? does he have a username? does user have a stored user id?
         //if so go to app
         // NSUserData.string(forKey: "didAgreeToPolAndEULA") == "Agree"
 
         if TestIfUserSignedIn(){//Signed in
+            //let launchinfo = launchOptions?.values
+            //print(launchinfo)
+            
+            /*let dictionary = userInfo
+            let recordid = dictionary["RecordUuid"] as? String
+            let userid = dictionary["UserId"] as? String
+            
+            
+            if response.actionIdentifier == UNNotificationDefaultActionIdentifier && recordid != nil{
+                notifTakeToCrumb(userid: userid!, recordid: recordid!)
+            }*/
+            
+            
             self.window = UIWindow(frame: UIScreen.main.bounds)
             
             let storyboard = UIStoryboard(name: "Main", bundle: nil)
@@ -203,7 +231,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         if (timerRepeatLoadAndStore == nil) && (checkLocation()) {
             print("timerForLoadAndStore")
             //checks icloud every 90 sec for a msg
-            timerRepeatLoadAndStore = Timer.scheduledTimer(timeInterval: 90, target: self, selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)
+            timerRepeatLoadAndStore = Timer.scheduledTimer(timeInterval: 80, target: self, selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)
         }
     }
     
@@ -295,11 +323,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         var bestCurrentTime = 0.0
         if bestCurrent != nil{
             bestCurrentTime = -Double((bestCurrent?.timestamp.timeIntervalSinceNow)!)
-            if bestCurrentTime < 30.0{
+            if bestCurrentTime < 60.0{
                 return
             }
         }
-        if bestEffortAtLocation == nil || (bestEffortAtLocation.horizontalAccuracy > (newloc?.horizontalAccuracy)!) || bestCurrentTime > 31.0{
+        if bestEffortAtLocation == nil || (bestEffortAtLocation.horizontalAccuracy > (newloc?.horizontalAccuracy)!) || bestCurrentTime > 61.0{
             //if best is empty 
             //if new value is more accurate
             //if bestcurrent is old as fuck
@@ -475,6 +503,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     //at least to my knowledge this is how it works
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         
+        
         let cloudKitNotification = CKNotification.init(fromRemoteNotificationDictionary: userInfo as! [String : NSObject])
         
         //let alertBody = cloudKitNotification.alertBody//123
@@ -503,8 +532,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     
     //user Notification funcs function for load and store
     
+    
+    
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        
+        print("run")
         
         let dictionary = response.notification.request.content.userInfo
         let recordid = dictionary["RecordUuid"] as? String
@@ -512,29 +543,35 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
         
         if response.actionIdentifier == UNNotificationDefaultActionIdentifier && recordid != nil{
-            let storyboard = UIStoryboard(name: "Main", bundle: nil)
-            
-            let initialViewController = storyboard.instantiateViewController(withIdentifier: "TabBarController") as! UITabBarController
-            
-            if userid != NSUserData.string(forKey: "recordID"){//need to open into view crumbs but idk how
-                initialViewController.selectedIndex = 2
-                self.window?.rootViewController = initialViewController
-                
-                let others = initialViewController.selectedViewController as! OthersCrumbsTableViewController
-                
-                let segue = UIStoryboardSegue(identifier: "othersviewcrumb", source: others, destination: ViewCrumbViewController() as UIViewController)
-                
-                let upcoming = segue.destination as! ViewCrumbViewController
-                
-                let crumbmsg = helperfunctions.getSpecific(recorduuid: recordid!)
-                
-                upcoming.viewbreadcrumb = crumbmsg
-                
-                upcoming.delegate = others
-                
-            }
+            notifTakeToCrumb(userid: userid!, recordid: recordid!)
         }
+        completionHandler()
+    }
+    
+    
+    
+    func notifTakeToCrumb(userid: String, recordid: String){
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
         
+        let initialViewController = storyboard.instantiateViewController(withIdentifier: "TabBarController") as! UITabBarController
+        
+        if userid != NSUserData.string(forKey: "recordID"){//need to open into view crumbs but idk how
+            initialViewController.selectedIndex = 2
+            self.window?.rootViewController = initialViewController
+            
+            let others = initialViewController.selectedViewController as! OthersCrumbsTableViewController
+            
+            let segue = UIStoryboardSegue(identifier: "othersviewcrumb", source: others, destination: ViewCrumbViewController() as UIViewController)
+            
+            let upcoming = segue.destination as! ViewCrumbViewController
+            
+            let crumbmsg = helperfunctions.getSpecific(recorduuid: recordid)
+            
+            upcoming.viewbreadcrumb = crumbmsg
+            
+            upcoming.delegate = others
+            
+        }
     }
     
     func notify(title: String ,body: String, crumbID: String, userId: String) {//used in load and store
@@ -545,7 +582,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             
             let badgeNumber = UIApplication.shared.applicationIconBadgeNumber
             
+            
             let content = UNMutableNotificationContent()
+            //content.categoryIdentifier = "CALLINNOTIFICATION"
             content.title = title
             content.body = body
             content.sound = UNNotificationSound.default()
@@ -554,6 +593,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             content.badge = newbadge as NSNumber?
             
             // Deliver the notification in five seconds.
+            
             let trigger = UNTimeIntervalNotificationTrigger.init(timeInterval: 5.0, repeats: false)
             let request = UNNotificationRequest(identifier:requestIdentifier, content: content, trigger: trigger)
             
@@ -607,7 +647,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             
             UIApplication.shared.applicationIconBadgeNumber = 0
 
-            
             AddCrumbCount()
             
             getUserInfo()
@@ -623,8 +662,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                 YourCrumbsTableViewController().timerload?.invalidate()
             }
             
-
-
+            
             
             /*no let us sit down and I shall tell ye a story. As I was writing updatetableviewcomments something strange happened. The entire app broke. Somehow, I had failed to notice that the update to ios 10 and swift 3 made inert my coredata code and brought to light some threading issues I had programmed. I am indeed an inexperienced ios programmer. I went from lead to lead, breaking the app one way and another trying to figure out the why and the what that caused my app to fail. Initially i thought it was my datamodel, and/or that my nsobject classes were getting confused with older versions of themselves. then after that debaucle I started reading about managed object contexts and how they work, after fucking with that thinking it was the core problem(it was really just a symptom) I discovered threads, and after learning how they worked; I could see that lots of my coredata code was sitting in completion handlers which run in a thread other than the main one. from there debuging all my poorly written code has been relatively easy. */
             
@@ -634,6 +672,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             //should use delegation or something
             NotificationCenter.default.post(name: Notification.Name(rawValue: "load"), object: nil)//reloads crmessages from cd everywhere
 
+
+/*            UNUserNotificationCenter.current().getDeliveredNotifications(completionHandler: { (no) in
+                print(no)
+            })
+*/
         } else if !isBanned(){
             self.window = UIWindow(frame: UIScreen.main.bounds)
             
