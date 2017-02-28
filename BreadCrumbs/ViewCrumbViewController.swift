@@ -160,82 +160,190 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
             
             return cell
         }else if indexPath.row == 1 {
-            let msgCell = tableView.dequeueReusableCell(withIdentifier: "YourMsgCell", for: indexPath) as! CrumbTableViewCell
             
-            //report button
-        
-            
-            
-            if viewbreadcrumb?.senderuuid == userSelf || viewbreadcrumb?.senderuuid == "_abacd--_dfasdfsiaoucvxzmnwfehk"{
-                msgCell.ReportButton.isHidden = true///////////////////////
-                msgCell.ReportButton.isEnabled = false
-            }else if viewbreadcrumb?.senderuuid != userSelf{
-                msgCell.ReportButton.tag = indexPath.row
-                msgCell.ReportButton.addTarget(self, action: #selector(ViewCrumbViewController.report), for: .touchUpInside)
-            }
-            if viewbreadcrumb!.calculate() > 0 {
-                msgCell.CreateCommentButton.addTarget(self, action: #selector(ViewCrumbViewController.commentSegue), for: .touchUpInside)
-                msgCell.VoteButton.addTarget(self, action: #selector(ViewCrumbViewController.Vote), for: .touchUpInside)
+            if viewbreadcrumb?.photo == nil{//no photo
+                let msgCell = tableView.dequeueReusableCell(withIdentifier: "YourMsgCell", for: indexPath) as! CrumbTableViewCell
                 
-            } else{
-                let color = UIColor(red: 146/255, green: 144/255, blue: 144/255, alpha: 1)//greay color
-                msgCell.CreateCommentButton.setTitleColor(color, for: .normal)
-                msgCell.CreateCommentButton.addTarget(self, action: #selector(ViewCrumbViewController.noCommentIndicator), for: .touchUpInside)
-                msgCell.VoteButton.addTarget(self, action: #selector(ViewCrumbViewController.noVoteIndicator), for: .touchUpInside)
+                //report button
                 
-            }
-            msgCell.ExitCrumbButton.addTarget(self, action: #selector(ViewCrumbViewController.exitCrumb), for: .touchUpInside)
-            
-            
-            //sets the values for the labels in the cell, time value and location value
-            if viewbreadcrumb?.votes != 1{
-                //msgCell.VoteValueLabel.text = "\((viewbreadcrumb?.votes)!) votes"
-                msgCell.VoteButton.setTitle("\((viewbreadcrumb?.votes)!) votes", for: .normal)
-            } else {
-                msgCell.VoteButton.setTitle("\((viewbreadcrumb?.votes)!) vote", for: .normal)
-
-                //msgCell.VoteValueLabel.text = "\((viewbreadcrumb?.votes)!) vote"
-            }
-            msgCell.MsgTextView.text = viewbreadcrumb!.text
-            msgCell.UserLabel.text = viewbreadcrumb!.senderName
-            
-            var textwidth = msgCell.UserLabel.intrinsicContentSize.width
-            let contentwidth = UIScreen.main.bounds.width - 126//screen width minus total constraints and item widths + 15 padding
-            if textwidth > contentwidth{
-                while textwidth > contentwidth {
-                    msgCell.UserLabel.font = msgCell.UserLabel.font.withSize((msgCell.UserLabel.font.pointSize-1))
-                    textwidth = msgCell.UserLabel.intrinsicContentSize.width
+                if viewbreadcrumb?.senderuuid == userSelf || viewbreadcrumb?.senderuuid == "_abacd--_dfasdfsiaoucvxzmnwfehk"{
+                    msgCell.ReportButton.isHidden = true///////////////////////
+                    msgCell.ReportButton.isEnabled = false
+                }else if viewbreadcrumb?.senderuuid != userSelf{
+                    msgCell.ReportButton.tag = indexPath.row
+                    msgCell.ReportButton.addTarget(self, action: #selector(ViewCrumbViewController.report), for: .touchUpInside)
                 }
-            }
-            
-            msgCell.TimeLabel.text = "\(viewbreadcrumb!.dateOrganizer())"
-            if viewbreadcrumb!.calculate() > 0 {
-                let ref = Int(viewbreadcrumb!.calculate())
-                
-                if ref >= 1 {
-                    msgCell.TimeLeftLabel.text! = "\(ref)h left"//////////////////////////////////////////////////
-                }else {
-                    msgCell.TimeLeftLabel.text = "Nearly Done!"
+                if viewbreadcrumb!.calculate() > 0 {
+                    msgCell.CreateCommentButton.addTarget(self, action: #selector(ViewCrumbViewController.commentSegue), for: .touchUpInside)
+                    msgCell.VoteButton.addTarget(self, action: #selector(ViewCrumbViewController.Vote), for: .touchUpInside)
+                    
+                } else{
+                    let color = UIColor(red: 146/255, green: 144/255, blue: 144/255, alpha: 1)//greay color
+                    msgCell.CreateCommentButton.setTitleColor(color, for: .normal)
+                    msgCell.CreateCommentButton.addTarget(self, action: #selector(ViewCrumbViewController.noCommentIndicator), for: .touchUpInside)
+                    msgCell.VoteButton.addTarget(self, action: #selector(ViewCrumbViewController.noVoteIndicator), for: .touchUpInside)
+                    
                 }
-            } else{
-                msgCell.TimeLeftLabel.text! = "Time's up!"
+                msgCell.ExitCrumbButton.addTarget(self, action: #selector(ViewCrumbViewController.exitCrumb), for: .touchUpInside)
                 
-                //Time's up indication Red Color
-                let uicolor = UIColor(red: 225/255, green: 50/255, blue: 50/255, alpha: 1)
-                msgCell.TimeLeftLabel.textColor = uicolor
-                //
-            }
-            
-            
-            //setColorVoteButton
-            if viewbreadcrumb?.hasVoted == 1{//user has voted
-                let bluecolor = UIColor(red: 64/255, green: 161/255, blue: 255/255, alpha: 1)
-                msgCell.VoteButton.setTitleColor(bluecolor, for: .normal)
-            }else if viewbreadcrumb?.hasVoted == 0{
                 let normalColor = UIColor(red: 245/255, green: 166/255, blue: 35/255, alpha: 1)
-                msgCell.VoteButton.setTitleColor(normalColor, for: .normal)
+                let bluecolor = UIColor(red: 64/255, green: 161/255, blue: 255/255, alpha: 1)
+                
+                //setColorVoteButton
+                if viewbreadcrumb?.hasVoted == 1{//user has voted
+                    msgCell.VoteButton.setTitleColor(bluecolor, for: .normal)
+                    msgCell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartfilled"), for: .normal)
+                    
+                }else if viewbreadcrumb?.hasVoted == 0{
+                    msgCell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartEmpty"), for: .normal)
+                    msgCell.VoteButton.setTitleColor(normalColor, for: .normal)
+                }
+                
+                //sets the values for the labels in the cell, time value and location value
+                
+                msgCell.VoteValue.text = "\(viewbreadcrumb!.votes)"
+                
+                
+                msgCell.MsgTextView.text = viewbreadcrumb!.text
+                msgCell.UserLabel.text = viewbreadcrumb!.senderName
+                
+                var textwidth = msgCell.UserLabel.intrinsicContentSize.width
+                let contentwidth = UIScreen.main.bounds.width - 126//screen width minus total constraints and item widths + 15 padding
+                if textwidth > contentwidth{
+                    while textwidth > contentwidth {
+                        msgCell.UserLabel.font = msgCell.UserLabel.font.withSize((msgCell.UserLabel.font.pointSize-1))
+                        textwidth = msgCell.UserLabel.intrinsicContentSize.width
+                    }
+                }
+                
+                msgCell.TimeLabel.text = "\(viewbreadcrumb!.dateOrganizer())"
+                if viewbreadcrumb!.calculate() > 0 {
+                    let ref = Int(viewbreadcrumb!.calculate())
+                    
+                    if ref >= 1 {
+                        msgCell.TimeLeftLabel.text! = "\(ref)h left"//////////////////////////////////////////////////
+                    }else {
+                        msgCell.TimeLeftLabel.text = "Nearly Done!"
+                    }
+                } else{
+                    msgCell.TimeLeftLabel.text! = "Time's up!"
+                    
+                    //Time's up indication Red Color
+                    let uicolor = UIColor(red: 225/255, green: 50/255, blue: 50/255, alpha: 1)
+                    msgCell.TimeLeftLabel.textColor = uicolor
+                    //
+                }
+                
+                
+                //setColorVoteButton
+                if viewbreadcrumb?.hasVoted == 1{//user has voted
+                    let bluecolor = UIColor(red: 64/255, green: 161/255, blue: 255/255, alpha: 1)
+                    msgCell.VoteButton.setTitleColor(bluecolor, for: .normal)
+                }else if viewbreadcrumb?.hasVoted == 0{
+                    let normalColor = UIColor(red: 245/255, green: 166/255, blue: 35/255, alpha: 1)
+                    msgCell.VoteButton.setTitleColor(normalColor, for: .normal)
+                }
+                return msgCell
+            }else {
+                //imagecrumbscell
+                
+                let msgCell = tableView.dequeueReusableCell(withIdentifier: "imagecrumbscell", for: indexPath) as! crumbPlusImageTableViewCell
+                
+                //report button
+                
+                
+                msgCell.ImageViewOnCell.contentMode = .scaleAspectFill
+                msgCell.ImageViewOnCell.image = viewbreadcrumb!.photo
+                msgCell.imageButton.addTarget(self, action: #selector(ViewCrumbViewController.imageSeggy), for: .touchUpInside)
+                
+                msgCell.ImageViewOnCell.layer.cornerRadius = 5.0
+                msgCell.ImageViewOnCell.clipsToBounds = true
+                
+                
+                
+                if viewbreadcrumb?.senderuuid == userSelf || viewbreadcrumb?.senderuuid == "_abacd--_dfasdfsiaoucvxzmnwfehk"{
+                    msgCell.ReportButton.isHidden = true///////////////////////
+                    msgCell.ReportButton.isEnabled = false
+                }else if viewbreadcrumb?.senderuuid != userSelf{
+                    msgCell.ReportButton.tag = indexPath.row
+                    msgCell.ReportButton.addTarget(self, action: #selector(ViewCrumbViewController.report), for: .touchUpInside)
+                }
+                if viewbreadcrumb!.calculate() > 0 {
+                    msgCell.CreateCommentButton.addTarget(self, action: #selector(ViewCrumbViewController.commentSegue), for: .touchUpInside)
+                    msgCell.VoteButton.addTarget(self, action: #selector(ViewCrumbViewController.Vote), for: .touchUpInside)
+                    
+                } else{
+                    let color = UIColor(red: 146/255, green: 144/255, blue: 144/255, alpha: 1)//greay color
+                    msgCell.CreateCommentButton.setTitleColor(color, for: .normal)
+                    msgCell.CreateCommentButton.addTarget(self, action: #selector(ViewCrumbViewController.noCommentIndicator), for: .touchUpInside)
+                    msgCell.VoteButton.addTarget(self, action: #selector(ViewCrumbViewController.noVoteIndicator), for: .touchUpInside)
+                    
+                }
+                msgCell.ExitCrumbButton.addTarget(self, action: #selector(ViewCrumbViewController.exitCrumb), for: .touchUpInside)
+                
+                let normalColor = UIColor(red: 245/255, green: 166/255, blue: 35/255, alpha: 1)
+                let bluecolor = UIColor(red: 64/255, green: 161/255, blue: 255/255, alpha: 1)
+                
+                //setColorVoteButton
+                if viewbreadcrumb?.hasVoted == 1{//user has voted
+                    msgCell.VoteButton.setTitleColor(bluecolor, for: .normal)
+                    msgCell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartfilled"), for: .normal)
+                    
+                }else if viewbreadcrumb?.hasVoted == 0{
+                    msgCell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartEmpty"), for: .normal)
+                    msgCell.VoteButton.setTitleColor(normalColor, for: .normal)
+                }
+                
+                //sets the values for the labels in the cell, time value and location value
+                
+                msgCell.VoteValue.text = "\(viewbreadcrumb!.votes)"
+                
+                
+                msgCell.MsgTextView.text = viewbreadcrumb!.text
+                msgCell.UserLabel.text = viewbreadcrumb!.senderName
+                
+                var textwidth = msgCell.UserLabel.intrinsicContentSize.width
+                let contentwidth = UIScreen.main.bounds.width - 126//screen width minus total constraints and item widths + 15 padding
+                if textwidth > contentwidth{
+                    while textwidth > contentwidth {
+                        msgCell.UserLabel.font = msgCell.UserLabel.font.withSize((msgCell.UserLabel.font.pointSize-1))
+                        textwidth = msgCell.UserLabel.intrinsicContentSize.width
+                    }
+                }
+                
+                msgCell.TimeLabel.text = "\(viewbreadcrumb!.dateOrganizer())"
+                if viewbreadcrumb!.calculate() > 0 {
+                    let ref = Int(viewbreadcrumb!.calculate())
+                    
+                    if ref >= 1 {
+                        msgCell.TimeLeftLabel.text! = "\(ref)h left"//////////////////////////////////////////////////
+                    }else {
+                        msgCell.TimeLeftLabel.text = "Nearly Done!"
+                    }
+                } else{
+                    msgCell.TimeLeftLabel.text! = "Time's up!"
+                    
+                    //Time's up indication Red Color
+                    let uicolor = UIColor(red: 225/255, green: 50/255, blue: 50/255, alpha: 1)
+                    msgCell.TimeLeftLabel.textColor = uicolor
+                    //
+                }
+                
+                
+                //setColorVoteButton
+                if viewbreadcrumb?.hasVoted == 1{//user has voted
+                    let bluecolor = UIColor(red: 64/255, green: 161/255, blue: 255/255, alpha: 1)
+                    msgCell.VoteButton.setTitleColor(bluecolor, for: .normal)
+                }else if viewbreadcrumb?.hasVoted == 0{
+                    let normalColor = UIColor(red: 245/255, green: 166/255, blue: 35/255, alpha: 1)
+                    msgCell.VoteButton.setTitleColor(normalColor, for: .normal)
+                }
+                return msgCell
+
             }
-            return msgCell
+            
+            
+            
         }else {
             let commentCells = tableView.dequeueReusableCell(withIdentifier: "commentYours", for: indexPath) as! CommentCell
             commentCells.selectionStyle = .none
@@ -269,6 +377,12 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
             
             return commentCells
         }
+        
+    }
+    
+    func imageSeggy(sender: UIButton){
+        print("segue to image viewer")
+        self.performSegue(withIdentifier: "viewimageviewseg", sender: sender)
         
     }
     //MARK: REport

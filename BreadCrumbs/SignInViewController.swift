@@ -69,6 +69,8 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
 
             
             ckUniqueNameTest(username: setUserNameTextField.text!)
+            
+            
             }else if AppDelegate().isBanned(){
             performSegue(withIdentifier: "BannedPage", sender: sender)
         }

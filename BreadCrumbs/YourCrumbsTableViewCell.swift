@@ -21,6 +21,7 @@ class YourCrumbsTableViewCell: UITableViewCell {
     @IBOutlet weak var VoteButton: UIButton!
     
     
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

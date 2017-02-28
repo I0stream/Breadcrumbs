@@ -39,7 +39,7 @@ extension Message {
     @NSManaged var addressStr: String?//stores an address like this "\(locality!), \(thoroughfare!), \(country!)"
     @NSManaged var markedForDelete: NSNumber?//0 is false 1 is true
     
-    @NSManaged var photo: NSData?
+    @NSManaged var photo: Data?
     
     
     @NSManaged var comments: [Comment]?

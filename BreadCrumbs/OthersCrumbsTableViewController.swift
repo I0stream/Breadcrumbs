@@ -57,7 +57,6 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
         self.crumbmessages += helperFunctions.loadCoreDataMessage(false)!//false load others
         //pull to refresh observer
         
-        AppDelegate().notify(title: "test", body: "test", crumbID: crumbmessages[0].uRecordID!, userId: crumbmessages[0].senderuuid)
         
         self.OthersTableView.addSubview(self.refreshControl)
 
@@ -152,81 +151,154 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
             return cell
         }else {
             
-            let cell = tableView.dequeueReusableCell(withIdentifier: "OthersMsgCell", for: indexPath) as! OthersCrumbsTableViewCell
-            
             let crumbmsg = crumbmessages[indexPath.row]
             
-            //setColorVoteButton
-            if crumbmsg.hasVoted == 1{//user has voted
-                let bluecolor = UIColor(red: 64/255, green: 161/255, blue: 255/255, alpha: 1)
-                cell.VoteButton.setTitleColor(bluecolor, for: .normal)
-            }else if crumbmsg.hasVoted == 0{
+            
+            if crumbmsg.photo == nil{//nophoto
+                let cell = tableView.dequeueReusableCell(withIdentifier: "OthersMsgCell", for: indexPath) as! OthersCrumbsTableViewCell
+                
                 let normalColor = UIColor(red: 245/255, green: 166/255, blue: 35/255, alpha: 1)
-                cell.VoteButton.setTitleColor(normalColor, for: .normal)
-            }
-            // Fetches the appropriate msg for the data source layout.
-            
-            //sets the values for the labels in the cell, time value and location value
-            cell.TextViewCellOutlet.text = crumbmsg.text
-            
-            if crumbmsg.votes != 1{
-                //msgCell.VoteValueLabel.text = "\((viewbreadcrumb?.votes)!) votes"
-                cell.VoteButton.setTitle("\((crumbmsg.votes)) votes", for: .normal)
-            } else {
-                cell.VoteButton.setTitle("\((crumbmsg.votes)) vote", for: .normal)
+                let bluecolor = UIColor(red: 64/255, green: 161/255, blue: 255/255, alpha: 1)
                 
-                //msgCell.VoteValueLabel.text = "\((viewbreadcrumb?.votes)!) vote"
-            }
-            
-            /*if crumbmsg.votes != 1{
-                cell.VoteValue.text = "\(crumbmsg.votes!) votes"
-            } else {
-                cell.VoteValue.text = "\(crumbmsg.votes!) vote"
-            }*/
-            cell.YouTheUserLabel.text = crumbmsg.senderName
-            var textwidth = cell.YouTheUserLabel.intrinsicContentSize.width
-            let contentwidth = UIScreen.main.bounds.width - 93//screen width minus total constraints and item widths + 15 padding
-            if textwidth > contentwidth{
-                while textwidth > contentwidth {
-                    cell.YouTheUserLabel.font = cell.YouTheUserLabel.font.withSize((cell.YouTheUserLabel.font.pointSize-1))
-                    textwidth = cell.YouTheUserLabel.intrinsicContentSize.width
+                
+                //setColorVoteButton
+                if crumbmsg.hasVoted == 1{//user has voted
+                    cell.VoteButton.setTitleColor(bluecolor, for: .normal)
+                    cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartfilled"), for: .normal)
+                    
+                }else if crumbmsg.hasVoted == 0{
+                    cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartEmpty"), for: .normal)
+                    cell.VoteButton.setTitleColor(normalColor, for: .normal)
                 }
-            }
-            //cell.YouTheUserLabel.font = UIFont.boldSystemFont(ofSize: 17)
-            cell.TimeRemainingValueLabel.text = crumbmsg.timeRelative()//time is how long ago it was posted, dont see the point to change var name to something more explanatory right now
-            //This is reused in yours
-            
-            cell.VoteButton.tag = indexPath.row
-            cell.VoteButton.addTarget(self, action: #selector(OthersCrumbsTableViewController.buttonActions), for: .touchUpInside)
-            
-            if crumbmsg.senderuuid == "_abacd--_dfasdfsiaoucvxzmnwfehk"{
+                // Fetches the appropriate msg for the data source layout.
+                
+                //sets the values for the labels in the cell, time value and location value
+                cell.TextViewCellOutlet.text = crumbmsg.text
+                
+                
+                cell.VoteValue.text = "\((crumbmsg.votes))"
+                
+                /*if crumbmsg.votes != 1{
+                 cell.VoteValue.text = "\(crumbmsg.votes!) votes"
+                 } else {
+                 cell.VoteValue.text = "\(crumbmsg.votes!) vote"
+                 }*/
+                cell.YouTheUserLabel.text = crumbmsg.senderName
+                var textwidth = cell.YouTheUserLabel.intrinsicContentSize.width
+                let contentwidth = UIScreen.main.bounds.width - 93//screen width minus total constraints and item widths + 15 padding
+                if textwidth > contentwidth{
+                    while textwidth > contentwidth {
+                        cell.YouTheUserLabel.font = cell.YouTheUserLabel.font.withSize((cell.YouTheUserLabel.font.pointSize-1))
+                        textwidth = cell.YouTheUserLabel.intrinsicContentSize.width
+                    }
+                }
+                //cell.YouTheUserLabel.font = UIFont.boldSystemFont(ofSize: 17)
+                cell.TimeRemainingValueLabel.text = crumbmsg.timeRelative()//time is how long ago it was posted, dont see the point to change var name to something more explanatory right now
+                //This is reused in yours
+                
+                cell.VoteButton.tag = indexPath.row
+                cell.VoteButton.addTarget(self, action: #selector(OthersCrumbsTableViewController.buttonActions), for: .touchUpInside)
+                
+                if crumbmsg.senderuuid == "_abacd--_dfasdfsiaoucvxzmnwfehk"{
+                    cell.ReportButton.isHidden = true
+                    cell.ReportButton.isEnabled = false
+                }
+                cell.ReportButton.tag = indexPath.row
+                cell.ReportButton.addTarget(self, action: #selector(OthersCrumbsTableViewController.report), for: .touchUpInside)
+                if crumbmsg.calculate() > 0 {
+                    let ref = Int(crumbmsg.calculate())
+                    
+                    let uicolorNormal = UIColor(red: 146/255, green: 144/255, blue: 144/255, alpha: 1)
+                    cell.timeCountdown.textColor = uicolorNormal
+                    
+                    if ref >= 1 {
+                        cell.timeCountdown.text! = "\(ref)h left"//////////////////////////////////////////////////
+                    }else {
+                        cell.timeCountdown.text! = "Nearly Done!"
+                    }
+                } else{
+                    cell.timeCountdown.text! = "Time's up!"
+                    
+                    //Time's up indication Red Color
+                    let uicolor = UIColor(red: 225/255, green: 50/255, blue: 50/255, alpha: 1)
+                    cell.timeCountdown.textColor = uicolor
+                    //
+                }
+                cell.TextViewCellOutlet.font = UIFont.systemFont(ofSize: 16)
+                
+                return cell
+            }else {
+                let cell = tableView.dequeueReusableCell(withIdentifier: "OtherPhotoCell", for: indexPath) as! ImageMessageTableViewCell
+                
                 cell.ReportButton.isHidden = true
-                cell.ReportButton.isEnabled = false
-            }
-            cell.ReportButton.tag = indexPath.row
-            cell.ReportButton.addTarget(self, action: #selector(OthersCrumbsTableViewController.report), for: .touchUpInside)
-            if crumbmsg.calculate() > 0 {
-                let ref = Int(crumbmsg.calculate())
                 
-                let uicolorNormal = UIColor(red: 146/255, green: 144/255, blue: 144/255, alpha: 1)
-                cell.timeCountdown.textColor = uicolorNormal
                 
-                if ref >= 1 {
-                    cell.timeCountdown.text! = "\(ref)h left"//////////////////////////////////////////////////
-                }else {
-                    cell.timeCountdown.text! = "Nearly Done!"
+                cell.UserUploadedPhotoUIView.contentMode = .scaleAspectFill
+                cell.UserUploadedPhotoUIView.image = crumbmsg.photo
+                cell.imageButton.tag = indexPath.row
+                cell.imageButton.addTarget(self, action: #selector(YourCrumbsTableViewController.imageSeggy), for: .touchUpInside)
+                
+                cell.UserUploadedPhotoUIView.layer.cornerRadius = 5.0
+                cell.UserUploadedPhotoUIView.clipsToBounds = true
+                
+                
+                
+                //sets the values for the labels in the cell, time value and location value
+                cell.TextViewCellOutlet.text = crumbmsg.text
+                cell.TextViewCellOutlet.font = UIFont.systemFont(ofSize: 16)
+                
+                //setColorVoteButton
+                if crumbmsg.hasVoted == 1{//user has voted
+                    cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartfilled"), for: .normal)
+                    
+                }else if crumbmsg.hasVoted == 0{
+                    cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartEmpty"), for: .normal)
                 }
-            } else{
-                cell.timeCountdown.text! = "Time's up!"
                 
-                //Time's up indication Red Color
-                let uicolor = UIColor(red: 225/255, green: 50/255, blue: 50/255, alpha: 1)
-                cell.timeCountdown.textColor = uicolor
-                //
+                //sets the values for the labels in the cell, time value and location value
+                
+                cell.VoteValue.text = "\(crumbmsg.votes)"
+                cell.YouTheUserLabel.text = crumbmsg.senderName
+                
+                var textwidth = cell.YouTheUserLabel.intrinsicContentSize.width
+                let contentwidth = UIScreen.main.bounds.width - 70//screen width minus total constraints and item widths + 15 padding
+                if textwidth > contentwidth{
+                    while textwidth > contentwidth {
+                        cell.YouTheUserLabel.font = cell.YouTheUserLabel.font.withSize((cell.YouTheUserLabel.font.pointSize-1))
+                        textwidth = cell.YouTheUserLabel.intrinsicContentSize.width
+                    }
+                }
+                
+                //cell.YouTheUserLabel.font = UIFont.
+                cell.TimeRemainingValueLabel.text = crumbmsg.timeRelative()//time is how long ago it was posted, dont see the point to change var name to something more explanatory right now
+                
+                cell.VoteButton.tag = indexPath.row
+                cell.VoteButton.addTarget(self, action: #selector(YourCrumbsTableViewController.buttonActions), for: .touchUpInside)
+                
+                if crumbmsg.calculate() > 0 {
+                    let ref = Int(crumbmsg.calculate())
+                    
+                    let uicolorNormal = UIColor(red: 146/255, green: 144/255, blue: 144/255, alpha: 1)
+                    cell.timeCountdown.textColor = uicolorNormal
+                    
+                    if ref >= 1 {
+                        cell.timeCountdown.text! = "\(ref)h left"//////////////////////////////////////////////////
+                    }else {
+                        cell.timeCountdown.text! = "Nearly Done!"
+                    }
+                } else{
+                    cell.timeCountdown.text! = "Time's up!"
+                    
+                    //Time's up indication Red Color
+                    let uicolor = UIColor(red: 225/255, green: 50/255, blue: 50/255, alpha: 1)
+                    cell.timeCountdown.textColor = uicolor
+                    //
+                }
+                
+                return cell
+
             }
-            cell.TextViewCellOutlet.font = UIFont.systemFont(ofSize: 16)
             
-            return cell
         }
     }
     

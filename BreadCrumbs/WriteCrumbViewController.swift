@@ -78,6 +78,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     @IBOutlet weak var UiViewImageContainer: UIView!
     @IBOutlet weak var imageContainerUIImage: UIImageView!
     var uploadedPhoto: UIImage?
+    var photoURL: NSURL?
     
     
     override func viewDidLoad() {
@@ -122,10 +123,10 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         
         if NSUserData.integer(forKey: "LastPickedTime") == 0{
             currentTime = 48
-            pickeroutlet.setTitle("\(currentTime!) hours", for: UIControlState())
+            pickeroutlet.setTitle("\(currentTime!) h", for: UIControlState())
         }else{
             currentTime = NSUserData.integer(forKey: "LastPickedTime")
-            pickeroutlet.setTitle("\(currentTime!) hours", for: UIControlState())
+            pickeroutlet.setTitle("\(currentTime!) h", for: UIControlState())
 
 
         }
@@ -191,6 +192,8 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         imageContainerUIImage.image = photoPicked
         uploadedPhoto = photoPicked
         
+        photoURL = writeImage(image:photoPicked)
+        
         imageContainerUIImage.layer.cornerRadius = 5.0
         imageContainerUIImage.clipsToBounds = true
         
@@ -212,15 +215,14 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         imageContainerUIImage.image = nil
     }
     
-    
-    
+
     
     
     
     func miDatePicker(_ amDatePicker: MIDatePicker, didSelect time: Int) {
         // Do something when the user has confirmed a selected date
         currentTime = pickerTimeLimit[time]
-        pickeroutlet.setTitle("\(currentTime!) hours", for: UIControlState())
+        pickeroutlet.setTitle("\(currentTime!) h", for: UIControlState())
     }
     func miDatePicker(_ amDatePicker: MIDatePicker, moveSelect: Void) {}
     
@@ -260,6 +262,17 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         record.setValue(crumbmessage?.senderuuid, forKey: "senderuuid")
         record.setValue(crumbmessage?.votes, forKey: "votes")
         
+        //Photo save, convert to file url
+        
+        if crumbmessage?.photo != nil{
+            
+            //include safety here
+            let photoasset = CKAsset(fileURL: photoURL! as URL)
+            record.setValue(photoasset, forKey: "photoUploaded")
+        }
+        
+        
+        
         publicData.save(record, completionHandler: { record, error in
             if error != nil {
                 print(error.debugDescription)
@@ -272,6 +285,18 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
                 
             }
         })
+    }
+    
+    
+    func writeImage(image: UIImage) -> NSURL {
+        let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let fileURL = documentsURL.appendingPathComponent(NSUUID().uuidString + ".jpeg")
+        if let imageData = UIImageJPEGRepresentation(image, 0.9) {
+            do {try imageData.write(to: fileURL, options: .noFileProtection)}//writeToURL(fileURL, atomically: false)
+            catch { print("fucked") }
+        }
+        
+        return fileURL as NSURL
     }
     
     func saveToCoreDataWrite(_ crumbmessage: CrumbMessage){//it has to do with threading
@@ -296,6 +321,9 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
                 message.senderuuid = crumbmessage.senderuuid
                 message.votevalue = crumbmessage.votes as NSNumber?
                 message.recorduuid = crumbmessage.uRecordID
+                if crumbmessage.photo != nil{
+                    message.photo = UIImageJPEGRepresentation(crumbmessage.photo!, 0.9)//convert uiimage into jpeg format
+                }
                 do {
                     try message.managedObjectContext?.save()
                     NotificationCenter.default.post(name: Notification.Name(rawValue: "load"), object: nil)//reloads crmessages from cd everywhere
@@ -352,7 +380,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
             
             if uploadedPhoto != nil{
                 print("photo uploaded")
-                //crumbmessage?.photo = uploadedPhoto!
+                crumbmessage?.photo = uploadedPhoto!
             }else {
                 print("no photo")
             }

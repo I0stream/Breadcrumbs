@@ -49,34 +49,50 @@ class Helper{
         publicData.perform(query, inZoneWith: nil) { results, error in
             if error == nil{ // There is no error
                 for cmsg in results! {
-                    let dbtext = cmsg["text"] as! String
-                    let dbsenderName = cmsg["senderName"] as! String
-                    let dblocation = cmsg["location"] as! CLLocation
+                    
+                    //just changed
+                    //now loads stuf i need to test, if alive, if in coredata already, if it is the user's message
                     let dbtimedropped = cmsg["timeDropped"] as! Date
                     let dbtimelimit = cmsg["timeLimit"] as! Int
-                    let dbvotes = cmsg["votes"] as! Int
                     let dbsenderuuid = cmsg["senderuuid"] as! String
                     let uniqueRecordID = cmsg.recordID.recordName
                     
-                    let loadedMessage = CrumbMessage(text: dbtext, senderName: dbsenderName, location: dblocation, timeDropped: dbtimedropped, timeLimit: dbtimelimit, senderuuid: dbsenderuuid, votes: dbvotes)
                     
-
-                    loadedMessage!.uRecordID = uniqueRecordID
-                    loadedMessage!.hasVoted = 0
+                    //is blocked? is mine? is alive?
+                    //need senderid, timelimit, timedropped
+                    let testID = dbsenderuuid != self.NSUserData.string(forKey: "recordID")!//keychain
+                    let blocktest = self.blockedUsertest(senderID: dbsenderuuid)//
+                    let timeCalc = self.TimeCalculate(timeDropped: dbtimedropped, timeLimit: dbtimelimit)
                     
-                    let testID = loadedMessage?.senderuuid != self.NSUserData.string(forKey: "recordID")!//keychain
-                    let blocktest = self.blockedUsertest(senderID: (loadedMessage?.senderuuid)!)//
-                    
-                    if (loadedMessage!.calculate() > 0) && testID && blocktest{
+                    if (timeCalc > 0) && testID && blocktest{
+                        
                         DispatchQueue.main.async(execute: { () -> Void in
                             //TESTS IF LOADED MSG IS IN COREDATA IF NOT THEN STORES IT BRAH
                             let fetchRequest = NSFetchRequest<NSFetchRequestResult>(entityName: "Message")
-                            let cdPredicate = NSPredicate(format: "recorduuid == %@", loadedMessage!.uRecordID!)
+                            let cdPredicate = NSPredicate(format: "recorduuid == %@", uniqueRecordID)
                             fetchRequest.predicate = cdPredicate
                             
                             do {
                                 if let fetchResults = try self.getmoc().fetch(fetchRequest) as? [Message]{
                                     if fetchResults.isEmpty{
+                                        //now load everything if tests are passed. might break, who knows.
+                                        let dbtext = cmsg["text"] as! String
+                                        let dbsenderName = cmsg["senderName"] as! String
+                                        let dblocation = cmsg["location"] as! CLLocation
+                                        let dbvotes = cmsg["votes"] as! Int
+                                        
+                                        let loadedMessage = CrumbMessage(text: dbtext, senderName: dbsenderName, location: dblocation, timeDropped: dbtimedropped, timeLimit: dbtimelimit, senderuuid: dbsenderuuid, votes: dbvotes)
+                                        
+                                        loadedMessage!.hasVoted = 0
+                                        loadedMessage!.uRecordID = uniqueRecordID
+                                        
+                                        let dbphoto = cmsg["photoUploaded"] as? CKAsset
+                                        if dbphoto?.fileURL != nil{
+                                            
+                                            guard let photoasdata = NSData(contentsOf: (dbphoto?.fileURL)!) else { return }
+                                            
+                                            loadedMessage?.photo = UIImage(data: photoasdata as Data)!
+                                        }
                                         
                                         self.NSUserData.setValue(2, forKey: "otherExplainer")
                                         self.saveToCoreData(loadedMessage!)
@@ -87,11 +103,11 @@ class Helper{
                                 print(fetchError)
                             }
                         })
-                    } else if loadedMessage!.calculate() <= 0 {
+                    } else if timeCalc <= 0 {
                         //delete, I think
                         print("delete crumb")
                         
-                        let yum = CKRecordID(recordName: (loadedMessage?.uRecordID)!)
+                        let yum = CKRecordID(recordName: uniqueRecordID)
                         self.cloudKitDeleteCrumb(yum)
                         
                         print("Finished request delete \(cmsg)")
@@ -104,6 +120,21 @@ class Helper{
 
     }
 
+    func TimeCalculate(timeDropped: Date, timeLimit: Int )-> Double{//calculates the time remaining in hours for a shortend use in cells
+        //in essence: timedropped + timelimit = timeDeadline; timeCurrent - timeDeadline = timeLeft
+        //convert timeleft to days hours
+        
+        let timeDeadline:Date = timeDropped.addingTimeInterval(Double(timeLimit) * 3600)// date crumbs dies
+        
+        let timeCurrent: Date = Date()//current date and time
+        
+        var timeLeft = timeCurrent.timeIntervalSince(timeDeadline) / 3600//time remaining in hours
+        
+        timeLeft = round(timeLeft * -1)// since its the future we multiply by -1 and round off the %hours
+        
+        return timeLeft//returns
+    }
+    
     
     //tests if messages have been recently recieved in teh area  limited to 6
     //limits crumbs using coredata store of crumbs
@@ -184,6 +215,12 @@ class Helper{
                         
                         let fmCrumbMessageYours = CrumbMessage(text: fmtext, senderName: fmsenderName, location: fmlocation, timeDropped: fmtimedropped, timeLimit: fmtimelimit, senderuuid: fmsenderuuid, votes: fmvotes)
                         
+                        
+                        if fetchedmsgsCD[i].photo != nil{
+                            let fmphoto = fetchedmsgsCD[i].photo! as Data
+                            fmCrumbMessageYours?.photo = UIImage(data: fmphoto)
+                        }
+                        
                         fmCrumbMessageYours?.hasVoted = fetchedmsgsCD[i].hasVoted! as Int
                         // ]\\sArr commentsArr
                         
@@ -211,7 +248,11 @@ class Helper{
                         
                         let fmCrumbMessageOther = CrumbMessage(text: fmtext, senderName: fmsenderName, location: fmlocation, timeDropped: fmtimedropped, timeLimit: fmtimelimit, senderuuid: fmsenderuuid, votes: fmvote)
                         
-                        //fmCrumbMessageOther?.commentsArr = fmcommentsArr
+                        if fetchedmsgsCD[i].photo != nil{
+                            let fmphoto = fetchedmsgsCD[i].photo! as Data
+                            fmCrumbMessageOther?.photo = UIImage(data: fmphoto)
+                        }
+                        
                         
                         fmCrumbMessageOther?.uRecordID = fmrecorduuid
                         fmCrumbMessageOther?.hasVoted = fmhasVoted
@@ -253,6 +294,12 @@ class Helper{
         messageMO.setValue(0, forKey: "hasVoted")//false
         messageMO.setValue(0, forKey: "markedForDelete")//false
         //messageMO.setValue(crumbmessage.addressStr, forKey: "addressStr")
+        
+        if crumbmessage.photo != nil{
+            let photoData = UIImageJPEGRepresentation(crumbmessage.photo!, 0.9)//convert uiimage into jpeg format
+            messageMO.setValue(photoData, forKey: "photo")
+            
+        }
         
         do {
             try messageMO.managedObjectContext?.save()

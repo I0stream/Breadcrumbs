@@ -1,21 +1,15 @@
 //
-//  CrumbTableViewCell.swift
-//  scrollviewtest
+//  crumbPlusImageTableViewCell.swift
+//  BreadCrumbs
 //
-//  Created by Daniel Schliesing on 11/2/16.
-//  Copyright © 2016 Daniel Schliesing. All rights reserved.
+//  Created by Daniel Schliesing on 2/28/17.
+//  Copyright © 2017 Daniel Schliesing. All rights reserved.
 //
 
 import UIKit
-import MapKit
 
-class CrumbTableViewCell: UITableViewCell, UITextViewDelegate{
-    
-    //What i am doing in this cell is probably looked down upon by apple
-    //however, if this fuckking works i will be so excited
-    
-    //MARK: Properties
-    //@IBOutlet weak var mapViewOutlet: MKMapView!
+class crumbPlusImageTableViewCell: UITableViewCell, UITextViewDelegate {
+
     @IBOutlet weak var MsgTextView: UITextView!
     @IBOutlet weak var UserLabel: UILabel!
     @IBOutlet weak var TimeLabel: UILabel!
@@ -26,9 +20,11 @@ class CrumbTableViewCell: UITableViewCell, UITextViewDelegate{
     
     @IBOutlet weak var CreateCommentButton: UIButton!
     
+    @IBOutlet weak var imageButton: UIButton!
     @IBOutlet weak var VoteValue: UILabel!
     @IBOutlet weak var VoteButton: UIButton!
-
+    
+    @IBOutlet weak var ImageViewOnCell: UIImageView!
     
     var viewbreadcrumb: CrumbMessage?
     
@@ -42,8 +38,8 @@ class CrumbTableViewCell: UITableViewCell, UITextViewDelegate{
         
         
         /*//fix font size
-        OtherMsgTextView.font = UIFont.systemFontOfSize(17)
-        */
+         OtherMsgTextView.font = UIFont.systemFontOfSize(17)
+         */
         //autodefine textview size
         let fixedWidth = MsgTextView.frame.size.width
         MsgTextView.sizeThatFits(CGSize(width: fixedWidth, height: CGFloat.greatestFiniteMagnitude))
@@ -54,11 +50,10 @@ class CrumbTableViewCell: UITableViewCell, UITextViewDelegate{
         
         
     }
-
+    
     override func setSelected(_ selected: Bool, animated: Bool) {
         super.setSelected(selected, animated: animated)
-
+        
         // Configure the view for the selected state
     }
-
 }

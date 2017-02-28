@@ -1,15 +1,15 @@
 //
-//  OthersCrumbsTableViewCell.swift
+//  ImageMessageTableViewCell.swift
 //  BreadCrumbs
 //
-//  Created by Daniel Schliesing on 4/28/16.
-//  Copyright © 2016 Daniel Schliesing. All rights reserved.
+//  Created by Daniel Schliesing on 2/23/17.
+//  Copyright © 2017 Daniel Schliesing. All rights reserved.
 //
 
 import UIKit
 
-class OthersCrumbsTableViewCell: UITableViewCell {
-    
+class ImageMessageTableViewCell: UITableViewCell {
+
     @IBOutlet weak var TimeRemainingValueLabel: UILabel!
     //    @IBOutlet weak var LocationPosted: UILabel!
     @IBOutlet weak var TextViewCellOutlet: UITextView!
@@ -17,8 +17,10 @@ class OthersCrumbsTableViewCell: UITableViewCell {
     @IBOutlet weak var YouTheUserLabel: UILabel!
     @IBOutlet weak var timeCountdown: UILabel!
     @IBOutlet weak var VoteButton: UIButton!
-    
     @IBOutlet weak var ReportButton: UIButton!
+    @IBOutlet weak var UserUploadedPhotoUIView: UIImageView!
+    @IBOutlet weak var imageButton: UIButton!
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code
@@ -32,7 +34,6 @@ class OthersCrumbsTableViewCell: UITableViewCell {
         // Configure the view for the selected state
     }
     
-
     
-
+    
 }
