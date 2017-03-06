@@ -105,7 +105,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             
             if NSUserData.object(forKey: "badgeOther") == nil {
                 NSUserData.setValue(0, forKey: "badgeOther")
-                print("was empty")
             }
             
             CDStack.saveContext()

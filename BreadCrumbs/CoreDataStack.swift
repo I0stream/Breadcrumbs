@@ -21,14 +21,7 @@ class CoreDataStack {
         
         
         let container = NSPersistentContainer(name: "MessageDataModel")
-        let description = NSPersistentStoreDescription()
-        
-        
-        description.shouldInferMappingModelAutomatically = true
-        description.shouldMigrateStoreAutomatically = true
-        
-        container.persistentStoreDescriptions = [description]
-        
+
         container.loadPersistentStores { (storeDescription, error) in
             if let error = error as? NSError {
                 fatalError("Unresolved error \(error), \(error.userInfo)")
