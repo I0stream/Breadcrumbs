@@ -40,6 +40,11 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
         
         return refreshControl
     }()
+
+    
+    var whohasvoted = [CrumbMessage?]()//store recuuids and update in view did dis
+
+    
     
     @IBOutlet weak var OthersTableView: UITableView!
     
@@ -64,13 +69,29 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
         OthersTableView.estimatedRowHeight = 200
         tabBarController?.tabBar.items![1].badgeValue = nil
 
+        
+        NotificationCenter.default.addObserver(self, selector: #selector(YourCrumbsTableViewController.listenForBackground), name: NSNotification.Name(rawValue: "UIApplicationDidEnterBackgroundNotification"), object: nil)
+        
+        
     }
-    /*override func viewDidDisappear(_ animated: Bool) {
-        for crumbs in crumbmessages{
-            crumbs.viewedOther = 1
-            updateIsViewedValue(crumbs)
+    
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        
+        for crumb in whohasvoted{
+            print("update")
+            self.helperFunctions.crumbVote((crumb?.hasVoted!)!, crumb: crumb!, voteValue: (crumb?.intermediaryVotingValue!)! )//has voted nil when just loaded
         }
-    }*/
+        whohasvoted.removeAll()
+        
+        
+    }
+    func listenForBackground(){
+        for crumb in whohasvoted{
+            print("update")
+            self.helperFunctions.crumbVote((crumb?.hasVoted!)!, crumb: crumb!, voteValue: (crumb?.intermediaryVotingValue!)! )//has voted nil when just loaded
+        }
+    }
   
 
 
@@ -127,11 +148,22 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
             let row = (sender as! UIButton).tag
             let crumbmsg = crumbmessages[row]
             
+            if crumbmsg.photo != nil{
+                upcoming.reportedPhoto = crumbmsg.photo!
+            }
             upcoming.reportedMessageId = crumbmsg.uRecordID
             upcoming.reportedUserId = crumbmsg.senderuuid
             upcoming.reportedtext = crumbmsg.text
             upcoming.reporteduserID = crumbmsg.senderuuid
             upcoming.typeToReport = "crumbmessage"
+        } else if segue.identifier == "OtherViewImageSeg"{
+            let upcoming = segue.destination as!ImageViewerViewController
+            
+            let row = (sender as! UIButton).tag
+            let crumbmsg = crumbmessages[row]
+            
+            upcoming.theImage = crumbmsg.photo
+            
         }
         
     }
@@ -178,11 +210,6 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
                 
                 cell.VoteValue.text = "\((crumbmsg.votes))"
                 
-                /*if crumbmsg.votes != 1{
-                 cell.VoteValue.text = "\(crumbmsg.votes!) votes"
-                 } else {
-                 cell.VoteValue.text = "\(crumbmsg.votes!) vote"
-                 }*/
                 cell.YouTheUserLabel.text = crumbmsg.senderName
                 var textwidth = cell.YouTheUserLabel.intrinsicContentSize.width
                 let contentwidth = UIScreen.main.bounds.width - 93//screen width minus total constraints and item widths + 15 padding
@@ -199,10 +226,7 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
                 cell.VoteButton.tag = indexPath.row
                 cell.VoteButton.addTarget(self, action: #selector(OthersCrumbsTableViewController.buttonActions), for: .touchUpInside)
                 
-                if crumbmsg.senderuuid == "_abacd--_dfasdfsiaoucvxzmnwfehk"{
-                    cell.ReportButton.isHidden = true
-                    cell.ReportButton.isEnabled = false
-                }
+                cell.ReportButton.isHidden = false
                 cell.ReportButton.tag = indexPath.row
                 cell.ReportButton.addTarget(self, action: #selector(OthersCrumbsTableViewController.report), for: .touchUpInside)
                 if crumbmsg.calculate() > 0 {
@@ -227,21 +251,22 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
                 cell.TextViewCellOutlet.font = UIFont.systemFont(ofSize: 16)
                 
                 return cell
-            }else {
+                
+            }else {//has photo
+                
                 let cell = tableView.dequeueReusableCell(withIdentifier: "OtherPhotoCell", for: indexPath) as! ImageMessageTableViewCell
-                
-                cell.ReportButton.isHidden = true
-                
                 
                 cell.UserUploadedPhotoUIView.contentMode = .scaleAspectFill
                 cell.UserUploadedPhotoUIView.image = crumbmsg.photo
                 cell.imageButton.tag = indexPath.row
-                cell.imageButton.addTarget(self, action: #selector(YourCrumbsTableViewController.imageSeggy), for: .touchUpInside)
+                cell.imageButton.addTarget(self, action: #selector(OthersCrumbsTableViewController.imageSeggy), for: .touchUpInside)
                 
                 cell.UserUploadedPhotoUIView.layer.cornerRadius = 5.0
                 cell.UserUploadedPhotoUIView.clipsToBounds = true
                 
-                
+                /*cell.UserUploadedPhotoUIView.layer.borderWidth = 1.5
+                let color = UIColor(red: 190/255, green: 190/255, blue: 190/255, alpha: 1)
+                cell.UserUploadedPhotoUIView.layer.borderColor = color.cgColor*/
                 
                 //sets the values for the labels in the cell, time value and location value
                 cell.TextViewCellOutlet.text = crumbmsg.text
@@ -272,8 +297,17 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
                 //cell.YouTheUserLabel.font = UIFont.
                 cell.TimeRemainingValueLabel.text = crumbmsg.timeRelative()//time is how long ago it was posted, dont see the point to change var name to something more explanatory right now
                 
+                cell.ReportButton.isHidden = false
+                cell.ReportButton.tag = indexPath.row
+                cell.ReportButton.addTarget(self, action: #selector(OthersCrumbsTableViewController.report), for: .touchUpInside)
+                
+                
                 cell.VoteButton.tag = indexPath.row
                 cell.VoteButton.addTarget(self, action: #selector(YourCrumbsTableViewController.buttonActions), for: .touchUpInside)
+                
+                
+                
+                
                 
                 if crumbmsg.calculate() > 0 {
                     let ref = Int(crumbmsg.calculate())
@@ -301,6 +335,13 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
             
         }
     }
+    //SEGUE to imageViewer
+    func imageSeggy(sender: UIButton){
+        print("segue to image viewer")
+        self.performSegue(withIdentifier: "OtherViewImageSeg", sender: sender)
+        
+    }
+    //OtherViewImageSeg
     
         
     //refresh table view
@@ -417,7 +458,18 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
                     = (viewbreadcrumb.votes) + 1
             }
             
-            helperFunctions.crumbVote(viewbreadcrumb.hasVoted!, crumb: viewbreadcrumb, voteValue: votevalue )
+            viewbreadcrumb.intermediaryVotingValue = votevalue
+            
+            
+            
+            if let i = whohasvoted.index(where: { $0?.uRecordID == viewbreadcrumb.uRecordID }) {
+                whohasvoted[i] = viewbreadcrumb
+                print("repeat")
+                
+            }else{
+                whohasvoted.insert(viewbreadcrumb, at: 0)
+                print("new")
+            }
             
             DispatchQueue.main.async(execute: { () -> Void in
                 self.OthersTableView.reloadData()

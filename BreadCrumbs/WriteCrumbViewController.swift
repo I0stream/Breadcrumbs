@@ -55,7 +55,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     let helperfunctions = AppDelegate().helperfunctions
     var crumbmessage: CrumbMessage?
     //let managedObjectContext = AppDelegate().getContext() //broke
-
+    var isinfobaropent: Bool?
     //weak var delegate: updateViewDelegate?
     var currentTime: Int?
     
@@ -74,12 +74,16 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     @IBOutlet weak var postButtonOutlet: UIButton!
     @IBOutlet weak var CrumbcountExplainerView: UIView!
     
+    @IBOutlet weak var ActivIndictatorsss: UIActivityIndicatorView!
     
     @IBOutlet weak var UiViewImageContainer: UIView!
     @IBOutlet weak var imageContainerUIImage: UIImageView!
     var uploadedPhoto: UIImage?
     var photoURL: NSURL?
+    var photoAsData: Data?
     
+    
+    @IBOutlet weak var Greyoutview: UIView!
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -123,10 +127,10 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         
         if NSUserData.integer(forKey: "LastPickedTime") == 0{
             currentTime = 48
-            pickeroutlet.setTitle("\(currentTime!) h", for: UIControlState())
+            pickeroutlet.setTitle("\(currentTime!)h", for: UIControlState())
         }else{
             currentTime = NSUserData.integer(forKey: "LastPickedTime")
-            pickeroutlet.setTitle("\(currentTime!) h", for: UIControlState())
+            pickeroutlet.setTitle("\(currentTime!)h", for: UIControlState())
 
 
         }
@@ -170,14 +174,19 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     
     @IBAction func UploadPhotoAction(sender: AnyObject) {
         if (UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.camera)){
+            if isinfobaropent == true{
+                UNanimateInfoBar()
+            }
             let picker = UIImagePickerController()
             picker.delegate = self
-            //picker.sourceType = UIImagePickerControllerSourceType.camera
-            //let mediaTypes: Array<AnyObject> = [kUTTypeImage]
-            //picker.mediaTypes = mediaTypes as! [String]
-            picker.allowsEditing = false //2
-            picker.sourceType = .photoLibrary //3
-            self.present(picker, animated: true, completion: nil)
+
+            
+            picker.allowsEditing = false
+            picker.sourceType = .photoLibrary
+            
+            
+            picker.modalPresentationStyle = .popover
+            present(picker, animated: true, completion: nil)
         }
         else{
             print("No Camera.")
@@ -188,17 +197,57 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
 
         
         let photoPicked = info[UIImagePickerControllerOriginalImage] as! UIImage //2
-        imageContainerUIImage.contentMode = .scaleAspectFit
-        imageContainerUIImage.image = photoPicked
-        uploadedPhoto = photoPicked
+        photoAsData = UIImageJPEGRepresentation(photoPicked, 0.4)
+        var test = NSData(data: photoAsData!)
         
-        photoURL = writeImage(image:photoPicked)
         
-        imageContainerUIImage.layer.cornerRadius = 5.0
-        imageContainerUIImage.clipsToBounds = true
-        
-        UiViewImageContainer.isHidden = false
-        
+        if ((test.length) / 1024) < 1500{
+            print("image right size")
+            
+            let viewit = test.length / 1024
+            print(viewit)
+            imageContainerUIImage.contentMode = .scaleAspectFit
+            imageContainerUIImage.image = photoPicked
+            uploadedPhoto = photoPicked
+            
+            photoURL = writeImage(image:photoPicked)
+            
+            imageContainerUIImage.layer.cornerRadius = 5.0
+            imageContainerUIImage.clipsToBounds = true
+            
+            UiViewImageContainer.isHidden = false
+            
+        }else{
+            let viewit = test.length / 1024
+            print(viewit)
+            
+            test = NSData(data: UIImageJPEGRepresentation(photoPicked, 0.3)!)
+            if ((test.length) / 1024) < 1000{
+                
+                let viewit = test.length / 1024
+                print(viewit)
+                
+                photoAsData = UIImageJPEGRepresentation(photoPicked, 0.2)
+
+                imageContainerUIImage.contentMode = .scaleAspectFit
+                imageContainerUIImage.image = photoPicked
+                uploadedPhoto = photoPicked
+                
+                photoURL = writeImage(image:photoPicked)
+                
+                imageContainerUIImage.layer.cornerRadius = 5.0
+                imageContainerUIImage.clipsToBounds = true
+                
+                UiViewImageContainer.isHidden = false
+            } else{
+                animateInfoBar("Image is too large")
+
+                let viewit = test.length / 1024
+                print(viewit)
+            }
+
+            
+        }
         dismiss(animated: true, completion: nil)
     }
     func imagePickerControllerDidCancel(_ picker: UIImagePickerController) {
@@ -213,6 +262,9 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         UiViewImageContainer.isHidden = true
         uploadedPhoto = nil
         imageContainerUIImage.image = nil
+        photoURL = nil
+        photoAsData = nil
+        
     }
     
 
@@ -222,7 +274,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     func miDatePicker(_ amDatePicker: MIDatePicker, didSelect time: Int) {
         // Do something when the user has confirmed a selected date
         currentTime = pickerTimeLimit[time]
-        pickeroutlet.setTitle("\(currentTime!) h", for: UIControlState())
+        pickeroutlet.setTitle("\(currentTime!)h", for: UIControlState())
     }
     func miDatePicker(_ amDatePicker: MIDatePicker, moveSelect: Void) {}
     
@@ -292,6 +344,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let fileURL = documentsURL.appendingPathComponent(NSUUID().uuidString + ".jpeg")
         if let imageData = UIImageJPEGRepresentation(image, 0.9) {
+            
             do {try imageData.write(to: fileURL, options: .noFileProtection)}//writeToURL(fileURL, atomically: false)
             catch { print("fucked") }
         }
@@ -322,7 +375,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
                 message.votevalue = crumbmessage.votes as NSNumber?
                 message.recorduuid = crumbmessage.uRecordID
                 if crumbmessage.photo != nil{
-                    message.photo = UIImageJPEGRepresentation(crumbmessage.photo!, 0.9)//convert uiimage into jpeg format
+                    message.photo = self.photoAsData!
                 }
                 do {
                     try message.managedObjectContext?.save()
@@ -351,12 +404,12 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
                 let msgText = crumbMessageTextView.text
                 let senderUser = NSUserData.string(forKey: "userName")!
                 let senderid = NSUserData.string(forKey: "recordID")!
-                CrumbCDCK(text: msgText!, User: senderUser, senderid: senderid)
+                CrumbCDCK(text: msgText!, User: senderUser, senderid: senderid, currentime: currentTime!)
             }
         }
     }
     
-    func CrumbCDCK(text: String, User: String, senderid: String){
+    func CrumbCDCK(text: String, User: String, senderid: String, currentime: Int){
         if checkLocation() == true{
             
             
@@ -375,7 +428,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
 
             
             //create crumbMessage object
-            crumbmessage = CrumbMessage(text: text, senderName: User, location: curLoc, timeDropped: date, timeLimit: currentTime!, senderuuid: senderid, votes: 0)
+            crumbmessage = CrumbMessage(text: text, senderName: User, location: curLoc, timeDropped: date, timeLimit: currentime, senderuuid: senderid, votes: 0)
             crumbmessage?.hasVoted = 0//keychain
             
             if uploadedPhoto != nil{
@@ -389,6 +442,11 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
             self.NSUserData.setValue(Date(), forKey: "SinceLastCheck")
             self.NSUserData.setValue(currentTime!, forKey: "LastPickedTime")
             
+            
+            //put loading indicator and grey out here
+            ActivIndictatorsss.isHidden = false
+            Greyoutview.isHidden = false
+            //ActivIndictatorsss.startAnimating()
             self.saveToCloudThenCD(self.crumbmessage)//saves both cd and ck
             
             
@@ -549,6 +607,9 @@ extension WriteCrumbViewController{//MARK: Alarm info bar
         let options = UIViewAnimationOptions.transitionCurlDown
         let damping:CGFloat = 1 // set damping ration
         let velocity:CGFloat = 1.0
+        
+        isinfobaropent = true
+        
         self.makeSubViewIndicator(alert)
         UIView.animate(withDuration: duration, delay: delay, usingSpringWithDamping: damping, initialSpringVelocity: velocity, options: options, animations: {
             self.view.viewWithTag(5)!.frame = CGRect(x: 0, y:((self.view.viewWithTag(1)!.frame.size.height)), width: (self.view.frame.size.width), height: 20)
@@ -565,6 +626,8 @@ extension WriteCrumbViewController{//MARK: Alarm info bar
         let damping:CGFloat = 1 // set damping ration
         let velocity:CGFloat = 1.0
         
+        isinfobaropent = false
+        
         UIView.animate(withDuration: duration, delay: delay, usingSpringWithDamping: damping, initialSpringVelocity: velocity, options: options, animations: {
             self.removeInfoBarView()
         }) { (true) in
@@ -578,7 +641,7 @@ extension WriteCrumbViewController{//MARK: Alarm info bar
     
     func makeSubViewIndicator(_ text: String){
         view.viewWithTag(2)?.transform.ty = (view.viewWithTag(2)?.transform.ty)! + 20
-        //view.viewWithTag(34)?.transform.ty = (view.viewWithTag(34)?.transform.ty)! + 20
+        view.viewWithTag(143)?.transform.ty = (view.viewWithTag(143)?.transform.ty)! + 20
         view.viewWithTag(26)?.transform.ty = (view.viewWithTag(26)?.transform.ty)! + 20
         
         let labelAnimate = UITextField(frame: CGRect(x: 0, y:((self.view.viewWithTag(1)!.frame.size.height)), width: (view.frame.size.width), height: 20))
@@ -602,7 +665,7 @@ extension WriteCrumbViewController{//MARK: Alarm info bar
         self.view.viewWithTag(5)!.frame = CGRect(x: 0, y:(self.view.viewWithTag(1)!.frame.size.height), width: (view.frame.size.width), height: 0)
         self.view.viewWithTag(26)?.transform.ty = (view.viewWithTag(26
             )?.transform.ty)! - 20//text
-        //view.viewWithTag(34)?.transform.ty = (view.viewWithTag(34)?.transform.ty)! - 20//textbox
+        view.viewWithTag(143)?.transform.ty = (view.viewWithTag(143)?.transform.ty)! - 20//textbox
         view.viewWithTag(2)?.transform.ty = (view.viewWithTag(2)?.transform.ty)! - 20
         
         self.view.viewWithTag(4)!.removeFromSuperview()

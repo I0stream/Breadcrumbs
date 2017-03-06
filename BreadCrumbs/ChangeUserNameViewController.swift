@@ -87,8 +87,7 @@ class ChangeUserNameViewController: SettingsViewController, UITextFieldDelegate 
     @IBAction func ChangeNameButton(_ sender: AnyObject) {
         if ChangeNameField.text?.characters.count < 16 && ChangeNameField.text?.characters.count > 1{
             NSUserData.setValue(ChangeNameField.text, forKey: "userName")
-            changeNameCK(ChangeNameField.text!)
-            dismiss(animated: true, completion: nil)
+            ckUniqueNameTest(username: ChangeNameField.text!)
         }else if ChangeNameField.text?.characters.count < 1 {
             
             errorMessageLabel.text = "Please enter a longer username"
@@ -98,6 +97,39 @@ class ChangeUserNameViewController: SettingsViewController, UITextFieldDelegate 
              errorMessageLabel.text = "Please enter a too long by \((ChangeNameField.text?.characters.count)! - 15) characters"
             
         }
+    }
+    
+    func ckUniqueNameTest(username: String){
+        
+        let container = CKContainer.default()
+        let publicData = container.publicCloudDatabase
+        
+        let query = CKQuery(recordType: "UserInfo", predicate: NSPredicate(format: "%K == %@", "userName" ,username))
+        
+        publicData.perform(query, inZoneWith: nil) {
+            results, error in
+            if error == nil{
+                if results?.count == 1{
+                    print("Someone is using that username, please try a different one")
+                    self.errormessage()
+                }else if (results?.isEmpty)!{
+                    print("no account found")
+                    self.changeNameCK(username)
+                }
+                
+            }else{
+                self.errorMessageLabel.text = "An error occurred please try again later :("
+                print(error!)
+            }
+        }
+    }
+    
+    func errormessage(){
+        DispatchQueue.main.async(execute: { () -> Void in
+            self.errorMessageLabel.isHidden = false
+            self.errorMessageLabel.text = "Someone is using that username, please try a different one"
+        })
+        
     }
     
     //changes username in /user whatever
@@ -118,6 +150,7 @@ class ChangeUserNameViewController: SettingsViewController, UITextFieldDelegate 
                     publicData.save(userinfo, completionHandler: {theRecord, error in
                         if error == nil{
                             print("saved version")
+                            self.dismiss(animated: true, completion: nil)
                         }else{
                             print(error as Any)
                         }

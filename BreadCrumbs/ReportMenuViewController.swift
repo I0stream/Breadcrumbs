@@ -20,6 +20,7 @@ class ReportMenuViewController: UIViewController {
     var typeToReport: String? //either comment or crumbmessage
     var reporteduserID: String?//can be comment or crumbmessage
     var reportedtext: String?
+    var reportedPhoto: UIImage?
     
     let helperFunctions = Helper()
     
@@ -45,6 +46,8 @@ class ReportMenuViewController: UIViewController {
             let upcoming = segue.destination as! ReportViewController
             upcoming.reportType = typeToReport
             upcoming.reportedMessageId = reportedMessageId
+            
+            upcoming.reportPhoto = reportedPhoto
             
             upcoming.reportedtext = reportedtext
             upcoming.reporteduserID = reporteduserID

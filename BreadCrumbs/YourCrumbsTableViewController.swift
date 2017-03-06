@@ -17,21 +17,21 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
     @IBOutlet weak var YourTableView: UITableView!
 
     let locationManager: CLLocationManager = AppDelegate().locationManager
-    //let helperFunctions = Helper()
     let helperFunctions = AppDelegate().helperfunctions
     var crumbmessages = [CrumbMessage]()// later we will be able to access users current crumbs from the User class; making sure the msg is associated by it's uuid
-    var dropped = [CrumbMessage]()
 
     //let managedObjectContext = AppDelegate().getContext() //broke
     let NSUserData = UserDefaults.standard
     var count: Int = 0
     var inscreen: Bool = false
     
+    //cell height stuff
     var cellHeights = [CGFloat?]()
     let heightspacer: CGFloat = UIScreen.main.bounds.height * 0.35
+    
+    
     weak var timerload = Timer()
 
-    
     //is indicator visible?
     var indicatorAlive = false
 
@@ -41,6 +41,9 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         
         return refreshControl
     }()
+    
+    var whohasvoted = [CrumbMessage?]()//store recuuids and update in view did dis
+    
     
     //@IBOutlet weak var CrumbCountBBI: UIBarButtonItem!
     
@@ -68,14 +71,32 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         
         YourTableView.estimatedRowHeight = 200
         YourTableView.rowHeight = UITableViewAutomaticDimension
+
         
-        /*if NSUserData.integer(forKey: "otherExplainer") == 0{
-            tabBarController?.tabBar.items![1].badgeValue = ""
-            NSUserData.setValue(1, forKey: "otherExplainer")
-        }*/
+        NotificationCenter.default.addObserver(self, selector: #selector(YourCrumbsTableViewController.listenForBackground), name: NSNotification.Name(rawValue: "UIApplicationDidEnterBackgroundNotification"), object: nil)
         
         //NotificationCenter.default.addObserver(self, selector: #selector(YourCrumbsTableViewController.reloadBasedOnRemoteNotif(_:recordID:)), name: Notification.Name(rawValue: "NotifLoad"), object: nil)
     }
+    
+    override func viewDidDisappear(_ animated: Bool) {
+        
+        for crumb in whohasvoted{
+            print("update")
+            
+            self.helperFunctions.crumbVote((crumb?.hasVoted!)!, crumb: crumb!, voteValue: (crumb?.intermediaryVotingValue!)! )//has voted nil when just loaded
+        }
+        whohasvoted.removeAll()
+
+
+    }
+    func listenForBackground(){
+        for crumb in whohasvoted{
+            print("update")
+            
+            self.helperFunctions.crumbVote((crumb?.hasVoted!)!, crumb: crumb!, voteValue: (crumb?.intermediaryVotingValue!)! )//has voted nil when just loaded
+        }
+    }
+    
     
     
     // prepare view with object data;
@@ -243,8 +264,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
                 cell.UserUploadedPhotoUIView.layer.cornerRadius = 5.0
                 cell.UserUploadedPhotoUIView.clipsToBounds = true
                 
-                
-                
+                                
                 //sets the values for the labels in the cell, time value and location value
                 cell.TextViewCellOutlet.text = crumbmsg.text
                 cell.TextViewCellOutlet.font = UIFont.systemFont(ofSize: 16)
@@ -277,6 +297,8 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
                 cell.VoteButton.tag = indexPath.row
                 cell.VoteButton.addTarget(self, action: #selector(YourCrumbsTableViewController.buttonActions), for: .touchUpInside)
                 
+                
+                
                 if crumbmsg.calculate() > 0 {
                     let ref = Int(crumbmsg.calculate())
                     
@@ -304,21 +326,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         }
     }
     
-    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
-        let lastLoadedElement = crumbmessages.count - 1
-        if indexPath.row == lastLoadedElement {
-            if dropped.count >= 15{
-                let fifteenMore = dropped[0...14]
-                dropped = [CrumbMessage](dropped.dropFirst(15))
-            
-                self.crumbmessages += fifteenMore//.reverse()
-            }else if dropped.count < 15 && dropped.count > 0 {
-                self.crumbmessages += dropped[0...(dropped.count - 1)]
-                
-                dropped = [CrumbMessage]()
-            }//if zero do nothing
-        }
-    }
+
     
     func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if (editingStyle == UITableViewCellEditingStyle.delete) {
@@ -394,10 +402,25 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
                 viewbreadcrumb.votes
                     = (viewbreadcrumb.votes) + 1
             }
+            viewbreadcrumb.intermediaryVotingValue = votevalue
+            
+            
+            
+            if let i = whohasvoted.index(where: { $0?.uRecordID == viewbreadcrumb.uRecordID }) {
+                whohasvoted[i] = viewbreadcrumb
+                print("repeat")
+                
+            }else{
+                whohasvoted.insert(viewbreadcrumb, at: 0)
+                print("new")
+            }
+            
             
             
             DispatchQueue.main.async(execute: { () -> Void in
-                self.helperFunctions.crumbVote(viewbreadcrumb.hasVoted!, crumb: viewbreadcrumb, voteValue: votevalue )//has voted nil when just loaded
+                //self.helperFunctions.crumbVote(viewbreadcrumb.hasVoted!, crumb: viewbreadcrumb, voteValue: votevalue )//has voted nil when just loaded
+                
+                
                 self.YourTableView.reloadData()
             })
         }else{ //if dead
@@ -423,25 +446,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         })
     }
     
-    //updates
-    /*func crumbNumUpdater(){
-        dispatch_async(dispatch_get_main_queue(), { () -> Void in
-        self.CrumbCountBBI.title = "\(String(self.NSUserData.stringForKey("crumbCount")!))/5"
-        })
-    }
-    
-    func limitTotalCrumbs(_ crumbs: [CrumbMessage]) -> [CrumbMessage]{
-        if crumbs.count > 15{
-            let remove = crumbs.count - 15
-            let final = [CrumbMessage](crumbs.dropFirst(remove))
-            
-            dropped = [CrumbMessage](crumbs[0...(remove-1)])
-            return final.reversed()
-            
-        }else{
-            return crumbs.reversed()
-        }
-    }*/
+
     
     func noVoteIndicator(){
         let alertController = UIAlertController(title: "BreadCrumbs", message:

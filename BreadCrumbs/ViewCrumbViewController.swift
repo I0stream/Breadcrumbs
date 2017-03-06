@@ -22,7 +22,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     
     let userSelf = AppDelegate().NSUserData.string(forKey: "recordID")
     var votevalue = 0
-
+    
     
     let helperFunctions = AppDelegate().helperfunctions
     //let helperFunctions = Helper()
@@ -37,12 +37,13 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     }()
     
     
-    @IBOutlet weak var PALEBLUEDOT: UIImageView!
+    //@IBOutlet weak var PALEBLUEDOT: UIImageView!
     
     @IBOutlet weak var YourtableView: UITableView!
     @IBOutlet weak var mapView: MKMapView!
-    @IBOutlet weak var ButtonUIViewContainer: UIView!
+    //@IBOutlet weak var ButtonUIViewContainer: UIView!
     
+    @IBOutlet weak var SaveCancelMenuView: UIView!
     //keeps track of votes in screen
     var inscreen = false
     
@@ -70,7 +71,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         
         if viewbreadcrumb?.hasVoted == nil { viewbreadcrumb?.hasVoted = 0}
         
-        if refreshNeed == false {PALEBLUEDOT.isHidden = true}
+        //if refreshNeed == false {PALEBLUEDOT.isHidden = true}
         
         self.YourtableView.delegate = self
         self.YourtableView.dataSource = self
@@ -98,13 +99,15 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         
         
         //NotifLoad
-        NotificationCenter.default.addObserver(self, selector: #selector(ViewCrumbViewController.BlueDotIndicate(_:)),name:NSNotification.Name(rawValue: "NotifLoad"), object: nil)
+        //NotificationCenter.default.addObserver(self, selector: #selector(ViewCrumbViewController.BlueDotIndicate(_:)),name:NSNotification.Name(rawValue: "NotifLoad"), object: nil)
 
         loadComments()
         //animateInfoBar("Pull to refresh")
+        
+        
     }
     
-    func BlueDotIndicate(_ notification: Notification){
+    /*func BlueDotIndicate(_ notification: Notification){
         if let recordid = notification.userInfo?["RecordUuid"] as? String{
             if recordid == self.viewbreadcrumb?.uRecordID{
                 DispatchQueue.main.async(execute: { () -> Void in
@@ -113,7 +116,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
                 })
             }
         }
-    }
+    }*/
     
     /*//http://stackoverflow.com/questions/32772498/how-to-add-a-circle-with-a-certain-radius-to-my-mkpointannotation-ios-swift
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
@@ -125,7 +128,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     
     
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        let num = comments.count + 2// + because of invisible spacer plus the crumb being displayed plus refresher
+        let num = comments.count + 3// + because of invisible spacer plus the crumb being displayed plus second spacer
         return num
     }
     
@@ -135,8 +138,23 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     
     func tableView(_ tableView: UITableView, heightForRowAt indexPath: IndexPath) -> CGFloat {
         if indexPath.row == 0 {//spacer size
+            
+            if viewbreadcrumb?.photo == nil{
+                let screenSize: CGRect = UIScreen.main.bounds
+                let percentheight: CGFloat = screenSize.height * 0.5
+                
+                let height: CGFloat = percentheight - 50.0
+                return height
+            }else {
+                let screenSize: CGRect = UIScreen.main.bounds
+                let percentheight: CGFloat = screenSize.height * 0.5
+                
+                let height: CGFloat = percentheight - 125.0
+                return height
+            }
+        }else if indexPath.row == indexPath.count + 1 || (comments.count == 0 && indexPath.row == indexPath.count){
             let screenSize: CGRect = UIScreen.main.bounds
-            let percentheight: CGFloat = screenSize.height * 0.5
+            let percentheight: CGFloat = screenSize.height * 0.3
             
             let height: CGFloat = percentheight - 50.0
             return height
@@ -244,7 +262,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
                     msgCell.VoteButton.setTitleColor(normalColor, for: .normal)
                 }
                 return msgCell
-            }else {
+            }else {//has photo
                 //imagecrumbscell
                 
                 let msgCell = tableView.dequeueReusableCell(withIdentifier: "imagecrumbscell", for: indexPath) as! crumbPlusImageTableViewCell
@@ -256,10 +274,15 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
                 msgCell.ImageViewOnCell.image = viewbreadcrumb!.photo
                 msgCell.imageButton.addTarget(self, action: #selector(ViewCrumbViewController.imageSeggy), for: .touchUpInside)
                 
+                let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressToSave(sender:)))
+                longPressRecognizer.minimumPressDuration = 0.5
+                msgCell.imageButton.addGestureRecognizer(longPressRecognizer)
+                
                 msgCell.ImageViewOnCell.layer.cornerRadius = 5.0
                 msgCell.ImageViewOnCell.clipsToBounds = true
                 
                 
+
                 
                 if viewbreadcrumb?.senderuuid == userSelf || viewbreadcrumb?.senderuuid == "_abacd--_dfasdfsiaoucvxzmnwfehk"{
                     msgCell.ReportButton.isHidden = true///////////////////////
@@ -344,7 +367,12 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
             
             
             
-        }else {
+        }else if indexPath.row == indexPath.count + 1 || (comments.count == 0 && indexPath.row == indexPath.count) {
+            let cell = tableView.dequeueReusableCell(withIdentifier: "Spacer", for: indexPath)
+            cell.selectionStyle = .none
+            
+            return cell
+        }else{
             let commentCells = tableView.dequeueReusableCell(withIdentifier: "commentYours", for: indexPath) as! CommentCell
             commentCells.selectionStyle = .none
             
@@ -427,6 +455,10 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
                 upcoming.reporteduserID = viewbreadcrumb?.senderuuid
                 upcoming.typeToReport = "crumbmessage"
                 
+                if viewbreadcrumb?.photo != nil{
+                    upcoming.reportedPhoto = viewbreadcrumb?.photo!
+                }
+                
             }else{
                 let index = tag - 2
                 let comment = comments[index]
@@ -435,7 +467,12 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
                 upcoming.reportedtext = comment.text
                 upcoming.reporteduserID = comment.userID
                 upcoming.typeToReport = "comment"
-            }}
+            }
+        } else if segue.identifier == "viewimageviewseg"{
+            let upcoming = segue.destination as!ImageViewerViewController
+            upcoming.theImage = viewbreadcrumb?.photo
+            
+        }
     }
     
     
@@ -474,7 +511,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     //MARK: Refresh
     
     
-    @IBAction func RefreshButtonAction(_ sender: Any) {
+   /* @IBAction func RefreshButtonAction(_ sender: Any) {
         
         reloadForRefresh()
 
@@ -485,7 +522,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
             button.transform = button.transform.rotated(by: CGFloat.pi)
         })
         
-    }
+    }*/
     
     
     func handleRefresh(_ refreshControl: UIRefreshControl) {
@@ -501,14 +538,14 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
             if self.refreshNeed{//if we know there is a msg in cd use only cd
                 //button go away (blue dot)
                 
-                self.PALEBLUEDOT.isHidden = true
+                //self.PALEBLUEDOT.isHidden = true
                 self.refreshNeed = false
                 //also update crumb
                 self.viewbreadcrumb = self.helperFunctions.getSpecific(recorduuid: (self.viewbreadcrumb?.uRecordID)!)
             }else {//if user wants to refresh constantly, use both
                 //button go away (blue dot)
                 
-                self.PALEBLUEDOT.isHidden = true
+                //self.PALEBLUEDOT.isHidden = true
                 self.refreshNeed = false
                 //also update crumb
                 //ck
@@ -608,6 +645,37 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     }*/
 
 
+    
+    @IBAction func savefotoButtonAction(_ sender: Any) {
+        saveimagePopUp()
+        SaveCancelMenuView.isHidden = true
+    }
+    
+    
+    @IBAction func cancelsave(_ sender: Any) {
+        SaveCancelMenuView.isHidden = true
+
+    }
+
+    
+    //press to save functions
+    func longPressToSave(sender: UILongPressGestureRecognizer) {
+        //use popover revopop\\\poppy im poppy popover///\\\(((Rootless cosmopolitans)))
+        SaveCancelMenuView.isHidden = false
+    }
+    
+    func saveimagePopUp(){
+        UIImageWriteToSavedPhotosAlbum((viewbreadcrumb?.photo)!, self, #selector(image(image:didFinishSavingWithError:contextInfo:)), nil)
+    }
+    
+    func image(image: UIImage!, didFinishSavingWithError error: NSError!, contextInfo: AnyObject!) {
+        if (error != nil) {
+            print(error)
+            
+        } else {
+            print("alright")
+        }
+    }
     
 }
 //reloads table in yours or others in order to persist vote button colors colors

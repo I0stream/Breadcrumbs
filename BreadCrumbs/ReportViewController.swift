@@ -24,6 +24,8 @@ class ReportViewController: UIViewController, UITextViewDelegate {
     var reporteduserID: String?
     var reportType: String?
     
+    var reportPhoto: UIImage?
+    
     let helperFunctions = Helper()
 
     
@@ -167,6 +169,15 @@ class ReportViewController: UIViewController, UITextViewDelegate {
         reportRecord.setValue(Date(), forKey: "whenReported")
         reportRecord.setValue(reportedtext, forKey: "reportedMessageText")
 
+        if reportPhoto != nil{
+            let photourl = writeImage(image: reportPhoto!)
+            
+            let photoasset = CKAsset(fileURL: photourl as URL)
+
+            reportRecord.setValue(photoasset, forKey: "photo")
+
+        }
+        
         /*
 
         let dbreportedMessageUserID = ckreport["reportedMessageUserID"] as! String
@@ -182,6 +193,17 @@ class ReportViewController: UIViewController, UITextViewDelegate {
                 print("ck error in report view controller")
             }
         })
+    }
+    
+    func writeImage(image: UIImage) -> NSURL {
+        let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
+        let fileURL = documentsURL.appendingPathComponent(NSUUID().uuidString + ".jpeg")
+        if let imageData = UIImageJPEGRepresentation(image, 0.9) {
+            do {try imageData.write(to: fileURL, options: .noFileProtection)}//writeToURL(fileURL, atomically: false)
+            catch { print("fucked") }
+        }
+        
+        return fileURL as NSURL
     }
     
     

@@ -95,7 +95,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
             let user = "Sabre"
             let tex = "Hi! This is a BreadCrumb. It's a message that you can find in different places you go, wherever people have dropped them. You can start a conversation on any BreadCrumb by first tapping the message, then the comment button. Or drop your own crumb wherever you are by pressing the plus button."
             let userId = "_abacd--_dfasdfsiaoucvxzmnwfehk"
-            WriteCrumbViewController().CrumbCDCK(text: tex, User: user, senderid: userId)
+            self.Crumb(text: tex, User: user, senderid: userId, currentime: 1)
             //NSUserData.setValue(1, forKey: "otherExplainer")
             
         }
@@ -103,6 +103,41 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         performSegue(withIdentifier: "SignInSegue", sender: nil)//presents weird and i also want user to be able to access this and sign out/in again. cant change username after picking though. may need more view controllers
         
     }
+    
+    func Crumb(text: String, User: String, senderid: String, currentime: Int){
+        if checkLocation() == true{
+            
+            
+            //update crumbcount value, maybe move this to savetocloud
+            if senderid == NSUserData.string(forKey: "recordID")!{
+                let cCounter: Int = Int(NSUserData.string(forKey: "crumbCount")!)! - 1
+                
+                NSUserData.setValue(cCounter, forKey: "crumbCount")
+                AppDelegate().UpdateCrumbCount(cCounter)
+            }
+            
+            
+            //init date, location for the message obj
+            let date = Date()
+            let curLoc = locationManager.location!
+            
+            
+            //create crumbMessage object
+            let crumbmessage = CrumbMessage(text: text, senderName: User, location: curLoc, timeDropped: date, timeLimit: currentime, senderuuid: senderid, votes: 0)
+            crumbmessage?.hasVoted = 0//keychain
+            
+            
+            WriteCrumbViewController().saveToCloudThenCD(crumbmessage)//saves both cd and ck
+            
+            
+        } else {
+            print("Tests did fail :(")/*I need to add an indicator and disable the post button if the
+             tests are failing; like jesus it makes testing shit a pain in my ass whenever I sim it
+             the loc services dont auto run half the time and then I have to dick around with it*/
+        }
+        
+    }
+
     
     func ckUniqueNameTest(username: String){
         
@@ -116,7 +151,10 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
             if error == nil{
                 if results?.count == 1{
                     print("Someone is using that username, please try a different one")
-                    self.failMessage(text: "Someone is using that username, please try a different one")
+                    DispatchQueue.main.async(execute: { () -> Void in
+                        self.failMessage(text: "Someone is using that username, please try a different one")
+                    })
+                    
                 }else if (results?.isEmpty)!{
                     print("no account found")
                     self.successSignIn()

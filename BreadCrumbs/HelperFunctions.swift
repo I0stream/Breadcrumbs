@@ -94,7 +94,7 @@ class Helper{
                                             loadedMessage?.photo = UIImage(data: photoasdata as Data)!
                                         }
                                         
-                                        self.NSUserData.setValue(2, forKey: "otherExplainer")
+                                        //self.NSUserData.setValue(2, forKey: "otherExplainer")
                                         self.saveToCoreData(loadedMessage!)
                                     }
                                 }
@@ -568,7 +568,6 @@ class Helper{
     }
     
     func crumbVote(_ hasvoted: Int, crumb: CrumbMessage, voteValue: Int) {//what happens when a vote conflicts between cd and ck?, this just does ck atm
-        print("voting")
         voteCKVote(crumb, voteValue: voteValue)
         
         voteCoreDataVote(hasvoted, crumb: crumb)
@@ -682,6 +681,11 @@ class Helper{
                     
                     fmCrumbMessageYours?.hasVoted = fetchedmsgsCD[i].hasVoted! as Int
                     // ]\\commentsArr commentsArr
+                    
+                    if fetchedmsgsCD[i].photo != nil{
+                        let fmphoto = fetchedmsgsCD[i].photo! as Data
+                        fmCrumbMessageYours?.photo = UIImage(data: fmphoto)
+                    }
                     
                     fmCrumbMessageYours?.uRecordID = fetchedmsgsCD[i].recorduuid! as String
                     //fmCrumbMessageYours?.addressStr = fmaddressStr

@@ -27,7 +27,7 @@ class CrumbMessage{
     var photo: UIImage?
     //var addressStr: String?
     //var commentsArr: [Comment]//array of comments
-    
+    var intermediaryVotingValue: Int?//used in your and other to hold the +-1 updating values for vote
     
     
     //MARK: Initialization

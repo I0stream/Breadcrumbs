@@ -308,4 +308,37 @@ dropped = [CrumbMessage]()
 
 }
 }*/
+//updates
+/*func crumbNumUpdater(){
+dispatch_async(dispatch_get_main_queue(), { () -> Void in
+self.CrumbCountBBI.title = "\(String(self.NSUserData.stringForKey("crumbCount")!))/5"
+})
+}
 
+func limitTotalCrumbs(_ crumbs: [CrumbMessage]) -> [CrumbMessage]{
+if crumbs.count > 15{
+let remove = crumbs.count - 15
+let final = [CrumbMessage](crumbs.dropFirst(remove))
+
+dropped = [CrumbMessage](crumbs[0...(remove-1)])
+return final.reversed()
+
+}else{
+return crumbs.reversed()
+}
+}*/
+/*    func tableView(_ tableView: UITableView, willDisplay cell: UITableViewCell, forRowAt indexPath: IndexPath) {
+let lastLoadedElement = crumbmessages.count - 1
+if indexPath.row == lastLoadedElement {
+if dropped.count >= 15{
+let fifteenMore = dropped[0...14]
+dropped = [CrumbMessage](dropped.dropFirst(15))
+
+self.crumbmessages += fifteenMore//.reverse()
+}else if dropped.count < 15 && dropped.count > 0 {
+self.crumbmessages += dropped[0...(dropped.count - 1)]
+
+dropped = [CrumbMessage]()
+}//if zero do nothing
+}
+}*/

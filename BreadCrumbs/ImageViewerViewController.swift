@@ -14,6 +14,7 @@ class ImageViewerViewController: UIViewController, UIScrollViewDelegate {
     
     @IBOutlet weak var ScrollZoomViewContrainer: UIScrollView!
     
+    @IBOutlet weak var SaveCancelMenuView: UIView!
     var theImage: UIImage?
     
     override func viewDidLoad() {
@@ -21,16 +22,57 @@ class ImageViewerViewController: UIViewController, UIScrollViewDelegate {
         
         ScrollZoomViewContrainer.delegate = self
         
-        // Do any additional setup after loading the view.
         ImageImageView.contentMode = .scaleAspectFit
         ImageImageView.image = theImage
+        //heres the thought set the size of the container to suit the image
+        //set the width or height to be the width or height - 100(top bar height) of the container/iphone
+        
+        
+        
+        //ImageImageView.center = ImageImageView.superview?.center
         
         ScrollZoomViewContrainer.minimumZoomScale=0.5;
         ScrollZoomViewContrainer.maximumZoomScale=6.0;
         ScrollZoomViewContrainer.contentSize = CGSize(width: 1280, height: 960)
         
+        let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressToSave(sender:)))
+        longPressRecognizer.minimumPressDuration = 0.5
+        ImageImageView.addGestureRecognizer(longPressRecognizer)
     }
 
+    
+    @IBAction func savefotoButtonAction(_ sender: Any) {
+        saveimagePopUp()
+        SaveCancelMenuView.isHidden = true
+
+    }
+    
+    
+    @IBAction func cancelSave(_ sender: Any) {
+        SaveCancelMenuView.isHidden = true
+
+    }
+    
+    //press to save functions
+    func longPressToSave(sender: UILongPressGestureRecognizer) {
+        //use popover revopop\\\poppy im poppy popover///\\\(((Rootless cosmopolitans)))
+        SaveCancelMenuView.isHidden = false
+    }
+    
+    func saveimagePopUp(){
+        UIImageWriteToSavedPhotosAlbum(ImageImageView.image!, self, #selector(image(image:didFinishSavingWithError:contextInfo:)), nil)
+    }
+    
+    func image(image: UIImage!, didFinishSavingWithError error: NSError!, contextInfo: AnyObject!) {
+        if (error != nil) {
+            print(error)
+            
+        } else {
+            print("alright")
+        }
+    }
+    
+    //zooming functions
     func viewForZooming(in scrollView: UIScrollView) -> UIView? {
         return self.ImageImageView
     }
@@ -42,15 +84,5 @@ class ImageViewerViewController: UIViewController, UIScrollViewDelegate {
     @IBAction func GoBackDismissButton(_ sender: Any) {
         dismiss(animated: true, completion: nil)
     }
-
-    /*
-    // MARK: - Navigation
-
-    // In a storyboard-based application, you will often want to do a little preparation before navigation
-    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        // Get the new view controller using segue.destinationViewController.
-        // Pass the selected object to the new view controller.
-    }
-    */
 
 }

@@ -20,7 +20,6 @@
 		651CFD711E1DDD7A0007D5C4 /* UserNotifications.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 651CFD701E1DDD7A0007D5C4 /* UserNotifications.framework */; };
 		65219AEC1E399FF80068CBA3 /* ReportMenuViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65219AEB1E399FF80068CBA3 /* ReportMenuViewController.swift */; };
 		6523F80E1E25F573003C49D1 /* NoAgreeViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6523F80D1E25F573003C49D1 /* NoAgreeViewController.swift */; };
-		6538741B1DD54FA9009ABDBF /* old code in Resources */ = {isa = PBXBuildFile; fileRef = 6538741A1DD54FA9009ABDBF /* old code */; };
 		6539C0F91CFBC7920072F1E3 /* CoreData.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6539C0F81CFBC7920072F1E3 /* CoreData.framework */; };
 		653BFF9C1CCA0BB7005923E9 /* ViewCrumbViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 653BFF9B1CCA0BB7005923E9 /* ViewCrumbViewController.swift */; };
 		6540B5311DD909E80014A0BC /* WriteCrumbViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6540B5301DD909E80014A0BC /* WriteCrumbViewController.swift */; };
@@ -82,7 +81,6 @@
 		651CFD701E1DDD7A0007D5C4 /* UserNotifications.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = UserNotifications.framework; path = System/Library/Frameworks/UserNotifications.framework; sourceTree = SDKROOT; };
 		65219AEB1E399FF80068CBA3 /* ReportMenuViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ReportMenuViewController.swift; sourceTree = "<group>"; };
 		6523F80D1E25F573003C49D1 /* NoAgreeViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = NoAgreeViewController.swift; sourceTree = "<group>"; };
-		6538741A1DD54FA9009ABDBF /* old code */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = "old code"; sourceTree = "<group>"; };
 		6539C0F81CFBC7920072F1E3 /* CoreData.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CoreData.framework; path = System/Library/Frameworks/CoreData.framework; sourceTree = SDKROOT; };
 		653BFF9B1CCA0BB7005923E9 /* ViewCrumbViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ViewCrumbViewController.swift; sourceTree = "<group>"; };
 		6540B5301DD909E80014A0BC /* WriteCrumbViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WriteCrumbViewController.swift; sourceTree = "<group>"; };
@@ -101,6 +99,7 @@
 		654C0B5A1CC6AE4200060E58 /* YourCrumbsTableViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = YourCrumbsTableViewController.swift; sourceTree = "<group>"; };
 		6567A9D71E60AAC800E64539 /* ImageViewerViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageViewerViewController.swift; sourceTree = "<group>"; };
 		656E04C01E25B2E900A46521 /* AgreementViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AgreementViewController.swift; sourceTree = "<group>"; };
+		656F08531E6CEE0A00CDDC4E /* MessageDataModel 2.xcdatamodel */ = {isa = PBXFileReference; lastKnownFileType = wrapper.xcdatamodel; path = "MessageDataModel 2.xcdatamodel"; sourceTree = "<group>"; };
 		6576060A1DCD69D4006860C6 /* CrumbTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CrumbTableViewCell.swift; path = BreadCrumbs/CrumbTableViewCell.swift; sourceTree = SOURCE_ROOT; };
 		6576060B1DCD69D4006860C6 /* CommentCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = CommentCell.swift; path = BreadCrumbs/CommentCell.swift; sourceTree = SOURCE_ROOT; };
 		657756B41DD93C8F00ABAFD7 /* MIDatePicker-master */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "MIDatePicker-master"; path = "BreadCrumbs/MIDatePicker-master"; sourceTree = SOURCE_ROOT; };
@@ -234,7 +233,6 @@
 				65219AEB1E399FF80068CBA3 /* ReportMenuViewController.swift */,
 				658898361E395ED40003735D /* ReportViewController.swift */,
 				654B117A1CB9705800BD6313 /* Info.plist */,
-				6538741A1DD54FA9009ABDBF /* old code */,
 				654B11751CB9705800BD6313 /* Assets.xcassets */,
 				65CB617A1CD3D175002D6F9E /* BreadCrumbs.entitlements */,
 				654B11771CB9705800BD6313 /* LaunchScreen.storyboard */,
@@ -414,7 +412,6 @@
 			files = (
 				654B11791CB9705800BD6313 /* LaunchScreen.storyboard in Resources */,
 				654B11761CB9705800BD6313 /* Assets.xcassets in Resources */,
-				6538741B1DD54FA9009ABDBF /* old code in Resources */,
 				657756B51DD93C8F00ABAFD7 /* MIDatePicker-master in Resources */,
 				654B11741CB9705800BD6313 /* Main.storyboard in Resources */,
 				657756B91DD9488D00ABAFD7 /* MIDatePicker.xib in Resources */,
@@ -710,9 +707,10 @@
 		65A5A2D51CF681B60019DB49 /* MessageDataModel.xcdatamodeld */ = {
 			isa = XCVersionGroup;
 			children = (
+				656F08531E6CEE0A00CDDC4E /* MessageDataModel 2.xcdatamodel */,
 				65A5A2D61CF681B60019DB49 /* MessageDataModel.xcdatamodel */,
 			);
-			currentVersion = 65A5A2D61CF681B60019DB49 /* MessageDataModel.xcdatamodel */;
+			currentVersion = 656F08531E6CEE0A00CDDC4E /* MessageDataModel 2.xcdatamodel */;
 			name = MessageDataModel.xcdatamodeld;
 			path = BreadCrumbs/MessageDataModel.xcdatamodeld;
 			sourceTree = "<group>";
