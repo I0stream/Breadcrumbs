@@ -23,7 +23,7 @@ class MIDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
         //200///changes height of box holding picker
         fileprivate let bouncingOffset: CGFloat = 0
         
-        var times: [String] = ["4","8","12","24","48"]
+        var times: [String] = ["1","2","4","8","12","24","48"]
         
         var confirmButtonTitle = "Confirm"
         var cancelButtonTitle = "Cancel"

@@ -49,7 +49,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     //MARK: Variables
     var msgCharCount:Int = 0
     var timeDroppedvar: String?
-    var pickerTimeLimit = [4,8,12,24,48]
+    var pickerTimeLimit = [1,2,4,8,12,24,48]
     let NSUserData = AppDelegate().NSUserData
     let locationManager: CLLocationManager = AppDelegate().locationManager
     let helperfunctions = AppDelegate().helperfunctions
