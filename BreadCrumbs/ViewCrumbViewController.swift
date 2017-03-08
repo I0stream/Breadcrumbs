@@ -284,7 +284,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
                 
 
                 
-                if viewbreadcrumb?.senderuuid == userSelf || viewbreadcrumb?.senderuuid == "_abacd--_dfasdfsiaoucvxzmnwfehk"{
+                if viewbreadcrumb?.senderuuid == userSelf{
                     msgCell.ReportButton.isHidden = true///////////////////////
                     msgCell.ReportButton.isEnabled = false
                 }else if viewbreadcrumb?.senderuuid != userSelf{
