@@ -1409,7 +1409,7 @@
                                                             <dataDetectorType key="dataDetectorTypes" link="YES"/>
                                                         </textView>
                                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="SKN-Qh-HLh">
-                                                            <rect key="frame" x="243" y="444" width="61" height="29"/>
+                                                            <rect key="frame" x="248" y="444" width="61" height="29"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                             <state key="normal" title="comment">
                                                                 <color key="titleColor" red="0.96078431369999995" green="0.65098039220000004" blue="0.13725490200000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -1480,7 +1480,7 @@
                                                         <constraint firstAttribute="bottom" secondItem="BPe-iJ-QGz" secondAttribute="bottom" constant="20" id="FUT-H1-Shh"/>
                                                         <constraint firstItem="dPQ-Z0-fZD" firstAttribute="centerY" secondItem="5Cd-cP-C69" secondAttribute="centerY" id="Gb2-Tw-JxK"/>
                                                         <constraint firstItem="afD-uv-Bdr" firstAttribute="top" secondItem="b36-SI-9Ac" secondAttribute="bottom" constant="20" id="Imi-Wd-Fo6"/>
-                                                        <constraint firstAttribute="trailing" secondItem="SKN-Qh-HLh" secondAttribute="trailing" constant="80" id="JHr-Mc-Mc6"/>
+                                                        <constraint firstAttribute="trailing" secondItem="SKN-Qh-HLh" secondAttribute="trailing" constant="75" id="JHr-Mc-Mc6"/>
                                                         <constraint firstItem="5Cd-cP-C69" firstAttribute="top" secondItem="O75-0E-386" secondAttribute="top" constant="20" id="K2a-Zl-28y"/>
                                                         <constraint firstAttribute="trailing" secondItem="b36-SI-9Ac" secondAttribute="trailing" constant="15" id="PDc-tp-OM9"/>
                                                         <constraint firstAttribute="trailing" secondItem="BPe-iJ-QGz" secondAttribute="trailing" constant="15" id="R6N-Zd-cfg"/>
@@ -1554,7 +1554,7 @@
                                                             <dataDetectorType key="dataDetectorTypes" link="YES"/>
                                                         </textView>
                                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="E3T-Z4-bCR">
-                                                            <rect key="frame" x="243" y="247" width="61" height="29"/>
+                                                            <rect key="frame" x="248" y="247" width="61" height="29"/>
                                                             <fontDescription key="fontDescription" type="system" pointSize="14"/>
                                                             <state key="normal" title="comment">
                                                                 <color key="titleColor" red="0.96078431369999995" green="0.65098039220000004" blue="0.13725490200000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
@@ -1620,7 +1620,7 @@
                                                         <constraint firstItem="0ej-as-NBa" firstAttribute="leading" secondItem="AHZ-sR-JcB" secondAttribute="leading" constant="15" id="WYj-MW-OYH"/>
                                                         <constraint firstItem="YTl-b3-rv5" firstAttribute="leading" secondItem="Ap7-vd-CzR" secondAttribute="trailing" id="Y0w-VT-VA2"/>
                                                         <constraint firstItem="Ap7-vd-CzR" firstAttribute="top" secondItem="AHZ-sR-JcB" secondAttribute="top" constant="20" id="Zaq-l5-2Hu"/>
-                                                        <constraint firstAttribute="trailing" secondItem="E3T-Z4-bCR" secondAttribute="trailing" constant="80" id="g9p-Sz-Ale"/>
+                                                        <constraint firstAttribute="trailing" secondItem="E3T-Z4-bCR" secondAttribute="trailing" constant="75" id="g9p-Sz-Ale"/>
                                                         <constraint firstItem="YTl-b3-rv5" firstAttribute="centerY" secondItem="Ap7-vd-CzR" secondAttribute="centerY" id="n6l-j5-WQx"/>
                                                         <constraint firstItem="Ap7-vd-CzR" firstAttribute="leading" secondItem="AHZ-sR-JcB" secondAttribute="leading" constant="15" id="oAm-av-Moc"/>
                                                         <constraint firstAttribute="bottom" secondItem="zxa-uY-lf5" secondAttribute="bottom" constant="20" id="ojz-XG-8Gs"/>
@@ -2318,7 +2318,7 @@
                                                 <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="vIq-t6-L39">
                                                     <rect key="frame" x="15" y="25" width="384" height="75"/>
                                                     <subviews>
-                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Walk around to find people's Crumbs! " textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="53F-4y-8sV">
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Walk around to find Crumbs! " textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="53F-4y-8sV">
                                                             <rect key="frame" x="15" y="27" width="354" height="21"/>
                                                             <accessibility key="accessibilityConfiguration">
                                                                 <accessibilityTraits key="traits" notEnabled="YES"/>
@@ -3103,10 +3103,10 @@
     </resources>
     <inferredMetricsTieBreakers>
         <segue reference="qDM-tG-5Bu"/>
+        <segue reference="m6C-9t-bzd"/>
         <segue reference="w23-IQ-pCl"/>
-        <segue reference="Hxq-ak-7Ch"/>
-        <segue reference="SqE-w9-VHj"/>
-        <segue reference="Y7s-rP-p5D"/>
+        <segue reference="OWZ-9w-7Zi"/>
+        <segue reference="Z5g-uf-dNi"/>
     </inferredMetricsTieBreakers>
     <color key="tintColor" red="0.3529411764705882" green="0.68235294117647061" blue="1" alpha="1" colorSpace="calibratedRGB"/>
 </document>

@@ -184,7 +184,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
                 
                 //report button
                 
-                if viewbreadcrumb?.senderuuid == userSelf || viewbreadcrumb?.senderuuid == "_abacd--_dfasdfsiaoucvxzmnwfehk"{
+                if viewbreadcrumb?.senderuuid == userSelf{
                     msgCell.ReportButton.isHidden = true///////////////////////
                     msgCell.ReportButton.isEnabled = false
                 }else if viewbreadcrumb?.senderuuid != userSelf{
@@ -288,6 +288,9 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
                     msgCell.ReportButton.isHidden = true///////////////////////
                     msgCell.ReportButton.isEnabled = false
                 }else if viewbreadcrumb?.senderuuid != userSelf{
+                    msgCell.ReportButton.isHidden = false///////////////////////
+                    msgCell.ReportButton.isEnabled = true
+
                     msgCell.ReportButton.tag = indexPath.row
                     msgCell.ReportButton.addTarget(self, action: #selector(ViewCrumbViewController.report), for: .touchUpInside)
                 }

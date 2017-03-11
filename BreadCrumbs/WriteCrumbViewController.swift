@@ -189,7 +189,8 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
             present(picker, animated: true, completion: nil)
         }
         else{
-            print("No Camera.")
+            animateInfoBar("No Camera.")
+
         }
     }
     

@@ -92,9 +92,10 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         
         //if if if if if if if okie doke
         if NSUserData.integer(forKey: "otherExplainer") == 2{
-            let user = "Sabre"
-            let tex = "Hi! This is a BreadCrumb. It's a message that you can find in different places you go, wherever people have dropped them. Leace your own crumb wherever you are by tapping the plus button. Or you can start a conversation on any message by first tapping the magnifying glass, then the comment button."
             let userId = "_abacd--_dfasdfsiaoucvxzmnwfehk"
+
+            let user = "Sabre"
+            let tex = "Hi! This is a BreadCrumb. It's a message that you can find wherever people have dropped them. Leave your own crumb wherever you are by tapping the plus button. Or you can start a conversation by first tapping the magnifying glass, then the comment button. And if a message breaks our guidelines. Report it! Use the 'V' next to a user's name to report the message."
             self.Crumb(text: tex, User: user, senderid: userId, currentime: 1)
             //NSUserData.setValue(1, forKey: "otherExplainer")
             

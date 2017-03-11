@@ -21,6 +21,7 @@ class BannedViewController: UIViewController{
         UserIDField.text = "ID: \(NSUserData.string(forKey: "recordID")!)"
         //UserIDField.
         UserIDField.borderStyle = .none
+        AppDelegate().timerRepeatLoadAndStore?.invalidate()
     }
 
     override func didReceiveMemoryWarning() {
