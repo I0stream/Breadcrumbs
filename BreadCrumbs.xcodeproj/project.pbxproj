@@ -49,6 +49,7 @@
 		65C0DDD11E2323BD00DB521E /* BreadCrumbsTests.xctest in Resources */ = {isa = PBXBuildFile; fileRef = 654B117F1CB9705800BD6313 /* BreadCrumbsTests.xctest */; };
 		65C659CD1D2C8CEA00E11210 /* ChangeUserNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C659CC1D2C8CEA00E11210 /* ChangeUserNameViewController.swift */; };
 		65C7CD5F1E6638C500042831 /* crumbPlusImageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C7CD5E1E6638C500042831 /* crumbPlusImageTableViewCell.swift */; };
+		65CDDF281E832BED00D9DB61 /* WebTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65CDDF271E832BED00D9DB61 /* WebTableViewCell.swift */; };
 		65DBCCC31E3EA02000FAB067 /* BannedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65DBCCC21E3EA02000FAB067 /* BannedViewController.swift */; };
 		65E47F231DFFD3780072996A /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65E47F221DFFD3780072996A /* CloudKit.framework */; };
 		65EF38A91D21D2B400161A3E /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65EF38A81D21D2B400161A3E /* SignInViewController.swift */; };
@@ -67,6 +68,19 @@
 			remoteInfo = BreadCrumbs;
 		};
 /* End PBXContainerItemProxy section */
+
+/* Begin PBXCopyFilesBuildPhase section */
+		65819D3B1E8499CD00CA9E09 /* Embed App Extensions */ = {
+			isa = PBXCopyFilesBuildPhase;
+			buildActionMask = 2147483647;
+			dstPath = "";
+			dstSubfolderSpec = 13;
+			files = (
+			);
+			name = "Embed App Extensions";
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
 		650017051E5FB626005DAA02 /* ImageMessageTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ImageMessageTableViewCell.swift; sourceTree = "<group>"; };
@@ -116,6 +130,7 @@
 		65C659CC1D2C8CEA00E11210 /* ChangeUserNameViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ChangeUserNameViewController.swift; sourceTree = "<group>"; };
 		65C7CD5E1E6638C500042831 /* crumbPlusImageTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = crumbPlusImageTableViewCell.swift; sourceTree = "<group>"; };
 		65CB617A1CD3D175002D6F9E /* BreadCrumbs.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = BreadCrumbs.entitlements; sourceTree = "<group>"; };
+		65CDDF271E832BED00D9DB61 /* WebTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebTableViewCell.swift; sourceTree = "<group>"; };
 		65DBCCC21E3EA02000FAB067 /* BannedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BannedViewController.swift; sourceTree = "<group>"; };
 		65E47F221DFFD3780072996A /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		65EF38A81D21D2B400161A3E /* SignInViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignInViewController.swift; sourceTree = "<group>"; };
@@ -264,12 +279,13 @@
 			isa = PBXGroup;
 			children = (
 				654C0B581CC565B200060E58 /* YourCrumbsTableViewCell.swift */,
+				65CDDF271E832BED00D9DB61 /* WebTableViewCell.swift */,
 				65F556BD1CD21D760014AC30 /* OthersCrumbsTableViewCell.swift */,
 				6576060A1DCD69D4006860C6 /* CrumbTableViewCell.swift */,
 				6576060B1DCD69D4006860C6 /* CommentCell.swift */,
-				65B9EB601E492EDE0013F616 /* settingsTableViewCell.swift */,
 				650017051E5FB626005DAA02 /* ImageMessageTableViewCell.swift */,
 				65C7CD5E1E6638C500042831 /* crumbPlusImageTableViewCell.swift */,
+				65B9EB601E492EDE0013F616 /* settingsTableViewCell.swift */,
 			);
 			name = cells;
 			sourceTree = "<group>";
@@ -320,6 +336,7 @@
 				654B11671CB9705800BD6313 /* Sources */,
 				654B11681CB9705800BD6313 /* Frameworks */,
 				654B11691CB9705800BD6313 /* Resources */,
+				65819D3B1E8499CD00CA9E09 /* Embed App Extensions */,
 			);
 			buildRules = (
 			);
@@ -354,7 +371,7 @@
 		654B11631CB9705800BD6313 /* Project object */ = {
 			isa = PBXProject;
 			attributes = {
-				LastSwiftUpdateCheck = 0730;
+				LastSwiftUpdateCheck = 0820;
 				LastUpgradeCheck = 0810;
 				ORGANIZATIONNAME = "Daniel Schliesing";
 				TargetAttributes = {
@@ -445,6 +462,7 @@
 				65031FD51E00A4AB00038348 /* Message+CoreDataClass.swift in Sources */,
 				65DBCCC31E3EA02000FAB067 /* BannedViewController.swift in Sources */,
 				65B9EB611E492EDE0013F616 /* settingsTableViewCell.swift in Sources */,
+				65CDDF281E832BED00D9DB61 /* WebTableViewCell.swift in Sources */,
 				6577DCC81D3D6DBB00C25F52 /* UserInfo.swift in Sources */,
 				65F556BE1CD21D760014AC30 /* OthersCrumbsTableViewCell.swift in Sources */,
 				65031FD81E00A4AB00038348 /* Comment+CoreDataProperties.swift in Sources */,
@@ -604,6 +622,7 @@
 		654B11891CB9705800BD6313 /* Debug */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = BreadCrumbs/BreadCrumbs.entitlements;
@@ -626,6 +645,7 @@
 		654B118A1CB9705800BD6313 /* Release */ = {
 			isa = XCBuildConfiguration;
 			buildSettings = {
+				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = BreadCrumbs/BreadCrumbs.entitlements;

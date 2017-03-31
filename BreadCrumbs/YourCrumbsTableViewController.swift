@@ -30,8 +30,6 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
     let heightspacer: CGFloat = UIScreen.main.bounds.height * 0.35
     
     
-    weak var timerload = Timer()
-
     //is indicator visible?
     var indicatorAlive = false
 
@@ -76,6 +74,9 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         NotificationCenter.default.addObserver(self, selector: #selector(YourCrumbsTableViewController.listenForBackground), name: NSNotification.Name(rawValue: "UIApplicationDidEnterBackgroundNotification"), object: nil)
         
         //NotificationCenter.default.addObserver(self, selector: #selector(YourCrumbsTableViewController.reloadBasedOnRemoteNotif(_:recordID:)), name: Notification.Name(rawValue: "NotifLoad"), object: nil)
+        
+       
+        //AppDelegate().notify(title: "test", body: "test", crumbID: crumbmessages[0].uRecordID!, userId: crumbmessages[0].senderuuid)
     }
     
     override func viewDidDisappear(_ animated: Bool) {
@@ -195,6 +196,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
                 
                 let cell = tableView.dequeueReusableCell(withIdentifier: "YourMsgCell", for: indexPath) as! YourCrumbsTableViewCell
                 
+                
                 //sets the values for the labels in the cell, time value and location value
                 cell.TextViewCellOutlet.text = crumbmsg.text
                 cell.TextViewCellOutlet.font = UIFont.systemFont(ofSize: 16)
@@ -249,7 +251,6 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
                 }
                 
                 return cell
-
             }else {//photo
                 let cell = tableView.dequeueReusableCell(withIdentifier: "YourPhotoCell", for: indexPath) as! ImageMessageTableViewCell
                 
@@ -406,7 +407,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
             
             
             
-            if let i = whohasvoted.index(where: { $0?.uRecordID == viewbreadcrumb.uRecordID }) {
+            if let i = whohasvoted.index(where: { $0?.uRecordID == viewbreadcrumb.uRecordID }) {//test if value is in it yet
                 whohasvoted[i] = viewbreadcrumb
                 print("repeat")
                 

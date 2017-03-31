@@ -72,7 +72,6 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
         
         NotificationCenter.default.addObserver(self, selector: #selector(YourCrumbsTableViewController.listenForBackground), name: NSNotification.Name(rawValue: "UIApplicationDidEnterBackgroundNotification"), object: nil)
         
-        
     }
     
     
