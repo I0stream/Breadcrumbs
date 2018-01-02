@@ -391,6 +391,37 @@ class Helper{
         }
     }
     
+    func CountComments(uniqueRecordID: String) -> Int{
+        var commCount = 0
+        
+        var fetchRequest: NSFetchRequest<Comment>
+        if #available(iOS 10.0, OSX 10.12, *) {
+            fetchRequest = Comment.fetchRequest()
+        } else {
+            fetchRequest = NSFetchRequest(entityName: "Comment")
+        }
+        let entityDescription = NSEntityDescription.entity(forEntityName: "Comment", in: getmoc())
+        
+        fetchRequest.entity = entityDescription
+        
+        do {
+            let fmComment = try getmoc().fetch(fetchRequest)
+            //commentsToLoad
+            var i = 0
+            while  i <= (fmComment.count - 1){//loops through all of coredata store
+                if (fmComment[i].message?.recorduuid)! == uniqueRecordID && fmComment[i].markedForDelete == 0 && blockedUsertest(senderID: fmComment[i].userID!){//compares sendername of user's to msgs and returns user's msgs
+                    
+                    commCount += 1
+                }
+                i += 1
+            }
+        }catch {
+            let fetchError = error as NSError
+            print(fetchError)
+        }
+        return commCount
+    }
+    
     
     func loadComments(uniqueRecordID: String) -> [CommentShort]{//loads from coredata
              
@@ -1013,4 +1044,19 @@ class Helper{
         }
         
     }
+    
+    
+    /*func repostMessage(crumb: CrumbMessage) -> {
+        
+    }*/
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
 }

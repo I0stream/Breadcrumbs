@@ -110,12 +110,12 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
             
             
             //update crumbcount value, maybe move this to savetocloud
-            if senderid == NSUserData.string(forKey: "recordID")!{
+            /*if senderid == NSUserData.string(forKey: "recordID")!{
                 let cCounter: Int = Int(NSUserData.string(forKey: "crumbCount")!)! - 1
                 
                 NSUserData.setValue(cCounter, forKey: "crumbCount")
                 AppDelegate().UpdateCrumbCount(cCounter)
-            }
+            }*/
             
             
             //init date, location for the message obj
@@ -332,7 +332,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
                     let inf = results?[0]
                     inf?.setValue(username ,forKey: "userName")
                     
-                    let crumbcount = inf?.value(forKey: "crumbCount") as! Int
+                    //let crumbcount = inf?.value(forKey: "crumbCount") as! Int
                     let prem = inf?.value(forKey: "premiumStatus") as! Int
                     let ban = inf?.value(forKey: "Banned") as! String
                     
@@ -342,7 +342,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
                     
                     self.NSUserData.setValue(agree, forKey: "didAgreeToPolAndEULA")
                     self.NSUserData.setValue(self.setUserNameTextField.text, forKey: "userName")
-                    self.NSUserData.setValue(crumbcount, forKey: "crumbCount")// let cCount = NSUserData.integerForKey("crumbCount")
+                    self.NSUserData.setValue(7, forKey: "crumbCount")// let cCount = NSUserData.integerForKey("crumbCount")
                     self.NSUserData.setValue(time, forKey: "SinceLastCheck")
                     self.NSUserData.setValue(ban, forKey: "banned")
                     self.NSUserData.setValue(prem, forKey: "premiumStatus")

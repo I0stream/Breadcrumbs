@@ -36,6 +36,8 @@ extension Message {
     @NSManaged var recorduuid: String?
     @NSManaged var viewedOther: NSNumber?//stored as a 0 or 1 1 == seen/true
     @NSManaged var hasVoted: NSNumber?//stored as a 0,1 zero is no vote
+    //should be 0,1
+    
     @NSManaged var addressStr: String?//stores an address like this "\(locality!), \(thoroughfare!), \(country!)"
     @NSManaged var markedForDelete: NSNumber?//0 is false 1 is true
     

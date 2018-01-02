@@ -101,6 +101,9 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         //NotifLoad
         //NotificationCenter.default.addObserver(self, selector: #selector(ViewCrumbViewController.BlueDotIndicate(_:)),name:NSNotification.Name(rawValue: "NotifLoad"), object: nil)
 
+        print(helperFunctions.CountComments(uniqueRecordID: (viewbreadcrumb?.uRecordID!)!)
+)
+        
         loadComments()
         //animateInfoBar("Pull to refresh")
         
@@ -152,7 +155,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
                 let height: CGFloat = percentheight - 125.0
                 return height
             }
-        }else if indexPath.row == indexPath.count + 1 || (comments.count == 0 && indexPath.row == indexPath.count){
+        }else if indexPath.row == comments.count + 2 || (comments.count == 0 && indexPath.row == indexPath.count){
             let screenSize: CGRect = UIScreen.main.bounds
             let percentheight: CGFloat = screenSize.height * 0.3
             
@@ -198,8 +201,8 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
                 } else{
                     let color = UIColor(red: 146/255, green: 144/255, blue: 144/255, alpha: 1)//greay color
                     msgCell.CreateCommentButton.setTitleColor(color, for: .normal)
-                    msgCell.CreateCommentButton.addTarget(self, action: #selector(ViewCrumbViewController.noCommentIndicator), for: .touchUpInside)
-                    msgCell.VoteButton.addTarget(self, action: #selector(ViewCrumbViewController.noVoteIndicator), for: .touchUpInside)
+                    //msgCell.CreateCommentButton.addTarget(self, action: #selector(ViewCrumbViewController.noCommentIndicator), for: .touchUpInside)
+                    //msgCell.VoteButton.addTarget(self, action: #selector(ViewCrumbViewController.noVoteIndicator), for: .touchUpInside)
                     
                 }
                 msgCell.ExitCrumbButton.addTarget(self, action: #selector(ViewCrumbViewController.exitCrumb), for: .touchUpInside)
@@ -301,8 +304,8 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
                 } else{
                     let color = UIColor(red: 146/255, green: 144/255, blue: 144/255, alpha: 1)//greay color
                     msgCell.CreateCommentButton.setTitleColor(color, for: .normal)
-                    msgCell.CreateCommentButton.addTarget(self, action: #selector(ViewCrumbViewController.noCommentIndicator), for: .touchUpInside)
-                    msgCell.VoteButton.addTarget(self, action: #selector(ViewCrumbViewController.noVoteIndicator), for: .touchUpInside)
+                    //msgCell.CreateCommentButton.addTarget(self, action: #selector(ViewCrumbViewController.noCommentIndicator), for: .touchUpInside)
+                    //msgCell.VoteButton.addTarget(self, action: #selector(ViewCrumbViewController.noVoteIndicator), for: .touchUpInside)
                     
                 }
                 msgCell.ExitCrumbButton.addTarget(self, action: #selector(ViewCrumbViewController.exitCrumb), for: .touchUpInside)
@@ -369,8 +372,8 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
             }
             
             
-            
-        }else if indexPath.row == indexPath.count + 1 || (comments.count == 0 && indexPath.row == indexPath.count) {
+            // indexPath.row == indexPath.last
+        }else if indexPath.row == comments.count + 2 || (comments.count == 0 && indexPath.row == indexPath.count) {
             let cell = tableView.dequeueReusableCell(withIdentifier: "Spacer", for: indexPath)
             cell.selectionStyle = .none
             
@@ -379,6 +382,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
             let commentCells = tableView.dequeueReusableCell(withIdentifier: "commentYours", for: indexPath) as! CommentCell
             commentCells.selectionStyle = .none
             
+            //print("index",indexPath.row)
             
             let comment = comments[(indexPath.row - 2)]
             commentCells.CommentTextView.text = comment.text
@@ -481,6 +485,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     
     //createcommentdelegate function
     func addNewComment(_ newComment: CommentShort){
+        print("new comment")
         comments += [newComment]
         YourtableView.reloadData()
     }

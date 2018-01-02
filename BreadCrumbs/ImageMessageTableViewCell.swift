@@ -10,6 +10,11 @@ import UIKit
 
 class ImageMessageTableViewCell: UITableViewCell {
 
+    
+    @IBOutlet weak var RepostButton: UIButton!
+    
+    
+    
     @IBOutlet weak var TimeRemainingValueLabel: UILabel!
     //    @IBOutlet weak var LocationPosted: UILabel!
     @IBOutlet weak var TextViewCellOutlet: UITextView!

@@ -101,8 +101,8 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         crumbMessageTextView.textColor = UIColor.lightGray
 
         //crumbcount value
-        CrumbcounterLabel.text = "\(NSUserData.string(forKey: "crumbCount")!)/7 Crumbs"
-        
+        //CrumbcounterLabel.text = "\(NSUserData.string(forKey: "crumbCount")!)/7 Crumbs"
+        CrumbcounterLabel.isHidden = true
         
         submitView.isHidden = true
         UiViewImageContainer.isHidden = true
@@ -131,19 +131,15 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         }else{
             currentTime = NSUserData.integer(forKey: "LastPickedTime")
             pickeroutlet.setTitle("\(currentTime!)h", for: UIControlState())
-
-
         }
         
-        
-        
         //show crumbcount explainer only once; maybe later have a ? mark button to show explainer
-        if NSUserData.value(forKey: "badgeOther") as! Int == 0{
+        /*if NSUserData.value(forKey: "badgeOther") as! Int == 0{
             //display explainer
             CrumbcountExplainerView.isHidden = false
             
             NSUserData.setValue(1, forKey: "badgeOther")
-        }
+        }*/
         
         //limit crumbs in area
         if currentReachabilityStatus == .notReachable{//internet down
@@ -218,6 +214,8 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
             
             UiViewImageContainer.isHidden = false
             
+            postButtonEnabledIfTestsTrue()
+            
         }else{
             let viewit = test.length / 1024
             print(viewit)
@@ -240,6 +238,8 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
                 imageContainerUIImage.clipsToBounds = true
                 
                 UiViewImageContainer.isHidden = false
+                
+                postButtonEnabledIfTestsTrue()
             } else{
                 animateInfoBar("Image is too large")
 
@@ -256,7 +256,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     }
     
     
-    //<=not my code
+    //<=not my code sort of
     
     
     @IBAction func CancelPhotoOnMessage(_ sender: Any) {
@@ -401,8 +401,11 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     func addCrumbCDAndCK(_ sender: AnyObject?) {
         if postButtonOutlet === sender{
             if testMsg() == true && checkLocation() == true && AppDelegate().NSUserData.integer(forKey: "limitArea") == 0 {
-
-                let msgText = crumbMessageTextView.text
+                
+                var msgText = crumbMessageTextView.text
+                if crumbMessageTextView.textColor == UIColor.lightGray{
+                    msgText = "   "
+                }
                 let senderUser = NSUserData.string(forKey: "userName")!
                 let senderid = NSUserData.string(forKey: "recordID")!
                 CrumbCDCK(text: msgText!, User: senderUser, senderid: senderid, currentime: currentTime!)
@@ -415,12 +418,12 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
             
             
             //update crumbcount value, maybe move this to savetocloud
-            if senderid == NSUserData.string(forKey: "recordID")!{
+            /*if senderid == NSUserData.string(forKey: "recordID")!{
                 let cCounter: Int = Int(NSUserData.string(forKey: "crumbCount")!)! - 1
             
                 NSUserData.setValue(cCounter, forKey: "crumbCount")
                 AppDelegate().UpdateCrumbCount(cCounter)
-            }
+            }*/
             
             
             //init date, location for the message obj
@@ -429,6 +432,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
 
             
             //create crumbMessage object
+            
             crumbmessage = CrumbMessage(text: text, senderName: User, location: curLoc, timeDropped: date, timeLimit: currentime, senderuuid: senderid, votes: 0)
             crumbmessage?.hasVoted = 0//keychain
             
@@ -443,7 +447,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
             self.NSUserData.setValue(Date(), forKey: "SinceLastCheck")
             self.NSUserData.setValue(currentTime!, forKey: "LastPickedTime")
             
-            
+            print(NSUserData.integer(forKey: "crumbCount"))
             //put loading indicator and grey out here
             ActivIndictatorsss.isHidden = false
             Greyoutview.isHidden = false
@@ -473,7 +477,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     //test if crumb passes length and if enough crumbs
     func testMsg() -> Bool{
         //success case; have enough crumbs and length is proper
-        if Int(NSUserData.string(forKey: "crumbCount")!) > 0 && msgLengthTest(){
+        if /*Int(NSUserData.string(forKey: "crumbCount")!) > 0 &&*/ msgLengthTest() || uploadedPhoto != nil{
             
             return true
         } else if msgLengthTest() == false{ //fail case; length is incorrect
@@ -484,10 +488,10 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
             
             //alert user they are out of msgs
             
-            let alert = UIAlertController(title: "Error", message: "You are out of crumbs, wait an hour to recieve more", preferredStyle: UIAlertControllerStyle.alert)
-            alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default, handler: nil))
-            self.present(alert, animated: true, completion: nil)
-            
+            //let alert = UIAlertController(title: "Error", message: "You are out of crumbs, wait an hour to recieve more", preferredStyle: UIAlertControllerStyle.alert)
+            //alert.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default, handler: nil))
+            //self.present(alert, animated: true, completion: nil)
+            print("out of crumbs somehow")
             return false
         }
     }
@@ -515,7 +519,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         
         // Disable the Save button if the text field is empty.
         //let text = crumbMessageTextView.text ?? ""
-        if crumbMessageTextView.text != "What do you think?" && crumbMessageTextView.text.characters.count <= 256 {
+        if (crumbMessageTextView.text != "What do you think?" || uploadedPhoto != nil ) && crumbMessageTextView.text.characters.count <= 256 {
             if checkLocation() && currentReachabilityStatus != .notReachable {
                 submitView.isHidden = false
                 postButtonOutlet.isEnabled = true
@@ -557,7 +561,10 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         if crumbMessageTextView.text.isEmpty{
             crumbMessageTextView.text = "What do you think?"
             crumbMessageTextView.textColor = UIColor.lightGray
-            submitView.isHidden = true
+            
+            if uploadedPhoto == nil{
+                submitView.isHidden = true
+            }
         }
     }
     

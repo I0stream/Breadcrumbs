@@ -23,7 +23,6 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
     //let managedObjectContext = AppDelegate().getContext() //broke
     let NSUserData = UserDefaults.standard
     var count: Int = 0
-    var inscreen: Bool = false
     
     //cell height stuff
     var cellHeights = [CGFloat?]()
@@ -39,9 +38,10 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         
         return refreshControl
     }()
-    
+    //var voteAtLoad = [Int?]()
     var whohasvoted = [CrumbMessage?]()//store recuuids and update in view did dis
     
+    //var voteListAtView = [Int?]()
     
     //@IBOutlet weak var CrumbCountBBI: UIBarButtonItem!
     
@@ -59,10 +59,8 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         //self.getUserInfo()
         
         self.crumbmessages += helperFunctions.loadCoreDataMessage(true)!//true to load yours
-        //self.crumbmessages = self.crumbmessages//.reversed()
-        
-        
-        
+        //self.voteAtLoad = crumbmessages.map{$0.hasVoted}
+        //print(voteAtLoad)
         //YourTableView.refreshControl?.addTarget(self, action: #selector(YourCrumbsTableViewController.handleRefresh(_:)), for: UIControlEvents.valueChanged)
         
         self.YourTableView.addSubview(self.refreshControl)
@@ -78,6 +76,9 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
        
         //AppDelegate().notify(title: "test", body: "test", crumbID: crumbmessages[0].uRecordID!, userId: crumbmessages[0].senderuuid)
     }
+    override func viewDidAppear(_ animated: Bool) {
+        self.refreshControl.didMoveToSuperview()
+    }
     
     override func viewDidDisappear(_ animated: Bool) {
         
@@ -87,15 +88,18 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
             self.helperFunctions.crumbVote((crumb?.hasVoted!)!, crumb: crumb!, voteValue: (crumb?.intermediaryVotingValue!)! )//has voted nil when just loaded
         }
         whohasvoted.removeAll()
-
-
+        
     }
+    
     func listenForBackground(){
         for crumb in whohasvoted{
             print("update")
             
             self.helperFunctions.crumbVote((crumb?.hasVoted!)!, crumb: crumb!, voteValue: (crumb?.intermediaryVotingValue!)! )//has voted nil when just loaded
         }
+        
+        whohasvoted.removeAll()
+
     }
     
     
@@ -190,8 +194,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
             
             // Fetches the appropriate msg for the data source layout.
             let crumbmsg = crumbmessages[indexPath.row]
-            
-            
+            crumbmessages[indexPath.row].inscreen = false
             if crumbmsg.photo == nil{//no photo
                 
                 let cell = tableView.dequeueReusableCell(withIdentifier: "YourMsgCell", for: indexPath) as! YourCrumbsTableViewCell
@@ -365,7 +368,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         if crumb.calculate() > 0{
            Vote(sender: sender)
         }else{
-            noVoteIndicator()
+            //noVoteIndicator()
         }
     }
     
@@ -376,10 +379,12 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         //let cell = YourTableView.dequeueReusableCell(withIdentifier: "YourMsgCell", for: indexPath) as! YourCrumbsTableViewCell
         
         let viewbreadcrumb = crumbmessages[indexPath.row]
+        var inscreen = viewbreadcrumb.inscreen
         var votevalue = 0
+        //let atLoad = voteAtLoad[indexPath.row]
 
         if viewbreadcrumb.calculate() > 0 { //alive
-            if viewbreadcrumb.hasVoted == 1 && inscreen == false{//has voted before setting vote to zero this is bad because of past structure
+            if viewbreadcrumb.hasVoted == 1 && inscreen == false{
                 inscreen = true
                 viewbreadcrumb.hasVoted = 0
                 votevalue = -1
@@ -405,27 +410,30 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
             }
             viewbreadcrumb.intermediaryVotingValue = votevalue
             
+            //how do i say
+            //if current value == 1 and they change to -1 then 1 again
+            //it stores it as +1 again, updating with an extra value
             
+            
+            //if
             
             if let i = whohasvoted.index(where: { $0?.uRecordID == viewbreadcrumb.uRecordID }) {//test if value is in it yet
-                whohasvoted[i] = viewbreadcrumb
-                print("repeat")
+                whohasvoted.remove(at: i)
+                //whohasvoted[i] = viewbreadcrumb
+                print("repeat delete")
                 
             }else{
+ 
                 whohasvoted.insert(viewbreadcrumb, at: 0)
                 print("new")
             }
             
-            
-            
             DispatchQueue.main.async(execute: { () -> Void in
-                //self.helperFunctions.crumbVote(viewbreadcrumb.hasVoted!, crumb: viewbreadcrumb, voteValue: votevalue )//has voted nil when just loaded
-                
                 
                 self.YourTableView.reloadData()
             })
         }else{ //if dead
-            noVoteIndicator()
+            //noVoteIndicator()
         }
 
     }

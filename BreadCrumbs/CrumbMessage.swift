@@ -28,6 +28,7 @@ class CrumbMessage{
     //var addressStr: String?
     //var commentsArr: [Comment]//array of comments
     var intermediaryVotingValue: Int?//used in your and other to hold the +-1 updating values for vote
+    var inscreen: Bool?
     
     
     //MARK: Initialization

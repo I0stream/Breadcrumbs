@@ -31,10 +31,14 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     let helperfunctions = Helper()//contains various cd and ck functions
     lazy var CDStack = CoreDataStack()//cd req functions
     
+    var goto: String = ""
+    var gotouser: String = ""
+
     
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         //helperfunctions.cloudkitSub()
 
+        /*
         UNUserNotificationCenter.current().delegate = self
         
         UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .badge, .sound]) { (granted, error) in
@@ -53,7 +57,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
         let center = UNUserNotificationCenter.current()
         center.setNotificationCategories([category])
- 
+        */
         // Register with APNs
         application.registerForRemoteNotifications()
         
@@ -65,9 +69,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
 
         }
         application.applicationIconBadgeNumber = 0
-        
-        
-        
+    
         
         
         //is icloud available? is icloud drive available? does he have a username? does user have a stored user id?
@@ -100,7 +102,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             
             initLocationManager()
             
-            AddCrumbCount()//checks to see and if so adds more crumbs to users
+            //AddCrumbCount()//checks to see and if so adds more crumbs to users
             
             timerForLoadAndStore()//starts checking for messages with load and store if needed  
             
@@ -232,9 +234,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     func timerForLoadAndStore(){
         if (timerRepeatLoadAndStore == nil) && (checkLocation()) {
             print("timerForLoadAndStore")
-            //checks icloud every 90 sec for a msg
-            timerRepeatLoadAndStore = Timer.scheduledTimer(timeInterval: 55, target: self, selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)
+            
+            runLoadStoreOnce()
+            
+            //checks icloud every 55 sec for a msg//super important
+            timerRepeatLoadAndStore = Timer.scheduledTimer(timeInterval: 50, target: self, selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: true)
         }
+    }
+    
+    func runLoadStoreOnce(){
+        //when timer runs does an initial quick check for msgs, loadn and store was not working initialy for some reason
+        Timer.scheduledTimer(timeInterval: 2, target: self, selector: #selector(AppDelegate().loadAndStoreiCloudMsgsBasedOnLoc), userInfo: nil, repeats: false)
     }
     
     //constant checking for new msgs
@@ -244,6 +254,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     //does not run in background, gets queued then runs after returning to foreground, try p
     func loadAndStoreiCloudMsgsBasedOnLoc(){// load icloud msgs; need to check if msg is already loaded & store loaded msgs to persist between views and app instances
         //I need to wait before running this stuff get better accuracy data ->
+        print("load and store has run")
+
         
         self.locationManager.startUpdatingLocation()
         
@@ -254,7 +266,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             locAge = -Double((currentUserLoc?.timestamp.timeIntervalSinceNow)!)
         }
         
-        if currentUserLoc != nil && ((locAge) < 30.0 ){
+        if currentUserLoc != nil && ((locAge) < 50.0 ){
             
             let radiusKm = 70 / 1000.0//30=~100ft,40=131ft
             let predicate: NSPredicate = NSPredicate(format: "distanceToLocation:fromLocation:(%K,%@) < %f", "location", currentUserLoc!, radiusKm)
@@ -262,8 +274,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             helperfunctions.loadIcloudMessageToCoreData(query)
             
             helperfunctions.testStoredMsgsInArea(currentUserLoc!)
-            
-            print("load and store has run")
+            print(currentUserLoc?.timestamp ?? "nothing found line 269 app del")
+            print("load and store has looked at ", NSDate())
             return
             
         }else if currentUserLoc == nil{
@@ -278,6 +290,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         let currentUserLoc = locationManager.location
         
         if currentUserLoc != nil{
+            
             
             let radiusKm = 80 / 1000.0//30=~100ft,40=131ft
             let predicate: NSPredicate = NSPredicate(format: "distanceToLocation:fromLocation:(%K,%@) < %f", "location", currentUserLoc!, radiusKm)
@@ -300,16 +313,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     
     
     func initLocationManager() {
-        //DispatchQueue.main.async(execute: { () -> Void in
+        DispatchQueue.main.async(execute: { () -> Void in
             self.seenError = false
             self.locationFixAchieved = false
             self.locationManager = CLLocationManager()
             self.locationManager.delegate = self
+            self.locationManager.requestWhenInUseAuthorization()
             self.locationManager.requestAlwaysAuthorization()
             self.locationManager.desiredAccuracy = kCLLocationAccuracyBest
             self.locationManager.allowsBackgroundLocationUpdates = true
             self.locationManager.startUpdatingLocation()
-        //})
+        })
     }
     
     func locationManager(_ manager: CLLocationManager, didUpdateLocations locations: [CLLocation]) {//this was hard to make
@@ -324,11 +338,11 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         var bestCurrentTime = 0.0
         if bestCurrent != nil{
             bestCurrentTime = -Double((bestCurrent?.timestamp.timeIntervalSinceNow)!)
-            if bestCurrentTime < 60.0{
+            if bestCurrentTime < 45.0{
                 return
             }
         }
-        if bestEffortAtLocation == nil || (bestEffortAtLocation.horizontalAccuracy > (newloc?.horizontalAccuracy)!) || bestCurrentTime > 61.0{
+        if bestEffortAtLocation == nil || (bestEffortAtLocation.horizontalAccuracy > (newloc?.horizontalAccuracy)!) || bestCurrentTime > 51.0{
             //if best is empty 
             //if new value is more accurate
             //if bestcurrent is old as fuck
@@ -339,7 +353,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                 bestCurrentTime = Double((bestCurrent?.timestamp.timeIntervalSinceNow)!)
             }*/
             // test the measurement to see if it meets the desired accuracy
-            if ((bestEffortAtLocation?.horizontalAccuracy)! <= 10.0) || (bestCurrentTime > 60.0){
+            if ((bestEffortAtLocation?.horizontalAccuracy)! <= 10.0) || (bestCurrentTime > 50.0){//important
                 // we have a measurement that meets our requirements, so we can stop updating the location
                 //
                 // IMPORTANT!!! Minimize power usage by stopping the location manager as soon as possible.
@@ -416,7 +430,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             }
         }
     }
-    
 
     
     //crumb count checker adder
@@ -429,7 +442,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     //extra seconds get stored in excesstime
     //reset date of last check to now
     //***********************************************************************************************************************//
-    func AddCrumbCount(){//for both nsuserdefaults and cloudkit
+    /*func AddCrumbCount(){//for both nsuserdefaults and cloudkit
         var cCount = NSUserData.integer(forKey: "crumbCount")
         
         let Lastdate:Date? = NSUserData.object(forKey: "SinceLastCheck") as? Date
@@ -491,7 +504,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             }
         }
         
-    }
+    }*/
 
     //MARK: User Notifications
     
@@ -502,10 +515,32 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     //but it does not tell me what specific value has changed
     //so i just update the only two that can, comment and vote
     //at least to my knowledge this is how it works
+    
+
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         
         
         let cloudKitNotification = CKNotification.init(fromRemoteNotificationDictionary: userInfo as! [String : NSObject])
+        
+        
+        switch application.applicationState {
+        case .active:
+            print("hello")
+            //app is currently active, can update badges count here
+            break
+        case .inactive:
+            //app is transitioning from background to foreground (user taps notification), do what you need when user taps here
+            print("hello")
+
+            break
+        case .background:
+            print("hello")
+
+            //app is in background, if content-available key of your notification is set to 1, poll to your backend to retrieve data and update your interface here
+            break
+        }
+        
+        
         
         //let alertBody = cloudKitNotification.alertBody//123
         //print(alertBody!)
@@ -521,16 +556,20 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
                 let recordID = (cloudKitNotification as! CKQueryNotification).recordFields?.first?.value as? CKReference
                 //print((cloudKitNotification as! CKQueryNotification).recordFields)
                 if let id = recordID?.recordID{
+                    print("have id is getting in did recieve remote notification")
                     helperfunctions.getcommentcktocd(ckidToTest: id)
                 }else{
                     helperfunctions.updateTableViewcomments()//updates all
                 }
             }
+            workAroundState = 1
+            
             completionHandler(.newData)
         }
         
     }
     
+    var workAroundState: Int = 0
     //user Notification funcs function for load and store
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
@@ -538,8 +577,6 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         print("willPresent")
         completionHandler([.badge, .alert, .sound])
     }
-    
-    
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
         print("didrecieve")
@@ -609,6 +646,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             UNUserNotificationCenter.current().add(request){(error) in
                 
                 print("notification sent")
+                
+                self.goto = crumbID
+                self.gotouser = userId
                 if (error != nil){
                     
                     print(error?.localizedDescription ?? "error in notify")
@@ -629,9 +669,17 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         // If your application supports background execution, this method is called instead of applicationWillTerminate: when the user quits.
         
         //self.NSUserData.setValue(0, forKey: "counterLoc")
+        
+        
+        //timerRepeatLoadAndStore?.invalidate()
         timerForLoadAndStore()//starts checking for messages with load and store if needed
         
-        AddCrumbCount()
+        
+        //DispatchQueue.global(qos: .background).async {
+        //    print("This is run on the background queue")
+        //    self.timerForLoadAndStore()
+        //}
+        //AddCrumbCount()
         CDStack.saveContext()
 
     }
@@ -655,37 +703,50 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
         let oneBigTest = isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && NSUserData.string(forKey: "didAgreeToPolAndEULA") == "Agree" && NSUserData.string(forKey: "welcomeValue") == "welcome"
         
+        
+        //open to msg if value is found from a notification
+        if !(goto.isEmpty){
+            print("hello")
+            notifTakeToCrumb(userid: gotouser, recordid: goto)
+
+        }
+        
+        
         if TestIfUserSignedIn(){
             
             UIApplication.shared.applicationIconBadgeNumber = 0
 
-            AddCrumbCount()
+            //AddCrumbCount()
             
             getUserInfo()
             
             initLocationManager()
             
+            //quick check for msgs once, loadAndStoreiCloudMsgsBasedOnLoc()
+
             timerForLoadAndStore()//starts checking for messages with load and store if needed
             
             helperfunctions.updateTableViewVoteValues()//updates all votes
             helperfunctions.checkMarkedForDeleteCD()//deletes old markeds
             
             
+            if workAroundState == 1{
+                
+            }
             
             
             /*no let us sit down and I shall tell ye a story. As I was writing updatetableviewcomments something strange happened. The entire app broke. Somehow, I had failed to notice that the update to ios 10 and swift 3 made inert my coredata code and brought to light some threading issues I had programmed. I am indeed an inexperienced ios programmer. I went from lead to lead, breaking the app one way and another trying to figure out the why and the what that caused my app to fail. Initially i thought it was my datamodel, and/or that my nsobject classes were getting confused with older versions of themselves. then after that debaucle I started reading about managed object contexts and how they work, after fucking with that thinking it was the core problem(it was really just a symptom) I discovered threads, and after learning how they worked; I could see that lots of my coredata code was sitting in completion handlers which run in a thread other than the main one. from there debuging all my poorly written code has been relatively easy. */
             
             //if i figure out subscriptions, this will be unnecessary
-            //helperfunctions.updateTableViewcomments()//this fucks my shit up so hard
+            
             
             //should use delegation or something
             NotificationCenter.default.post(name: Notification.Name(rawValue: "load"), object: nil)//reloads crmessages from cd everywhere
 
+            //UNUserNotificationCenter.current().getDeliveredNotifications(completionHandler: { (no) in
+            //    print(no)
+            //})
 
-/*            UNUserNotificationCenter.current().getDeliveredNotifications(completionHandler: { (no) in
-                print(no)
-            })
-*/
         } else if !isBanned(){
             self.window = UIWindow(frame: UIScreen.main.bounds)
             
@@ -711,7 +772,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             print("Agreement")
             
             
-        }else if (forKey: "didAgreeToPolAndEULA") != "Agree" && NSUserData.string(forKey: "welcomeValue") == "welcome"{
+        }else if (forKey: "didAgreeToPolAndEULA") as? String != "Agree" && NSUserData.string(forKey: "welcomeValue") == "welcome"{
             if NSUserData.string(forKey: "recordID") == nil/*|| user != signedIn*/{//keychain
                 iCloudUserIDAsync() {
                     recordID, error in

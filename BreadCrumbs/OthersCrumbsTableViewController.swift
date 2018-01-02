@@ -74,6 +74,10 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
         
     }
     
+    override func viewDidAppear(_ animated: Bool) {
+        self.refreshControl.didMoveToSuperview()
+    }
+    
     
     override func viewDidDisappear(_ animated: Bool) {
         
@@ -90,6 +94,8 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
             print("update")
             self.helperFunctions.crumbVote((crumb?.hasVoted!)!, crumb: crumb!, voteValue: (crumb?.intermediaryVotingValue!)! )//has voted nil when just loaded
         }
+        whohasvoted.removeAll()
+
     }
   
 
@@ -418,7 +424,7 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
         if crumb.calculate() > 0{
             Vote(sender: sender)
         }else{
-            noVoteIndicator()
+            //noVoteIndicator()
         }
     }
     
@@ -462,8 +468,12 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
             
             
             if let i = whohasvoted.index(where: { $0?.uRecordID == viewbreadcrumb.uRecordID }) {
-                whohasvoted[i] = viewbreadcrumb
-                print("repeat")
+                whohasvoted.remove(at: i)
+                //whohasvoted[i] = viewbreadcrumb
+                print("repeat delete")
+                
+                //whohasvoted[i] = viewbreadcrumb
+                //print("repeat")
                 
             }else{
                 whohasvoted.insert(viewbreadcrumb, at: 0)
@@ -474,7 +484,7 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
                 self.OthersTableView.reloadData()
             })
         }else{ //if dead
-            noVoteIndicator()
+            //noVoteIndicator()
         }
         
     }
