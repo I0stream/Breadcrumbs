@@ -54,7 +54,7 @@ class ReportViewController: UIViewController, UITextViewDelegate {
     
     //test msglength
     func msgLengthTest() -> Bool {
-        if WriteReportTextView.text.characters.count >= 256 || WriteReportTextView.text.characters.count < 2 || WriteReportTextView.text == "How did this break our guidelines?" {//fixed 256 off by one error; if want to shorten to 128 make sure to set as 129
+        if WriteReportTextView.text.count >= 256 || WriteReportTextView.text.count < 2 || WriteReportTextView.text == "How did this break our guidelines?" {//fixed 256 off by one error; if want to shorten to 128 make sure to set as 129
             //fails to send
             return false
         }
@@ -69,7 +69,7 @@ class ReportViewController: UIViewController, UITextViewDelegate {
         
         // Disable the Save button if the text field is empty.
         //let text = WriteCommentTextView.text ?? ""
-        if WriteReportTextView.text != "How did this break our guidelines?" && WriteReportTextView.text.characters.count <= 256 {
+        if WriteReportTextView.text != "How did this break our guidelines?" && WriteReportTextView.text.count <= 256 {
             submitView.isHidden = false
             //bool.enabled = !text.isEmpty
         }
@@ -95,12 +95,12 @@ class ReportViewController: UIViewController, UITextViewDelegate {
     //track chars in msgview and highlight dat sheeit
     func textViewDidChange(_ textView: UITextView) {
         if WriteReportTextView.text != "How did this break our guidelines?"{
-            let msgCharCount = WriteReportTextView.text.characters.count
+            let msgCharCount = WriteReportTextView.text.count
             charCount.text = String(256 - msgCharCount)
         }else {
             charCount.text = String(256)
         }
-        if WriteReportTextView.text.characters.count >= 256 {
+        if WriteReportTextView.text.count >= 256 {
             //TODO: highlight >:( number indicating too long
             //will doo soon ------------
             charCount.textColor = UIColor(red: 1, green: 0, blue: 0, alpha: 1)

@@ -221,7 +221,7 @@ class Helper{
                             fmCrumbMessageYours?.photo = UIImage(data: fmphoto)
                         }
                         
-                        fmCrumbMessageYours?.hasVoted = fetchedmsgsCD[i].hasVoted! as Int
+                        fmCrumbMessageYours?.hasVoted = (fetchedmsgsCD[i].hasVoted! as! Int)
                         // ]\\sArr commentsArr
                         
                         fmCrumbMessageYours?.uRecordID = fetchedmsgsCD[i].recorduuid! as String
@@ -239,7 +239,7 @@ class Helper{
                         let fmtimedropped = fetchedmsgsCD[i].timeDropped! as Date
                         let fmtimelimit = fetchedmsgsCD[i].timeLimit as! Int
                         let fmsenderuuid = fetchedmsgsCD[i].senderuuid! as String
-                        let fmvote = fetchedmsgsCD[i].votevalue! as Int
+                        let fmvote = fetchedmsgsCD[i].votevalue! as! Int
                         let fmrecorduuid = fetchedmsgsCD[i].recorduuid! as String
                         let fmhasVoted = fetchedmsgsCD[i].hasVoted as! Int
                         //let fmviewedOther = fetchedmsgsCD[i].viewedOther as! Int
@@ -641,12 +641,12 @@ class Helper{
                         
                     }else{
                         
-                        print("local desc save: \(error?.localizedDescription) \n")
+                        print("local desc save: \(String(describing: error?.localizedDescription)) \n")
                     }
                 })
             }else{
                 print(recorduuid)
-                print("local desc fetch: \(error?.localizedDescription) \n")
+                print("local desc fetch: \(String(describing: error?.localizedDescription)) \n")
             }
         })
     }
@@ -710,7 +710,7 @@ class Helper{
                     
                     let fmCrumbMessageYours = CrumbMessage(text: fmtext, senderName: fmsenderName, location: fmlocation, timeDropped: fmtimedropped, timeLimit: fmtimelimit, senderuuid: fmsenderuuid, votes: fmvotes)
                     
-                    fmCrumbMessageYours?.hasVoted = fetchedmsgsCD[i].hasVoted! as Int
+                    fmCrumbMessageYours?.hasVoted = (fetchedmsgsCD[i].hasVoted! as! Int)
                     // ]\\commentsArr commentsArr
                     
                     if fetchedmsgsCD[i].photo != nil{

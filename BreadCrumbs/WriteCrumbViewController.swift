@@ -498,7 +498,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     
     //test msglength
     func msgLengthTest() -> Bool {
-        if crumbMessageTextView.text.characters.count >= 257 || crumbMessageTextView.text.characters.count < 1 || crumbMessageTextView.text == "What do you think?" {//fixed 256 off by one error; if want to shorten to 128 make sure to set as 129
+        if crumbMessageTextView.text.count >= 257 || crumbMessageTextView.text.count < 1 || crumbMessageTextView.text == "What do you think?" {//fixed 256 off by one error; if want to shorten to 128 make sure to set as 129
             //fails to send
             return false
         }
@@ -519,7 +519,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         
         // Disable the Save button if the text field is empty.
         //let text = crumbMessageTextView.text ?? ""
-        if (crumbMessageTextView.text != "What do you think?" || uploadedPhoto != nil ) && crumbMessageTextView.text.characters.count <= 256 {
+        if (crumbMessageTextView.text != "What do you think?" || uploadedPhoto != nil ) && crumbMessageTextView.text.count <= 256 {
             if checkLocation() && currentReachabilityStatus != .notReachable {
                 submitView.isHidden = false
                 postButtonOutlet.isEnabled = true
@@ -545,12 +545,12 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     func textViewDidChange(_ textView: UITextView) {
         if crumbMessageTextView.text != "What do you think?"{            
             
-            msgCharCount = crumbMessageTextView.text.characters.count
+            msgCharCount = crumbMessageTextView.text.count
             charLabelCount.text = String(256 - msgCharCount)
         } else {
             charLabelCount.text = String(256)
         }
-        if crumbMessageTextView.text.characters.count >= 256 {
+        if crumbMessageTextView.text.count >= 256 {
             charLabelCount.textColor = UIColor(red: 1, green: 0, blue: 0, alpha: 1)
         }else{
             charLabelCount.textColor = UIColor(red: 162/255, green: 162/255, blue: 162/255, alpha: 1)

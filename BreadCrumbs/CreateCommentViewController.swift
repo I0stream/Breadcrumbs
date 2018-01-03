@@ -45,7 +45,7 @@ class CreateCommentViewController: UIViewController, UITextViewDelegate {
 
     //test msglength
     func msgLengthTest() -> Bool {
-        if WriteCommentTextView.text.characters.count >= 126 || WriteCommentTextView.text.characters.count < 2 || WriteCommentTextView.text == "What do you think?" {//fixed 256 off by one error; if want to shorten to 128 make sure to set as 129
+        if WriteCommentTextView.text.count >= 126 || WriteCommentTextView.text.count < 2 || WriteCommentTextView.text == "What do you think?" {//fixed 256 off by one error; if want to shorten to 128 make sure to set as 129
             //fails to send
             return false
         }
@@ -60,7 +60,7 @@ class CreateCommentViewController: UIViewController, UITextViewDelegate {
         
         // Disable the Save button if the text field is empty.
         //let text = WriteCommentTextView.text ?? ""
-        if WriteCommentTextView.text != "What do you think?" && WriteCommentTextView.text.characters.count <= 126 {
+        if WriteCommentTextView.text != "What do you think?" && WriteCommentTextView.text.count <= 126 {
             submitView.isHidden = false
             //bool.enabled = !text.isEmpty
         }
@@ -86,12 +86,12 @@ class CreateCommentViewController: UIViewController, UITextViewDelegate {
     //track chars in msgview and highlight dat sheeit
     func textViewDidChange(_ textView: UITextView) {
         if WriteCommentTextView.text != "What do you think?"{
-            let msgCharCount = WriteCommentTextView.text.characters.count
+            let msgCharCount = WriteCommentTextView.text.count
             charCount.text = String(126 - msgCharCount)
         }else {
             charCount.text = String(126)
         }
-        if WriteCommentTextView.text.characters.count >= 126 {
+        if WriteCommentTextView.text.count >= 126 {
             //TODO: highlight >:( number indicating too long
             //will doo soon ------------
             charCount.textColor = UIColor(red: 1, green: 0, blue: 0, alpha: 1)

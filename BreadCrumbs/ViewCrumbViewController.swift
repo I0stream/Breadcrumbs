@@ -194,7 +194,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
                     msgCell.ReportButton.tag = indexPath.row
                     msgCell.ReportButton.addTarget(self, action: #selector(ViewCrumbViewController.report), for: .touchUpInside)
                 }
-                if viewbreadcrumb!.calculate() > 0 {
+                if viewbreadcrumb!.calculateTimeLeftInHours() > 0 {
                     msgCell.CreateCommentButton.addTarget(self, action: #selector(ViewCrumbViewController.commentSegue), for: .touchUpInside)
                     msgCell.VoteButton.addTarget(self, action: #selector(ViewCrumbViewController.Vote), for: .touchUpInside)
                     
@@ -238,8 +238,8 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
                 
                 msgCell.TimeLabel.text = "\(viewbreadcrumb!.dateOrganizer())"
-                if viewbreadcrumb!.calculate() > 0 {
-                    let ref = Int(viewbreadcrumb!.calculate())
+                if viewbreadcrumb!.calculateTimeLeftInHours() > 0 {
+                    let ref = Int(viewbreadcrumb!.calculateTimeLeftInHours())
                     
                     if ref >= 1 {
                         msgCell.TimeLeftLabel.text! = "\(ref)h left"//////////////////////////////////////////////////
@@ -297,7 +297,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
                     msgCell.ReportButton.tag = indexPath.row
                     msgCell.ReportButton.addTarget(self, action: #selector(ViewCrumbViewController.report), for: .touchUpInside)
                 }
-                if viewbreadcrumb!.calculate() > 0 {
+                if viewbreadcrumb!.calculateTimeLeftInHours() > 0 {
                     msgCell.CreateCommentButton.addTarget(self, action: #selector(ViewCrumbViewController.commentSegue), for: .touchUpInside)
                     msgCell.VoteButton.addTarget(self, action: #selector(ViewCrumbViewController.Vote), for: .touchUpInside)
                     
@@ -341,8 +341,8 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
                 
                 msgCell.TimeLabel.text = "\(viewbreadcrumb!.dateOrganizer())"
-                if viewbreadcrumb!.calculate() > 0 {
-                    let ref = Int(viewbreadcrumb!.calculate())
+                if viewbreadcrumb!.calculateTimeLeftInHours() > 0 {
+                    let ref = Int(viewbreadcrumb!.calculateTimeLeftInHours())
                     
                     if ref >= 1 {
                         msgCell.TimeLeftLabel.text! = "\(ref)h left"//////////////////////////////////////////////////
@@ -423,7 +423,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     //MARK: REport
     
     func report(sender: UIButton) {
-        if viewbreadcrumb!.calculate() > 0 {
+        if viewbreadcrumb!.calculateTimeLeftInHours() > 0 {
             performSegue(withIdentifier: "ReportMenuSegue", sender: sender)
             
         }else{
@@ -443,12 +443,12 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     
     // prepare view with object data;
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
-        if (segue.identifier == "writeComment") && viewbreadcrumb!.calculate() > 0 {
+        if (segue.identifier == "writeComment") && viewbreadcrumb!.calculateTimeLeftInHours() > 0 {
             let upcoming = segue.destination as! CreateCommentViewController
             upcoming.viewbreadcrumb = viewbreadcrumb
             let destVC = segue.destination as! CreateCommentViewController
             destVC.delegate = self
-        } else if (segue.identifier == "ReportMenuSegue") && viewbreadcrumb!.calculate() > 0{
+        } else if (segue.identifier == "ReportMenuSegue") && viewbreadcrumb!.calculateTimeLeftInHours() > 0{
         
             let upcoming = segue.destination as! ReportMenuViewController
             upcoming.delegate = self

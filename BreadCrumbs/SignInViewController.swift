@@ -50,7 +50,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     
     @IBAction func signUpAction(_ sender: UIButton) {
         
-        if isICloudContainerAvailable() && setUserNameTextField.text?.characters.count > 0 && setUserNameTextField.text?.characters.count < 16 && NSUserData.bool(forKey: "ckAccountStatus") && currentReachabilityStatus != .notReachable && AppDelegate().isBanned(){
+        if isICloudContainerAvailable() && setUserNameTextField.text?.count > 0 && setUserNameTextField.text?.count < 16 && NSUserData.bool(forKey: "ckAccountStatus") && currentReachabilityStatus != .notReachable && AppDelegate().isBanned(){
             
             //make a record in cloudkit if a userinfo for this account is not found
 
@@ -172,7 +172,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     
     //length error, cloud error, internet error
     func errorTest(){
-        if isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && currentReachabilityStatus != .notReachable && setUserNameTextField.text?.characters.count > 0 && setUserNameTextField.text?.characters.count < 16{//success
+        if isICloudContainerAvailable() && NSUserData.bool(forKey: "ckAccountStatus") && currentReachabilityStatus != .notReachable && setUserNameTextField.text?.count > 0 && setUserNameTextField.text?.count < 16{//success
             //print("a user is signed into icloud")
             signUpButton.isEnabled = true
             ErrorDisp.isHidden = true
@@ -183,13 +183,13 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
             
         }else if currentReachabilityStatus == .notReachable{
             failMessage(text: "No service, cannot sign up without internet")
-        }else if setUserNameTextField.text?.characters.count < 1 {
+        }else if setUserNameTextField.text?.count < 1 {
             
             failMessage(text: "Please enter a longer username")
             
-        }else if setUserNameTextField.text?.characters.count > 15{
+        }else if setUserNameTextField.text?.count > 15{
             
-            failMessage(text: "Please enter a too long by \((setUserNameTextField.text?.characters.count)! - 15) characters")
+            failMessage(text: "Please enter a too long by \((setUserNameTextField.text?.count)! - 15) characters")
             
         }
     }

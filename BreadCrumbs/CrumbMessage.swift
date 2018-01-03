@@ -80,7 +80,7 @@ class CrumbMessage{
         
     }
     
-    func calculate() -> Double{//calculates the time remaining in hours for a shortend use in cells
+    func calculateTimeLeftInHours() -> Double{//calculates the time remaining in hours for a shortend use in cells
         //in essence: timedropped + timelimit = timeDeadline; timeCurrent - timeDeadline = timeLeft
         //convert timeleft to days hours 
         

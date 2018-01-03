@@ -234,8 +234,8 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
                 cell.ReportButton.isHidden = false
                 cell.ReportButton.tag = indexPath.row
                 cell.ReportButton.addTarget(self, action: #selector(OthersCrumbsTableViewController.report), for: .touchUpInside)
-                if crumbmsg.calculate() > 0 {
-                    let ref = Int(crumbmsg.calculate())
+                if crumbmsg.calculateTimeLeftInHours() > 0 {
+                    let ref = Int(crumbmsg.calculateTimeLeftInHours())
                     
                     let uicolorNormal = UIColor(red: 146/255, green: 144/255, blue: 144/255, alpha: 1)
                     cell.timeCountdown.textColor = uicolorNormal
@@ -314,8 +314,8 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
                 
                 
                 
-                if crumbmsg.calculate() > 0 {
-                    let ref = Int(crumbmsg.calculate())
+                if crumbmsg.calculateTimeLeftInHours() > 0 {
+                    let ref = Int(crumbmsg.calculateTimeLeftInHours())
                     
                     let uicolorNormal = UIColor(red: 146/255, green: 144/255, blue: 144/255, alpha: 1)
                     cell.timeCountdown.textColor = uicolorNormal
@@ -421,7 +421,7 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
         let indexPath = IndexPath(row: row, section: 1)
         let crumb = crumbmessages[indexPath.row]
         
-        if crumb.calculate() > 0{
+        if crumb.calculateTimeLeftInHours() > 0{
             Vote(sender: sender)
         }else{
             //noVoteIndicator()
@@ -438,7 +438,7 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
         let viewbreadcrumb = crumbmessages[indexPath.row]
         var votevalue = 0
 
-        if viewbreadcrumb.calculate() > 0 { //alive
+        if viewbreadcrumb.calculateTimeLeftInHours() > 0 { //alive
             if viewbreadcrumb.hasVoted == 1 && inscreen == false{//has voted before setting vote to zero this is bad because of past structure
                 inscreen = true
                 viewbreadcrumb.hasVoted = 0
@@ -511,7 +511,7 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
     
     func report(sender: UIButton) {
         let i = sender.tag
-        if crumbmessages[i].calculate() > 0 {
+        if crumbmessages[i].calculateTimeLeftInHours() > 0 {
             performSegue(withIdentifier: "OthersToReportMenu", sender: sender)
             
         }else{
