@@ -198,6 +198,9 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
             
             // Fetches the appropriate msg for the data source layout.
             let crumbmsg = crumbmessages[indexPath.row]
+            
+            let commentValue = helperFunctions.loadComments(uniqueRecordID: crumbmsg.uRecordID!).count
+            
             crumbmessages[indexPath.row].inscreen = false
             if crumbmsg.photo == nil{//no photo
                 
@@ -239,9 +242,11 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
                 }
                 //sets the values for the labels in the cell, time value and location value
                 
+                cell.CommentValueLabel.text = "\(commentValue)"
                 cell.VoteValue.text = "\(crumbmsg.votes)"
                 cell.YouTheUserLabel.text = crumbmsg.senderName
 
+                
                 
                 var textwidth = cell.YouTheUserLabel.intrinsicContentSize.width
                 let contentwidth = UIScreen.main.bounds.width - 70//screen width minus total constraints and item widths + 15 padding
@@ -284,7 +289,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
                 
                 cell.ReportButton.isHidden = true
                 
-                
+                //.scaleAspectFit
                 cell.UserUploadedPhotoUIView.contentMode = .scaleAspectFill
                 cell.UserUploadedPhotoUIView.image = crumbmsg.photo
                 cell.imageButton.tag = indexPath.row
@@ -330,6 +335,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
                 
                 //sets the values for the labels in the cell, time value and location value
                 
+                cell.CommentValueLabel.text = "\(commentValue)"
                 cell.VoteValue.text = "\(crumbmsg.votes)"
                 cell.YouTheUserLabel.text = crumbmsg.senderName
 

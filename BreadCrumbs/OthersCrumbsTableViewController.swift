@@ -190,7 +190,7 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
         }else {
             
             let crumbmsg = crumbmessages[indexPath.row]
-            
+            let commentValue = helperFunctions.loadComments(uniqueRecordID: crumbmsg.uRecordID!).count
             
             if crumbmsg.photo == nil{//nophoto
                 let cell = tableView.dequeueReusableCell(withIdentifier: "OthersMsgCell", for: indexPath) as! OthersCrumbsTableViewCell
@@ -241,10 +241,10 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
                 // Fetches the appropriate msg for the data source layout.
                 
                 //sets the values for the labels in the cell, time value and location value
+                cell.CommentValueLabel.text = "\(commentValue)"
                 cell.TextViewCellOutlet.text = crumbmsg.text
-                
-                
                 cell.VoteValue.text = "\((crumbmsg.votes))"
+                
                 
                 cell.YouTheUserLabel.text = crumbmsg.senderName
                 var textwidth = cell.YouTheUserLabel.intrinsicContentSize.width
@@ -357,6 +357,7 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
                 
                 //sets the values for the labels in the cell, time value and location value
                 
+                cell.CommentValueLabel.text = "\(commentValue)"
                 cell.VoteValue.text = "\(crumbmsg.votes)"
                 cell.YouTheUserLabel.text = crumbmsg.senderName
                 

@@ -104,8 +104,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         //NotifLoad
         //NotificationCenter.default.addObserver(self, selector: #selector(ViewCrumbViewController.BlueDotIndicate(_:)),name:NSNotification.Name(rawValue: "NotifLoad"), object: nil)
 
-        print(helperFunctions.CountComments(uniqueRecordID: (crumbmsg?.uRecordID!)!)
-)
+        print(helperFunctions.CountComments(uniqueRecordID: (crumbmsg?.uRecordID!)!))
         
         loadComments()
         //animateInfoBar("Pull to refresh")
@@ -365,9 +364,8 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
                 }
                 //sets the values for the labels in the cell, time value and location value
                 
+                cell.CommentValueLabel.text = "\(comments.count)"
                 cell.VoteValue.text = "\(crumbmsg!.votes)"
-                
-                
                 cell.MsgTextView.text = crumbmsg!.text
                 cell.UserLabel.text = crumbmsg!.senderName
                 
