@@ -281,10 +281,10 @@
 				654C0B581CC565B200060E58 /* YourCrumbsTableViewCell.swift */,
 				65CDDF271E832BED00D9DB61 /* WebTableViewCell.swift */,
 				65F556BD1CD21D760014AC30 /* OthersCrumbsTableViewCell.swift */,
-				6576060A1DCD69D4006860C6 /* CrumbTableViewCell.swift */,
-				6576060B1DCD69D4006860C6 /* CommentCell.swift */,
 				650017051E5FB626005DAA02 /* ImageMessageTableViewCell.swift */,
+				6576060A1DCD69D4006860C6 /* CrumbTableViewCell.swift */,
 				65C7CD5E1E6638C500042831 /* crumbPlusImageTableViewCell.swift */,
+				6576060B1DCD69D4006860C6 /* CommentCell.swift */,
 				65B9EB601E492EDE0013F616 /* settingsTableViewCell.swift */,
 			);
 			name = cells;

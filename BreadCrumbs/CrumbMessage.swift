@@ -80,6 +80,20 @@ class CrumbMessage{
         
     }
     
+    
+    /**
+     *isAlive instructions*
+     - important: if crumb is alive returns true, if dead returns false
+     */
+    func isAlive() -> Bool {
+        
+        if self.calculateTimeLeftInHours() > 0 { //alive
+            return true
+        } else{//dead
+            return false
+        }
+    }
+    
     func calculateTimeLeftInHours() -> Double{//calculates the time remaining in hours for a shortend use in cells
         //in essence: timedropped + timelimit = timeDeadline; timeCurrent - timeDeadline = timeLeft
         //convert timeleft to days hours 

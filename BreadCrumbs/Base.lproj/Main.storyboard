@@ -639,6 +639,8 @@
                                         <color key="backgroundColor" red="0.97254901959999995" green="0.97254901959999995" blue="0.97254901959999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <inset key="separatorInset" minX="15" minY="0.0" maxX="15" maxY="0.0"/>
                                         <connections>
+                                            <outlet property="CommentButton" destination="qHN-fK-cV5" id="mwt-J0-7Bi"/>
+                                            <outlet property="CommentValueLabel" destination="Rhr-Bm-hSK" id="kMi-fG-e8a"/>
                                             <outlet property="ReportButton" destination="8qw-Q6-gB5" id="w0r-GV-8Ja"/>
                                             <outlet property="TextViewCellOutlet" destination="dyw-ZF-Q28" id="tlk-bt-jsB"/>
                                             <outlet property="TimeRemainingValueLabel" destination="A3X-g9-cLM" id="NRj-6X-lQn"/>
@@ -764,6 +766,8 @@
                                         <color key="backgroundColor" red="0.97254901959999995" green="0.97254901959999995" blue="0.97254901959999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <inset key="separatorInset" minX="15" minY="0.0" maxX="15" maxY="0.0"/>
                                         <connections>
+                                            <outlet property="CommentButton" destination="dba-Kh-0qt" id="n48-92-IOo"/>
+                                            <outlet property="CommentValueLabel" destination="2o8-ui-UfM" id="ZjK-mL-gKn"/>
                                             <outlet property="TextViewCellOutlet" destination="SfN-Tx-RBZ" id="jWR-P0-cwp"/>
                                             <outlet property="TimeRemainingValueLabel" destination="KHz-Vg-13f" id="Y4H-Ze-nGc"/>
                                             <outlet property="VoteButton" destination="tsk-7L-Sss" id="UEW-AB-syh"/>
@@ -1511,6 +1515,12 @@
                                                         <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="roundedRect" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="afD-uv-Bdr">
                                                             <rect key="frame" x="25" y="235" width="334" height="187"/>
                                                         </button>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="10" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="LBs-0W-l35">
+                                                            <rect key="frame" x="299" y="452" width="14" height="15"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                                            <color key="textColor" red="0.96078431369999995" green="0.65098039220000004" blue="0.13725490200000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
                                                     </subviews>
                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                     <constraints>
@@ -1521,6 +1531,7 @@
                                                         <constraint firstAttribute="bottom" secondItem="Uns-qH-GVj" secondAttribute="bottom" constant="20" id="ASa-g2-C5S"/>
                                                         <constraint firstAttribute="trailing" secondItem="sWu-lP-lQH" secondAttribute="trailing" constant="25" id="Apa-e2-NtX"/>
                                                         <constraint firstAttribute="bottom" secondItem="afD-uv-Bdr" secondAttribute="bottom" constant="65" id="CPi-3j-teP"/>
+                                                        <constraint firstItem="LBs-0W-l35" firstAttribute="centerY" secondItem="SKN-Qh-HLh" secondAttribute="centerY" id="Dci-Xa-J0n"/>
                                                         <constraint firstItem="dPQ-Z0-fZD" firstAttribute="leading" secondItem="5Cd-cP-C69" secondAttribute="trailing" id="ErV-d5-Rl4"/>
                                                         <constraint firstItem="b36-SI-9Ac" firstAttribute="leading" secondItem="O75-0E-386" secondAttribute="leading" constant="15" id="FMj-Xp-WuJ"/>
                                                         <constraint firstAttribute="bottom" secondItem="BPe-iJ-QGz" secondAttribute="bottom" constant="20" id="FUT-H1-Shh"/>
@@ -1533,6 +1544,7 @@
                                                         <constraint firstItem="b36-SI-9Ac" firstAttribute="top" secondItem="O75-0E-386" secondAttribute="top" constant="84" id="Sto-PX-eEc"/>
                                                         <constraint firstItem="jmw-jd-NRh" firstAttribute="top" secondItem="O75-0E-386" secondAttribute="top" constant="17" id="XJU-wZ-pYM"/>
                                                         <constraint firstItem="WFC-sr-3Cd" firstAttribute="leading" secondItem="O75-0E-386" secondAttribute="leading" constant="15" id="ZPR-bq-Dom"/>
+                                                        <constraint firstItem="LBs-0W-l35" firstAttribute="leading" secondItem="SKN-Qh-HLh" secondAttribute="trailing" constant="-10" id="avN-tA-dEI"/>
                                                         <constraint firstAttribute="trailing" secondItem="jmw-jd-NRh" secondAttribute="trailing" constant="15" id="c6H-xP-3Xc"/>
                                                         <constraint firstItem="sWu-lP-lQH" firstAttribute="top" secondItem="b36-SI-9Ac" secondAttribute="bottom" constant="20" id="fOV-OD-6jF"/>
                                                         <constraint firstAttribute="trailing" secondItem="afD-uv-Bdr" secondAttribute="trailing" constant="25" id="hkR-2Z-bjb"/>
@@ -1555,7 +1567,8 @@
                                         <color key="backgroundColor" red="0.97254901959999995" green="0.97254901959999995" blue="0.97254901959999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <inset key="separatorInset" minX="15" minY="0.0" maxX="15" maxY="0.0"/>
                                         <connections>
-                                            <outlet property="CreateCommentButton" destination="SKN-Qh-HLh" id="ahV-q9-Pbr"/>
+                                            <outlet property="CommentButton" destination="SKN-Qh-HLh" id="ktn-PT-o1W"/>
+                                            <outlet property="CommentValueLabel" destination="LBs-0W-l35" id="L2h-cD-3Z1"/>
                                             <outlet property="ExitCrumbButton" destination="jmw-jd-NRh" id="kLD-Zu-EgL"/>
                                             <outlet property="ImageViewOnCell" destination="sWu-lP-lQH" id="icF-Jk-HA4"/>
                                             <outlet property="MsgTextView" destination="b36-SI-9Ac" id="cXt-cV-bKP"/>
@@ -1650,6 +1663,12 @@
                                                             <color key="textColor" red="0.96078431369999995" green="0.65098039220000004" blue="0.13725490200000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                                             <nil key="highlightedColor"/>
                                                         </label>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="10" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="W18-tK-eQz">
+                                                            <rect key="frame" x="299" y="254.66666666666663" width="14" height="15"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                                            <color key="textColor" red="0.96078431369999995" green="0.65098039220000004" blue="0.13725490200000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
                                                     </subviews>
                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                     <constraints>
@@ -1658,6 +1677,7 @@
                                                         <constraint firstAttribute="bottom" secondItem="Edv-tR-0wc" secondAttribute="bottom" constant="20" id="2jp-DK-woK"/>
                                                         <constraint firstItem="E3T-Z4-bCR" firstAttribute="centerY" secondItem="zxa-uY-lf5" secondAttribute="centerY" id="3vr-fI-3mP"/>
                                                         <constraint firstItem="Shj-xu-v9q" firstAttribute="top" secondItem="Ap7-vd-CzR" secondAttribute="bottom" constant="3" id="6zN-S1-oJr"/>
+                                                        <constraint firstItem="W18-tK-eQz" firstAttribute="leading" secondItem="E3T-Z4-bCR" secondAttribute="trailing" constant="-10" id="7Oe-Ad-Ph4"/>
                                                         <constraint firstItem="0ej-as-NBa" firstAttribute="top" secondItem="AHZ-sR-JcB" secondAttribute="top" constant="84" id="Bc4-tx-ZEi"/>
                                                         <constraint firstItem="Xp6-Fq-mAb" firstAttribute="top" secondItem="AHZ-sR-JcB" secondAttribute="top" constant="17" id="C0F-LI-7WR"/>
                                                         <constraint firstAttribute="trailing" secondItem="Edv-tR-0wc" secondAttribute="trailing" constant="15" id="HNd-r0-zSK"/>
@@ -1669,6 +1689,7 @@
                                                         <constraint firstItem="0ej-as-NBa" firstAttribute="leading" secondItem="AHZ-sR-JcB" secondAttribute="leading" constant="15" id="WYj-MW-OYH"/>
                                                         <constraint firstItem="YTl-b3-rv5" firstAttribute="leading" secondItem="Ap7-vd-CzR" secondAttribute="trailing" id="Y0w-VT-VA2"/>
                                                         <constraint firstItem="Ap7-vd-CzR" firstAttribute="top" secondItem="AHZ-sR-JcB" secondAttribute="top" constant="20" id="Zaq-l5-2Hu"/>
+                                                        <constraint firstItem="W18-tK-eQz" firstAttribute="centerY" secondItem="E3T-Z4-bCR" secondAttribute="centerY" id="Zle-0g-842"/>
                                                         <constraint firstAttribute="trailing" secondItem="E3T-Z4-bCR" secondAttribute="trailing" constant="75" id="g9p-Sz-Ale"/>
                                                         <constraint firstItem="YTl-b3-rv5" firstAttribute="centerY" secondItem="Ap7-vd-CzR" secondAttribute="centerY" id="n6l-j5-WQx"/>
                                                         <constraint firstItem="Ap7-vd-CzR" firstAttribute="leading" secondItem="AHZ-sR-JcB" secondAttribute="leading" constant="15" id="oAm-av-Moc"/>
@@ -1687,7 +1708,8 @@
                                         <color key="backgroundColor" red="0.97254901959999995" green="0.97254901959999995" blue="0.97254901959999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <inset key="separatorInset" minX="15" minY="0.0" maxX="15" maxY="0.0"/>
                                         <connections>
-                                            <outlet property="CreateCommentButton" destination="E3T-Z4-bCR" id="3uU-0p-B0u"/>
+                                            <outlet property="CommentButton" destination="E3T-Z4-bCR" id="BjE-hm-py3"/>
+                                            <outlet property="CommentValueLabel" destination="W18-tK-eQz" id="Pig-pz-guH"/>
                                             <outlet property="ExitCrumbButton" destination="Xp6-Fq-mAb" id="Wuu-c1-mVa"/>
                                             <outlet property="MsgTextView" destination="0ej-as-NBa" id="IHh-Xf-mAi"/>
                                             <outlet property="ReportButton" destination="YTl-b3-rv5" id="FGL-Oc-RNm"/>
@@ -2196,6 +2218,12 @@
                                                             </constraints>
                                                             <state key="normal" image="comment"/>
                                                         </button>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="10" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="BJ3-3h-Aj9">
+                                                            <rect key="frame" x="261" y="452" width="14" height="15"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                                            <color key="textColor" red="0.96078431369999995" green="0.65098039220000004" blue="0.13725490200000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
                                                     </subviews>
                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                     <constraints>
@@ -2207,6 +2235,7 @@
                                                         <constraint firstAttribute="bottom" secondItem="HGy-Oh-Vud" secondAttribute="bottom" constant="65" id="73z-r0-wAX"/>
                                                         <constraint firstItem="hsU-GZ-6Iz" firstAttribute="top" secondItem="PAo-za-SQr" secondAttribute="top" constant="20" id="809-bM-7pv"/>
                                                         <constraint firstAttribute="trailing" secondItem="HGy-Oh-Vud" secondAttribute="trailing" constant="25" id="8ll-dP-htb"/>
+                                                        <constraint firstItem="BJ3-3h-Aj9" firstAttribute="leading" secondItem="KH5-27-mx3" secondAttribute="trailing" constant="-10" id="AyR-mz-0dz"/>
                                                         <constraint firstAttribute="bottom" secondItem="CoA-h6-RTu" secondAttribute="bottom" constant="65" id="Gwd-B0-FAP"/>
                                                         <constraint firstAttribute="bottom" secondItem="r9l-45-B1G" secondAttribute="bottom" constant="20" id="JFH-Dn-ORu"/>
                                                         <constraint firstAttribute="trailing" secondItem="7Vu-Pu-t8w" secondAttribute="trailing" constant="15" id="Onw-ab-sIy"/>
@@ -2217,6 +2246,7 @@
                                                         <constraint firstItem="tNl-Yi-F43" firstAttribute="leading" secondItem="hsU-GZ-6Iz" secondAttribute="trailing" id="gNk-pW-suj"/>
                                                         <constraint firstItem="uOu-Hn-4D5" firstAttribute="leading" secondItem="PAo-za-SQr" secondAttribute="leading" constant="15" id="h6p-0F-qfc"/>
                                                         <constraint firstAttribute="trailing" secondItem="uOu-Hn-4D5" secondAttribute="trailing" constant="15" id="hk9-Ij-Q8t"/>
+                                                        <constraint firstItem="BJ3-3h-Aj9" firstAttribute="centerY" secondItem="KH5-27-mx3" secondAttribute="centerY" id="lOh-D7-raZ"/>
                                                         <constraint firstItem="8jj-M8-33u" firstAttribute="top" secondItem="hsU-GZ-6Iz" secondAttribute="bottom" constant="3" id="leq-TE-zCH"/>
                                                         <constraint firstItem="QTD-1Q-gVB" firstAttribute="leading" secondItem="KH5-27-mx3" secondAttribute="trailing" constant="54" id="nD2-85-e7x"/>
                                                         <constraint firstItem="tNl-Yi-F43" firstAttribute="centerY" secondItem="hsU-GZ-6Iz" secondAttribute="centerY" id="nEq-Uc-Drd"/>
@@ -2240,8 +2270,9 @@
                                         <color key="backgroundColor" red="0.97254901959999995" green="0.97254901959999995" blue="0.97254901959999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <inset key="separatorInset" minX="15" minY="0.0" maxX="15" maxY="0.0"/>
                                         <connections>
+                                            <outlet property="CommentButton" destination="KH5-27-mx3" id="hi6-ge-xPo"/>
+                                            <outlet property="CommentValueLabel" destination="BJ3-3h-Aj9" id="paT-Nh-UaH"/>
                                             <outlet property="ReportButton" destination="tNl-Yi-F43" id="pta-Tf-tn1"/>
-                                            <outlet property="RepostButton" destination="KH5-27-mx3" id="JY5-uV-5JH"/>
                                             <outlet property="TextViewCellOutlet" destination="uOu-Hn-4D5" id="VYh-OY-Lzi"/>
                                             <outlet property="TimeRemainingValueLabel" destination="8jj-M8-33u" id="wAt-Ho-UGL"/>
                                             <outlet property="UserUploadedPhotoUIView" destination="CoA-h6-RTu" id="Zar-Vr-HtX"/>
@@ -2334,6 +2365,12 @@
                                                             </constraints>
                                                             <state key="normal" image="comment"/>
                                                         </button>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="10" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="iJU-In-OG8">
+                                                            <rect key="frame" x="261" y="233" width="14" height="15"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                                            <color key="textColor" red="0.96078431369999995" green="0.65098039220000004" blue="0.13725490200000001" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
                                                     </subviews>
                                                     <color key="backgroundColor" white="1" alpha="1" colorSpace="calibratedWhite"/>
                                                     <constraints>
@@ -2347,10 +2384,12 @@
                                                         <constraint firstAttribute="trailing" secondItem="HEB-AT-0bo" secondAttribute="trailing" constant="15" id="JNS-Oa-Cre"/>
                                                         <constraint firstItem="n1x-Mv-dJf" firstAttribute="leading" secondItem="kD6-Ps-RBn" secondAttribute="leading" constant="15" id="KXK-j1-8Ut"/>
                                                         <constraint firstItem="jl6-uJ-rTk" firstAttribute="leading" secondItem="GUf-Tn-88S" secondAttribute="trailing" id="NFC-Z9-NdN"/>
+                                                        <constraint firstItem="iJU-In-OG8" firstAttribute="centerY" secondItem="rqR-8I-Z8y" secondAttribute="centerY" id="Nrt-J7-Xm9"/>
                                                         <constraint firstAttribute="bottom" secondItem="HEB-AT-0bo" secondAttribute="bottom" constant="60" id="UiY-l9-4w7"/>
                                                         <constraint firstItem="jl6-uJ-rTk" firstAttribute="centerY" secondItem="GUf-Tn-88S" secondAttribute="centerY" id="Wdr-Tk-mLb"/>
                                                         <constraint firstItem="GuF-A2-yaT" firstAttribute="leading" secondItem="rqR-8I-Z8y" secondAttribute="trailing" constant="54" id="XSV-7z-sA5"/>
                                                         <constraint firstItem="4sL-zJ-mk4" firstAttribute="top" secondItem="kD6-Ps-RBn" secondAttribute="top" constant="17" id="ZiH-eU-5Co"/>
+                                                        <constraint firstItem="iJU-In-OG8" firstAttribute="leading" secondItem="rqR-8I-Z8y" secondAttribute="trailing" constant="-10" id="ZxC-aq-Pla"/>
                                                         <constraint firstItem="GuF-A2-yaT" firstAttribute="centerY" secondItem="c2L-Lf-6K0" secondAttribute="centerY" id="dck-Zh-GyJ"/>
                                                         <constraint firstItem="GUf-Tn-88S" firstAttribute="top" secondItem="kD6-Ps-RBn" secondAttribute="top" constant="20" id="fXe-Sk-lLc"/>
                                                         <constraint firstItem="HEB-AT-0bo" firstAttribute="top" secondItem="wt0-kQ-NFp" secondAttribute="bottom" constant="15" id="ljp-R9-0GN"/>
@@ -2371,8 +2410,9 @@
                                         <color key="backgroundColor" red="0.97254901959999995" green="0.97254901959999995" blue="0.97254901959999995" alpha="1" colorSpace="custom" customColorSpace="sRGB"/>
                                         <inset key="separatorInset" minX="15" minY="0.0" maxX="15" maxY="0.0"/>
                                         <connections>
+                                            <outlet property="CommentButton" destination="rqR-8I-Z8y" id="NNg-Hs-S6Q"/>
+                                            <outlet property="CommentValueLabel" destination="iJU-In-OG8" id="WKK-8g-tjn"/>
                                             <outlet property="ReportButton" destination="jl6-uJ-rTk" id="dyN-mD-yFf"/>
-                                            <outlet property="RepostButton" destination="rqR-8I-Z8y" id="FHQ-fC-UU9"/>
                                             <outlet property="TextViewCellOutlet" destination="HEB-AT-0bo" id="cS6-UD-4Po"/>
                                             <outlet property="TimeRemainingValueLabel" destination="wt0-kQ-NFp" id="e19-rO-azd"/>
                                             <outlet property="VoteButton" destination="GuF-A2-yaT" id="wOX-Cs-PDy"/>
@@ -3172,7 +3212,7 @@
         <image name="Image" width="384" height="384"/>
         <image name="Stopwatch" width="18" height="18"/>
         <image name="WinterHikeAlone" width="1808" height="1206"/>
-        <image name="comment" width="19" height="16"/>
+        <image name="comment" width="19" height="19"/>
         <image name="likeHeartEmpty" width="16" height="16"/>
         <image name="magGlass" width="20" height="21"/>
         <image name="manStandingPhone" width="1416" height="2128"/>
@@ -3184,8 +3224,8 @@
         <image name="you" width="25" height="25"/>
     </resources>
     <inferredMetricsTieBreakers>
-        <segue reference="w23-IQ-pCl"/>
-        <segue reference="m6C-9t-bzd"/>
+        <segue reference="76v-Ar-Pcv"/>
+        <segue reference="QeC-Rf-hS0"/>
         <segue reference="Z5g-uf-dNi"/>
         <segue reference="OWZ-9w-7Zi"/>
         <segue reference="qDM-tG-5Bu"/>

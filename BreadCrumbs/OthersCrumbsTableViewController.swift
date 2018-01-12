@@ -20,10 +20,11 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
     //MARK: Properties
     
     var crumbmessages = [CrumbMessage]()
-    //var dropped = [CrumbMessage]()
-    //var final = [CrumbMessage]()
+ 
+    let orangeColor = UIColor(red: 245/255, green: 166/255, blue: 35/255, alpha: 1)
+    let blueColor = UIColor(red: 64/255, green: 161/255, blue: 255/255, alpha: 1)
+    let greyColor = UIColor(red: 146/255, green: 144/255, blue: 144/255, alpha: 1)
     
-    //let helperFunctions = Helper()
     let helperFunctions = AppDelegate().helperfunctions
     
     let locationManager: CLLocationManager = AppDelegate().locationManager
@@ -138,7 +139,7 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
             
             upcoming.conHeight = 20 + (self.tabBarController?.tabBar.frame.size.height)!
             
-            upcoming.viewbreadcrumb = crumbmsg
+            upcoming.crumbmsg = crumbmsg
   
             upcoming.delegate = self
                 /*
@@ -194,18 +195,48 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
             if crumbmsg.photo == nil{//nophoto
                 let cell = tableView.dequeueReusableCell(withIdentifier: "OthersMsgCell", for: indexPath) as! OthersCrumbsTableViewCell
                 
-                let normalColor = UIColor(red: 245/255, green: 166/255, blue: 35/255, alpha: 1)
-                let bluecolor = UIColor(red: 64/255, green: 161/255, blue: 255/255, alpha: 1)
+                //COMMENT
+                
+                
+               /* if crumbmsg.calculateTimeLeftInHours() > 0 {
+                    cell.CreateCommentButton.addTarget(self, action: #selector(ViewCrumbViewController.commentSegue), for: .touchUpInside)
+                    cell.VoteButton.addTarget(self, action: #selector(ViewCrumbViewController.Vote), for: .touchUpInside)
+                    
+                } else{
+                    let color = UIColor(red: 146/255, green: 144/255, blue: 144/255, alpha: 1)//greay color
+                    cell.CreateCommentButton.setTitleColor(color, for: .normal)
+                    //msgCell.CreateCommentButton.addTarget(self, action: #selector(ViewCrumbViewController.noCommentIndicator), for: .touchUpInside)
+                    //msgCell.VoteButton.addTarget(self, action: #selector(ViewCrumbViewController.noVoteIndicator), for: .touchUpInside)
+                    
+                }*/
+                
+                //setColorVoteButton
+                if crumbmsg.isAlive(){
+                    cell.CommentButton.setImage(#imageLiteral(resourceName: "comment"), for: .normal)
+                    cell.CommentValueLabel.textColor = orangeColor
+                } else{
+                    cell.CommentButton.setImage(#imageLiteral(resourceName: "Comment-Grey"), for: .normal)
+                    cell.CommentValueLabel.textColor = greyColor
+                }
+                
+                
                 
                 
                 //setColorVoteButton
                 if crumbmsg.hasVoted == 1{//user has voted
-                    cell.VoteButton.setTitleColor(bluecolor, for: .normal)
-                    cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartfilled"), for: .normal)
+                    if crumbmsg.isAlive(){
+                        cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartfilled"), for: .normal)
+                    } else{
+                        cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartFilled-Grey"), for: .normal)
+                        
+                    }
                     
                 }else if crumbmsg.hasVoted == 0{
-                    cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartEmpty"), for: .normal)
-                    cell.VoteButton.setTitleColor(normalColor, for: .normal)
+                    if crumbmsg.isAlive(){
+                        cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartEmpty"), for: .normal)
+                    } else{ //dead
+                        cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHearEmpty-Grey"), for: .normal)
+                    }
                 }
                 // Fetches the appropriate msg for the data source layout.
                 
@@ -237,8 +268,7 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
                 if crumbmsg.calculateTimeLeftInHours() > 0 {
                     let ref = Int(crumbmsg.calculateTimeLeftInHours())
                     
-                    let uicolorNormal = UIColor(red: 146/255, green: 144/255, blue: 144/255, alpha: 1)
-                    cell.timeCountdown.textColor = uicolorNormal
+                    cell.timeCountdown.textColor = greyColor
                     
                     if ref >= 1 {
                         cell.timeCountdown.text! = "\(ref)h left"//////////////////////////////////////////////////
@@ -277,12 +307,52 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
                 cell.TextViewCellOutlet.text = crumbmsg.text
                 cell.TextViewCellOutlet.font = UIFont.systemFont(ofSize: 16)
                 
+                
+                //COMMENT
+                
+                
+                /*if crumbmsg.calculateTimeLeftInHours() > 0 {
+                    cell.CreateCommentButton.addTarget(self, action: #selector(ViewCrumbViewController.commentSegue), for: .touchUpInside)
+                    cell.VoteButton.addTarget(self, action: #selector(ViewCrumbViewController.Vote), for: .touchUpInside)
+                    
+                } else{
+                    let color = UIColor(red: 146/255, green: 144/255, blue: 144/255, alpha: 1)//greay color
+                    cell.CreateCommentButton.setTitleColor(color, for: .normal)
+                    //msgCell.CreateCommentButton.addTarget(self, action: #selector(ViewCrumbViewController.noCommentIndicator), for: .touchUpInside)
+                    //msgCell.VoteButton.addTarget(self, action: #selector(ViewCrumbViewController.noVoteIndicator), for: .touchUpInside)
+                    
+                }*/
+                
                 //setColorVoteButton
+                if crumbmsg.isAlive(){
+                    cell.CommentButton.setImage(#imageLiteral(resourceName: "comment"), for: .normal)
+                    cell.CommentValueLabel.textColor = orangeColor
+                } else{
+                    cell.CommentButton.setImage(#imageLiteral(resourceName: "Comment-Grey"), for: .normal)
+                    cell.CommentValueLabel.textColor = greyColor
+                }
+                
+                
+                
+                
+                //setColorVoteButton and value color
                 if crumbmsg.hasVoted == 1{//user has voted
-                    cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartfilled"), for: .normal)
+                    if crumbmsg.isAlive(){
+                        cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartfilled"), for: .normal)
+                        cell.VoteValue.textColor = orangeColor
+                    } else{
+                        cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartFilled-Grey"), for: .normal)
+                        cell.VoteValue.textColor = greyColor
+                    }
                     
                 }else if crumbmsg.hasVoted == 0{
-                    cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartEmpty"), for: .normal)
+                    if crumbmsg.isAlive(){
+                        cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartEmpty"), for: .normal)
+                        cell.VoteValue.textColor = orangeColor
+                    } else{ //dead
+                        cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHearEmpty-Grey"), for: .normal)
+                        cell.VoteValue.textColor = greyColor
+                    }
                 }
                 
                 //sets the values for the labels in the cell, time value and location value

@@ -24,7 +24,8 @@ class CrumbTableViewCell: UITableViewCell, UITextViewDelegate{
     
     @IBOutlet weak var ReportButton: UIButton!
     
-    @IBOutlet weak var CreateCommentButton: UIButton!
+    @IBOutlet weak var CommentValueLabel: UILabel!
+    @IBOutlet weak var CommentButton: UIButton!
     
     @IBOutlet weak var VoteValue: UILabel!
     @IBOutlet weak var VoteButton: UIButton!

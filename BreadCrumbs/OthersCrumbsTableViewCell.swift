@@ -10,10 +10,7 @@ import UIKit
 
 class OthersCrumbsTableViewCell: UITableViewCell {
     
-    @IBOutlet weak var RepostButton: UIButton!
-    
-    
-    
+   // @IBOutlet weak var RepostButton: UIButton!
     
     @IBOutlet weak var TimeRemainingValueLabel: UILabel!
     //    @IBOutlet weak var LocationPosted: UILabel!
@@ -22,8 +19,12 @@ class OthersCrumbsTableViewCell: UITableViewCell {
     @IBOutlet weak var YouTheUserLabel: UILabel!
     @IBOutlet weak var timeCountdown: UILabel!
     @IBOutlet weak var VoteButton: UIButton!
-    
     @IBOutlet weak var ReportButton: UIButton!
+    
+    @IBOutlet weak var CommentButton: UIButton!
+    @IBOutlet weak var CommentValueLabel: UILabel!
+    
+    
     override func awakeFromNib() {
         super.awakeFromNib()
         // Initialization code

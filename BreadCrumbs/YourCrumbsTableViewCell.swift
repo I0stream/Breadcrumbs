@@ -20,7 +20,8 @@ class YourCrumbsTableViewCell: UITableViewCell {
     @IBOutlet weak var timeCountdown: UILabel!
     @IBOutlet weak var VoteButton: UIButton!
     
-    @IBOutlet weak var commentNumberLabel: UILabel!
+    @IBOutlet weak var CommentValueLabel: UILabel!
+    @IBOutlet weak var CommentButton: UIButton!
     
     
     override func awakeFromNib() {

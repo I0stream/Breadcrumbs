@@ -11,7 +11,7 @@ import UIKit
 class ImageMessageTableViewCell: UITableViewCell {
 
     
-    @IBOutlet weak var RepostButton: UIButton!
+  //  @IBOutlet weak var RepostButton: UIButton!
     
     
     
@@ -25,6 +25,9 @@ class ImageMessageTableViewCell: UITableViewCell {
     @IBOutlet weak var ReportButton: UIButton!
     @IBOutlet weak var UserUploadedPhotoUIView: UIImageView!
     @IBOutlet weak var imageButton: UIButton!
+    
+    @IBOutlet weak var CommentButton: UIButton!
+    @IBOutlet weak var CommentValueLabel: UILabel!
     
     override func awakeFromNib() {
         super.awakeFromNib()

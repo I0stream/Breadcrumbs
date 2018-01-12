@@ -18,13 +18,15 @@ class crumbPlusImageTableViewCell: UITableViewCell, UITextViewDelegate {
     
     @IBOutlet weak var ReportButton: UIButton!
     
-    @IBOutlet weak var CreateCommentButton: UIButton!
     
     @IBOutlet weak var imageButton: UIButton!
     @IBOutlet weak var VoteValue: UILabel!
     @IBOutlet weak var VoteButton: UIButton!
     
     @IBOutlet weak var ImageViewOnCell: UIImageView!
+    
+    @IBOutlet weak var CommentButton: UIButton!
+    @IBOutlet weak var CommentValueLabel: UILabel!
     
     var viewbreadcrumb: CrumbMessage?
     

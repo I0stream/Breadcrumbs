@@ -611,7 +611,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             
             let crumbmsg = helperfunctions.getSpecific(recorduuid: recordid)
             
-            upcoming.viewbreadcrumb = crumbmsg
+            upcoming.crumbmsg = crumbmsg
             
             upcoming.delegate = others
             
