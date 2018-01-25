@@ -76,13 +76,16 @@ class Helper{
                                 if let fetchResults = try self.getmoc().fetch(fetchRequest) as? [Message]{
                                     if fetchResults.isEmpty{
                                         //now load everything if tests are passed. might break, who knows.
-                                        let dbtext = cmsg["text"] as! String
+                                        var dbtext = cmsg["text"] as? String
                                         let dbsenderName = cmsg["senderName"] as! String
                                         let dblocation = cmsg["location"] as! CLLocation
                                         let dbvotes = cmsg["votes"] as! Int
                                         
-                                        let loadedMessage = CrumbMessage(text: dbtext, senderName: dbsenderName, location: dblocation, timeDropped: dbtimedropped, timeLimit: dbtimelimit, senderuuid: dbsenderuuid, votes: dbvotes)
-                                        
+                                        if dbtext == nil{
+                                            dbtext = ""
+                                        }
+                                        let loadedMessage = CrumbMessage(text: dbtext!, senderName: dbsenderName, location: dblocation, timeDropped: dbtimedropped, timeLimit: dbtimelimit, senderuuid: dbsenderuuid, votes: dbvotes)
+
                                         loadedMessage!.hasVoted = 0
                                         loadedMessage!.uRecordID = uniqueRecordID
                                         
@@ -908,7 +911,10 @@ class Helper{
             var i = 0
             
             while  i <= (fetchedmsgsCD.count - 1){//loops through all of coredata store
-                if fetchedmsgsCD[i].calculate() == true {//if alive
+                
+                let deletedCM = fetchedmsgsCD[i].markedForDelete as! Int//make sure user is even using the thing
+                
+                if fetchedmsgsCD[i].calculate() == true && deletedCM  == 0{//if alive and is not marked for deletion
                     let msgToUpdateRecordID = fetchedmsgsCD[i].recorduuid! as String
                     
                     RecordIDsToTest += [msgToUpdateRecordID]

@@ -23,7 +23,7 @@ class CrumbMessage{
     var uRecordID: String?//the id of the unique record
     var viewedOther: Int?
     var hasVoted: Int?
-    var markedForDelete: Int?
+    var markedForDelete: Int?//marked cm as one user is "deleting" aka either doesnt want to see or deletes own
     var photo: UIImage?
     //var addressStr: String?
     //var commentsArr: [Comment]//array of comments
@@ -43,9 +43,6 @@ class CrumbMessage{
         self.votes = votes
         //self.commentsArr = []
         //test if empty; see if the message is only whitespace cause that would be annoying
-        if text.isEmpty || senderName.isEmpty {
-            return nil
-        }
     }
     
    /* func convertCoordinatesToAddress(locationCoor: CLLocation, completion: (answer: String?) -> Void) {// used in load others crumbs and

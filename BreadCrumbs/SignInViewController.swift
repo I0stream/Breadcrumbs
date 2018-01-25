@@ -83,8 +83,8 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         createUserInfo(setUserNameTextField.text!)
         AppDelegate().initLocationManager()
         
-        helperFunctions.cloudkitSub()//subscribe to upvotes
-        helperFunctions.commentsub()//subscribe to comments
+        //helperFunctions.cloudkitSub()//subscribe to upvotes
+        //helperFunctions.commentsub()//subscribe to comments
         
         self.resignFirstResponder()
         

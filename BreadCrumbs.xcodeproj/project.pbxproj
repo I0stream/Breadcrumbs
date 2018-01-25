@@ -50,6 +50,7 @@
 		65C659CD1D2C8CEA00E11210 /* ChangeUserNameViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C659CC1D2C8CEA00E11210 /* ChangeUserNameViewController.swift */; };
 		65C7CD5F1E6638C500042831 /* crumbPlusImageTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65C7CD5E1E6638C500042831 /* crumbPlusImageTableViewCell.swift */; };
 		65CDDF281E832BED00D9DB61 /* WebTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65CDDF271E832BED00D9DB61 /* WebTableViewCell.swift */; };
+		65DB658E20180CF2007FE152 /* PhotoOnlyTableViewCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65DB658D20180CF2007FE152 /* PhotoOnlyTableViewCell.swift */; };
 		65DBCCC31E3EA02000FAB067 /* BannedViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65DBCCC21E3EA02000FAB067 /* BannedViewController.swift */; };
 		65E47F231DFFD3780072996A /* CloudKit.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 65E47F221DFFD3780072996A /* CloudKit.framework */; };
 		65EF38A91D21D2B400161A3E /* SignInViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 65EF38A81D21D2B400161A3E /* SignInViewController.swift */; };
@@ -131,6 +132,7 @@
 		65C7CD5E1E6638C500042831 /* crumbPlusImageTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = crumbPlusImageTableViewCell.swift; sourceTree = "<group>"; };
 		65CB617A1CD3D175002D6F9E /* BreadCrumbs.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.xml; path = BreadCrumbs.entitlements; sourceTree = "<group>"; };
 		65CDDF271E832BED00D9DB61 /* WebTableViewCell.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = WebTableViewCell.swift; sourceTree = "<group>"; };
+		65DB658D20180CF2007FE152 /* PhotoOnlyTableViewCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PhotoOnlyTableViewCell.swift; sourceTree = "<group>"; };
 		65DBCCC21E3EA02000FAB067 /* BannedViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = BannedViewController.swift; sourceTree = "<group>"; };
 		65E47F221DFFD3780072996A /* CloudKit.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = CloudKit.framework; path = System/Library/Frameworks/CloudKit.framework; sourceTree = SDKROOT; };
 		65EF38A81D21D2B400161A3E /* SignInViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = SignInViewController.swift; sourceTree = "<group>"; };
@@ -284,6 +286,7 @@
 				650017051E5FB626005DAA02 /* ImageMessageTableViewCell.swift */,
 				6576060A1DCD69D4006860C6 /* CrumbTableViewCell.swift */,
 				65C7CD5E1E6638C500042831 /* crumbPlusImageTableViewCell.swift */,
+				65DB658D20180CF2007FE152 /* PhotoOnlyTableViewCell.swift */,
 				6576060B1DCD69D4006860C6 /* CommentCell.swift */,
 				65B9EB601E492EDE0013F616 /* settingsTableViewCell.swift */,
 			);
@@ -454,6 +457,7 @@
 				65FCBD681DDBF2B9002D07BA /* MessageDataModel.xcdatamodeld in Sources */,
 				6576060E1DCD69D4006860C6 /* CrumbTableViewCell.swift in Sources */,
 				65219AEC1E399FF80068CBA3 /* ReportMenuViewController.swift in Sources */,
+				65DB658E20180CF2007FE152 /* PhotoOnlyTableViewCell.swift in Sources */,
 				6543DA511DC47CEA00197513 /* CommentShort.swift in Sources */,
 				65BE461F1E4EAA630028B5EA /* TabsViewController.swift in Sources */,
 				65F556BC1CD219030014AC30 /* OthersCrumbsTableViewController.swift in Sources */,

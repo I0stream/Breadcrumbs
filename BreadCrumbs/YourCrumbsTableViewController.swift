@@ -194,7 +194,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
             let cell = tableView.dequeueReusableCell(withIdentifier: "SpacerYour", for: indexPath)
             cell.selectionStyle = UITableViewCellSelectionStyle.none
             return cell
-        }else {
+        }else {// message only
             
             // Fetches the appropriate msg for the data source layout.
             let crumbmsg = crumbmessages[indexPath.row]
@@ -284,7 +284,101 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
                 }
                 
                 return cell
-            }else {//photo
+            }else if crumbmsg.text == "   " || crumbmsg.text == ""{
+                let cell = tableView.dequeueReusableCell(withIdentifier: "OnlyPhotoCell", for: indexPath) as! PhotoOnlyTableViewCell
+                
+                cell.ReportButton.isHidden = true
+                
+                //.scaleAspectFit
+                cell.UserUploadedPhotoUIView.contentMode = .scaleAspectFill
+                cell.UserUploadedPhotoUIView.image = crumbmsg.photo
+                
+                /*if original aspect ratio is non landscape position the photo as wide and focused on the top*/
+                
+                cell.imageButton.tag = indexPath.row
+                cell.imageButton.addTarget(self, action: #selector(YourCrumbsTableViewController.imageSeggy), for: .touchUpInside)
+                
+                cell.UserUploadedPhotoUIView.layer.cornerRadius = 5.0
+                cell.UserUploadedPhotoUIView.clipsToBounds = true
+                
+                
+                //sets the values for the labels in the cell, time value and location value
+                
+                //setColorVoteButton
+                if crumbmsg.isAlive(){
+                    cell.CommentButton.setImage(#imageLiteral(resourceName: "comment"), for: .normal)
+                    cell.CommentValueLabel.textColor = orangeColor
+                } else{
+                    cell.CommentButton.setImage(#imageLiteral(resourceName: "Comment-Grey"), for: .normal)
+                    cell.CommentValueLabel.textColor = greyColor
+                }
+                
+                //setColorVoteButton and value color
+                if crumbmsg.hasVoted == 1{//user has voted
+                    if crumbmsg.isAlive(){
+                        cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartfilled"), for: .normal)
+                        cell.VoteValue.textColor = orangeColor
+                    } else{
+                        cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartFilled-Grey"), for: .normal)
+                        cell.VoteValue.textColor = greyColor
+                    }
+                    
+                }else if crumbmsg.hasVoted == 0{
+                    if crumbmsg.isAlive(){
+                        cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartEmpty"), for: .normal)
+                        cell.VoteValue.textColor = orangeColor
+                    } else{ //dead
+                        cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHearEmpty-Grey"), for: .normal)
+                        cell.VoteValue.textColor = greyColor
+                    }
+                }
+                
+                
+                //sets the values for the labels in the cell, time value and location value
+                
+                cell.CommentValueLabel.text = "\(commentValue)"
+                cell.VoteValue.text = "\(crumbmsg.votes)"
+                cell.YouTheUserLabel.text = crumbmsg.senderName
+                
+                var textwidth = cell.YouTheUserLabel.intrinsicContentSize.width
+                let contentwidth = UIScreen.main.bounds.width - 70//screen width minus total constraints and item widths + 15 padding
+                if textwidth > contentwidth{
+                    while textwidth > contentwidth {
+                        cell.YouTheUserLabel.font = cell.YouTheUserLabel.font.withSize((cell.YouTheUserLabel.font.pointSize-1))
+                        textwidth = cell.YouTheUserLabel.intrinsicContentSize.width
+                    }
+                }
+                
+                //cell.YouTheUserLabel.font = UIFont.
+                cell.TimeRemainingValueLabel.text = crumbmsg.timeRelative()//time is how long ago it was posted, dont see the point to change var name to something more explanatory right now
+                
+                cell.VoteButton.tag = indexPath.row
+                cell.VoteButton.addTarget(self, action: #selector(YourCrumbsTableViewController.buttonActions), for: .touchUpInside)
+                
+                
+                
+                if crumbmsg.calculateTimeLeftInHours() > 0 {
+                    let ref = Int(crumbmsg.calculateTimeLeftInHours())
+                    
+                    let uicolorNormal = UIColor(red: 146/255, green: 144/255, blue: 144/255, alpha: 1)
+                    cell.timeCountdown.textColor = uicolorNormal
+                    
+                    if ref >= 1 {
+                        cell.timeCountdown.text! = "\(ref)h left"//////////////////////////////////////////////////
+                    }else {
+                        cell.timeCountdown.text! = "Nearly Done!"
+                    }
+                } else{
+                    cell.timeCountdown.text! = "Time's up!"
+                    
+                    //Time's up indication Red Color
+                    let uicolor = UIColor(red: 225/255, green: 50/255, blue: 50/255, alpha: 1)
+                    cell.timeCountdown.textColor = uicolor
+                    //
+                }
+                return cell
+            } else {//photo and message
+                
                 let cell = tableView.dequeueReusableCell(withIdentifier: "YourPhotoCell", for: indexPath) as! ImageMessageTableViewCell
                 
                 cell.ReportButton.isHidden = true
@@ -292,6 +386,9 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
                 //.scaleAspectFit
                 cell.UserUploadedPhotoUIView.contentMode = .scaleAspectFill
                 cell.UserUploadedPhotoUIView.image = crumbmsg.photo
+                
+                /*if original aspect ratio is non landscape position the photo as wide and focused on the top*/
+                
                 cell.imageButton.tag = indexPath.row
                 cell.imageButton.addTarget(self, action: #selector(YourCrumbsTableViewController.imageSeggy), for: .touchUpInside)
                 
@@ -596,4 +693,14 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         
     }*/
 
+}
+extension YourCrumbsTableViewController{
+    func ResizeImage(){
+        /*Plan:
+         1. import constraints?
+         2. find imagesize
+         3. resize to 1:2 aspect ratio
+         4. output new constraints
+         */
+    }
 }

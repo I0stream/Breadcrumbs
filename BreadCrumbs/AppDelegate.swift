@@ -13,7 +13,7 @@ import CloudKit
 import UserNotifications
 
 @UIApplicationMain
-class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate, UNUserNotificationCenterDelegate{
+class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate{
 
     var window: UIWindow?
     
@@ -506,156 +506,8 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         
     }*/
 
-    //MARK: User Notifications
-    
-    //remote Notification funcs for subscriptions
     
     
-    //this func it pretty dumb, so I get a notif when a any breadcrumb changes(it includes the recordid)
-    //but it does not tell me what specific value has changed
-    //so i just update the only two that can, comment and vote
-    //at least to my knowledge this is how it works
-    
-
-    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-        
-        
-        let cloudKitNotification = CKNotification.init(fromRemoteNotificationDictionary: userInfo as! [String : NSObject])
-        
-        
-        switch application.applicationState {
-        case .active:
-            print("hello")
-            //app is currently active, can update badges count here
-            break
-        case .inactive:
-            //app is transitioning from background to foreground (user taps notification), do what you need when user taps here
-            print("hello")
-
-            break
-        case .background:
-            print("hello")
-
-            //app is in background, if content-available key of your notification is set to 1, poll to your backend to retrieve data and update your interface here
-            break
-        }
-        
-        
-        
-        //let alertBody = cloudKitNotification.alertBody//123
-        //print(alertBody!)
-        print("recieved notif")
-        if cloudKitNotification.notificationType == .query {
-            if cloudKitNotification.alertBody == "Somebody upvoted on one of your Crumbs, Congrats!"{
-                let recordID = (cloudKitNotification as! CKQueryNotification).recordID
-                let voteValue = (cloudKitNotification as! CKQueryNotification).recordFields?.first?.value as? Int
-                
-                helperfunctions.updateCrumbFromSub(recorduuid: recordID!, NewVote: voteValue)
-                
-            }else if cloudKitNotification.alertBody == "Someone commented on your Crumb check it out!"{
-                let recordID = (cloudKitNotification as! CKQueryNotification).recordFields?.first?.value as? CKReference
-                //print((cloudKitNotification as! CKQueryNotification).recordFields)
-                if let id = recordID?.recordID{
-                    print("have id is getting in did recieve remote notification")
-                    helperfunctions.getcommentcktocd(ckidToTest: id)
-                }else{
-                    helperfunctions.updateTableViewcomments()//updates all
-                }
-            }
-            workAroundState = 1
-            
-            completionHandler(.newData)
-        }
-        
-    }
-    
-    var workAroundState: Int = 0
-    //user Notification funcs function for load and store
-    
-    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
-        
-        print("willPresent")
-        completionHandler([.badge, .alert, .sound])
-    }
-    
-    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
-        print("didrecieve")
-        
-        let dictionary = response.notification.request.content.userInfo
-        let recordid = dictionary["RecordUuid"] as? String
-        let userid = dictionary["UserId"] as? String
-        
-        
-        if response.actionIdentifier == UNNotificationDefaultActionIdentifier && recordid != nil{
-            notifTakeToCrumb(userid: userid!, recordid: recordid!)
-        }
-        completionHandler()
-    }
-    
-    
-    
-    func notifTakeToCrumb(userid: String, recordid: String){
-        let storyboard = UIStoryboard(name: "Main", bundle: nil)
-        
-        let initialViewController = storyboard.instantiateViewController(withIdentifier: "TabBarController") as! UITabBarController
-        
-        if userid != NSUserData.string(forKey: "recordID"){//need to open into view crumbs but idk how
-            initialViewController.selectedIndex = 2
-            self.window?.rootViewController = initialViewController
-            
-            let others = initialViewController.selectedViewController as! OthersCrumbsTableViewController
-            
-            let segue = UIStoryboardSegue(identifier: "othersviewcrumb", source: others, destination: ViewCrumbViewController() as UIViewController)
-            
-            let upcoming = segue.destination as! ViewCrumbViewController
-            
-            let crumbmsg = helperfunctions.getSpecific(recorduuid: recordid)
-            
-            upcoming.crumbmsg = crumbmsg
-            
-            upcoming.delegate = others
-            
-        }
-    }
-    
-    func notify(title: String ,body: String, crumbID: String, userId: String) {//used in load and store
-        let requestIdentifier = "ARequestId" //identifier is to cancel the notification request
-        print("notify run")
-        //use crumbid to know which viewcrumb to open
-        if #available(iOS 10.0, *) {
-            
-            let badgeNumber = UIApplication.shared.applicationIconBadgeNumber
-            
-            
-            let content = UNMutableNotificationContent()
-            content.categoryIdentifier = "CALLINNOTIFICATION"
-            content.title = title
-            content.body = body
-            content.sound = UNNotificationSound.default()
-            content.userInfo = ["RecordUuid": crumbID, "UserId": userId]
-            let newbadge = 1 + badgeNumber
-            content.badge = newbadge as NSNumber?
-            
-            
-            // Deliver the notification in five seconds.
-            
-            let trigger = UNTimeIntervalNotificationTrigger.init(timeInterval: 5.0, repeats: false)
-            let request = UNNotificationRequest(identifier:requestIdentifier, content: content, trigger: trigger)
-            
-            UNUserNotificationCenter.current().delegate = self
-            UNUserNotificationCenter.current().add(request){(error) in
-                
-                print("notification sent")
-                
-                self.goto = crumbID
-                self.gotouser = userId
-                if (error != nil){
-                    
-                    print(error?.localizedDescription ?? "error in notify")
-                }
-            }
-        }
-    }
     //MARK: misc stack
     //***********************************************************************************************************************//
 
@@ -671,7 +523,15 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         //self.NSUserData.setValue(0, forKey: "counterLoc")
         
         
+        
         //timerRepeatLoadAndStore?.invalidate()
+        
+        
+        let cm = CrumbMessage(text: "hello", senderName: "john", location: locationManager.location!, timeDropped: Date(), timeLimit: 1, senderuuid: "asdfihyvczxouewrqn", votes: 12)
+        cm!.hasVoted = 0
+        cm!.uRecordID = UUID().uuidString
+        helperfunctions.saveToCoreData(cm!)
+
         timerForLoadAndStore()//starts checking for messages with load and store if needed
         
         
@@ -707,7 +567,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         //open to msg if value is found from a notification
         if !(goto.isEmpty){
             print("hello")
-            notifTakeToCrumb(userid: gotouser, recordid: goto)
+            //notifTakeToCrumb(userid: gotouser, recordid: goto) notif
 
         }
         
@@ -730,9 +590,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             helperfunctions.checkMarkedForDeleteCD()//deletes old markeds
             
             
-            if workAroundState == 1{
-                
-            }
+            /*if workAroundState == 1{
+                notif
+            }*/
             
             
             /*no let us sit down and I shall tell ye a story. As I was writing updatetableviewcomments something strange happened. The entire app broke. Somehow, I had failed to notice that the update to ios 10 and swift 3 made inert my coredata code and brought to light some threading issues I had programmed. I am indeed an inexperienced ios programmer. I went from lead to lead, breaking the app one way and another trying to figure out the why and the what that caused my app to fail. Initially i thought it was my datamodel, and/or that my nsobject classes were getting confused with older versions of themselves. then after that debaucle I started reading about managed object contexts and how they work, after fucking with that thinking it was the core problem(it was really just a symptom) I discovered threads, and after learning how they worked; I could see that lots of my coredata code was sitting in completion handlers which run in a thread other than the main one. from there debuging all my poorly written code has been relatively easy. */
@@ -878,6 +738,173 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         //self.saveContext()
     }
 }
+
+
+extension AppDelegate: UNUserNotificationCenterDelegate{
+    //MARK: User Notifications
+    
+    //remote Notification funcs for subscriptions
+    
+    
+    
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+    print("GUTEN TAG from Did Recieve Remote Notification ")
+    }
+    
+    
+    
+    
+    
+    /*
+    
+    //this func it pretty dumb, so I get a notif when a any breadcrumb changes(it includes the recordid)
+    //but it does not tell me what specific value has changed
+    //so i just update the only two that can, comment and vote
+    //at least to my knowledge this is how it works
+    
+    
+    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
+        
+        
+        let cloudKitNotification = CKNotification.init(fromRemoteNotificationDictionary: userInfo as! [String : NSObject])
+        
+        
+        switch application.applicationState {
+        case .active:
+            print("hello")
+            //app is currently active, can update badges count here
+            break
+        case .inactive:
+            //app is transitioning from background to foreground (user taps notification), do what you need when user taps here
+            print("hello")
+            
+            break
+        case .background:
+            print("hello")
+            
+            //app is in background, if content-available key of your notification is set to 1, poll to your backend to retrieve data and update your interface here
+            break
+        }
+        
+     
+        
+        //let alertBody = cloudKitNotification.alertBody//123
+        //print(alertBody!)
+        print("recieved notif")
+        if cloudKitNotification.notificationType == .query {
+            if cloudKitNotification.alertBody == "Somebody upvoted on one of your Crumbs, Congrats!"{
+                let recordID = (cloudKitNotification as! CKQueryNotification).recordID
+                let voteValue = (cloudKitNotification as! CKQueryNotification).recordFields?.first?.value as? Int
+                
+                helperfunctions.updateCrumbFromSub(recorduuid: recordID!, NewVote: voteValue)
+                
+            }else if cloudKitNotification.alertBody == "Someone commented on your Crumb check it out!"{
+                let recordID = (cloudKitNotification as! CKQueryNotification).recordFields?.first?.value as? CKReference
+                //print((cloudKitNotification as! CKQueryNotification).recordFields)
+                if let id = recordID?.recordID{
+                    print("have id is getting in did recieve remote notification")
+                    helperfunctions.getcommentcktocd(ckidToTest: id)
+                }else{
+                    helperfunctions.updateTableViewcomments()//updates all
+                }
+            }
+            //workAroundState = 1
+            
+            completionHandler(.newData)
+        }
+        
+    }
+    
+    //var workAroundState: Int = 0
+    //user Notification funcs function for load and store
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        
+        print("willPresent")
+        completionHandler([.badge, .alert, .sound])
+    }
+    
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        print("didrecieve")
+        
+        let dictionary = response.notification.request.content.userInfo
+        let recordid = dictionary["RecordUuid"] as? String
+        let userid = dictionary["UserId"] as? String
+        
+        
+        if response.actionIdentifier == UNNotificationDefaultActionIdentifier && recordid != nil{
+            notifTakeToCrumb(userid: userid!, recordid: recordid!)
+        }
+        completionHandler()
+    }
+    
+    
+    
+func notifTakeToCrumb(userid: String, recordid: String){
+        let storyboard = UIStoryboard(name: "Main", bundle: nil)
+        
+        let initialViewController = storyboard.instantiateViewController(withIdentifier: "TabBarController") as! UITabBarController
+        
+        if userid != NSUserData.string(forKey: "recordID"){//need to open into view crumbs but idk how
+            initialViewController.selectedIndex = 2
+            self.window?.rootViewController = initialViewController
+            
+            let others = initialViewController.selectedViewController as! OthersCrumbsTableViewController
+            
+            let segue = UIStoryboardSegue(identifier: "othersviewcrumb", source: others, destination: ViewCrumbViewController() as UIViewController)
+            
+            let upcoming = segue.destination as! ViewCrumbViewController
+            
+            let crumbmsg = helperfunctions.getSpecific(recorduuid: recordid)
+            
+            upcoming.crumbmsg = crumbmsg
+            
+            upcoming.delegate = others
+            
+        }
+    }
+    */
+    func notify(title: String ,body: String, crumbID: String, userId: String) {//used in load and store
+        let requestIdentifier = "ARequestId" //identifier is to cancel the notification request
+        print("notify run")
+        //use crumbid to know which viewcrumb to open
+        if #available(iOS 10.0, *) {
+            
+            let badgeNumber = UIApplication.shared.applicationIconBadgeNumber
+            
+            
+            let content = UNMutableNotificationContent()
+            content.categoryIdentifier = "CALLINNOTIFICATION"
+            content.title = title
+            content.body = body
+            content.sound = UNNotificationSound.default()
+            content.userInfo = ["RecordUuid": crumbID, "UserId": userId]
+            let newbadge = 1 + badgeNumber
+            content.badge = newbadge as NSNumber?
+            
+            
+            // Deliver the notification in five seconds.
+            
+            let trigger = UNTimeIntervalNotificationTrigger.init(timeInterval: 5.0, repeats: false)
+            let request = UNNotificationRequest(identifier:requestIdentifier, content: content, trigger: trigger)
+            
+            UNUserNotificationCenter.current().delegate = self
+            UNUserNotificationCenter.current().add(request){(error) in
+                
+                print("notification sent")
+                
+                self.goto = crumbID
+                self.gotouser = userId
+                if (error != nil){
+                    
+                    print(error?.localizedDescription ?? "error in notify")
+                }
+            }
+        }
+    }
+ 
+}
+
 
 // FIXME: comparison operators with optionals were removed from the Swift Standard Libary.
 // Consider refactoring the code to use the non-optional operators.
