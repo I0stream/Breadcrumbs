@@ -530,7 +530,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         let cm = CrumbMessage(text: "hello", senderName: "john", location: locationManager.location!, timeDropped: Date(), timeLimit: 1, senderuuid: "asdfihyvczxouewrqn", votes: 12)
         cm!.hasVoted = 0
         cm!.uRecordID = UUID().uuidString
-        helperfunctions.saveToCoreData(cm!)
+        //helperfunctions.saveToCoreData(cm!)
 
         timerForLoadAndStore()//starts checking for messages with load and store if needed
         
@@ -746,13 +746,9 @@ extension AppDelegate: UNUserNotificationCenterDelegate{
     //remote Notification funcs for subscriptions
     
     
-    
-    func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
-    print("GUTEN TAG from Did Recieve Remote Notification ")
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        print("GUTEN TAG from Did Recieve Notification ")
     }
-    
-    
-    
     
     
     /*

@@ -288,7 +288,141 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
                     cell.VoteButton.setTitleColor(orangeColor, for: .normal)
                 }
                 return cell
-            }else {//MESSAGE HAS PHOTO
+            }else if crumbmsg.text == "   " || crumbmsg.text == ""{//MARK: CopyPasta code from yours and others, FML reWriting
+                
+                
+                
+                let cell = tableView.dequeueReusableCell(withIdentifier: "OnlyPhotoCell", for: indexPath) as! PhotoOnlyTableViewCell
+                
+                //Hide report button if you are the owner if not enable it
+                if crumbmsg?.senderuuid == userSelf{
+                    cell.ReportButton.isHidden = true///////////////////////
+                    cell.ReportButton.isEnabled = false
+                }else if crumbmsg?.senderuuid != userSelf{
+                    cell.ReportButton.isHidden = false///////////////////////
+                    cell.ReportButton.isEnabled = true
+                    
+                    cell.ReportButton.tag = indexPath.row
+                    cell.ReportButton.addTarget(self, action: #selector(ViewCrumbViewController.report), for: .touchUpInside)
+                }
+                
+                
+                //.scaleAspectFit
+                cell.UserUploadedPhotoUIView.contentMode = .scaleAspectFill
+                cell.UserUploadedPhotoUIView.image = crumbmsg.photo
+                
+                /*if original aspect ratio is non landscape position the photo as wide and focused on the top*/
+                
+                cell.imageButton.addTarget(self, action: #selector(ViewCrumbViewController.imageSeggy), for: .touchUpInside)
+                
+                cell.ExitCrumbButton.addTarget(self, action: #selector(ViewCrumbViewController.exitCrumb), for: .touchUpInside)
+                cell.ExitCrumbButton.isUserInteractionEnabled = true
+
+                let longPressRecognizer = UILongPressGestureRecognizer(target: self, action: #selector(longPressToSave(sender:)))
+                longPressRecognizer.minimumPressDuration = 0.5
+                cell.imageButton.addGestureRecognizer(longPressRecognizer)
+                
+                cell.imageButton.tag = indexPath.row
+                cell.imageButton.addTarget(self, action: #selector(YourCrumbsTableViewController.imageSeggy), for: .touchUpInside)
+                
+                cell.UserUploadedPhotoUIView.layer.cornerRadius = 5.0
+                cell.UserUploadedPhotoUIView.clipsToBounds = true
+                
+                
+                //sets the values for the labels in the cell, time value and location value
+                
+                //setColorVoteButton
+                if crumbmsg.isAlive(){
+                    cell.CommentButton.setImage(#imageLiteral(resourceName: "comment"), for: .normal)
+                    cell.CommentValueLabel.textColor = orangeColor
+                } else{
+                    cell.CommentButton.setImage(#imageLiteral(resourceName: "Comment-Grey"), for: .normal)
+                    cell.CommentValueLabel.textColor = greyColor
+                }
+                
+                //setColorVoteButton and value color
+                if crumbmsg.hasVoted == 1{//user has voted
+                    if crumbmsg.isAlive(){
+                        cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartfilled"), for: .normal)
+                        cell.VoteValue.textColor = orangeColor
+                    } else{
+                        cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartFilled-Grey"), for: .normal)
+                        cell.VoteValue.textColor = greyColor
+                    }
+                    
+                }else if crumbmsg.hasVoted == 0{
+                    if crumbmsg.isAlive(){
+                        cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartEmpty"), for: .normal)
+                        cell.VoteValue.textColor = orangeColor
+                    } else{ //dead
+                        cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHearEmpty-Grey"), for: .normal)
+                        cell.VoteValue.textColor = greyColor
+                    }
+                }
+                
+                
+                //sets the values for the labels in the cell, time value and location value
+                
+                cell.CommentValueLabel.text = "\(comments.count)"
+                //set action for create comment button
+                if crumbmsg!.calculateTimeLeftInHours() > 0 {
+                    cell.CommentButton.addTarget(self, action: #selector(ViewCrumbViewController.commentSegue), for: .touchUpInside)
+                    cell.VoteButton.addTarget(self, action: #selector(ViewCrumbViewController.Vote), for: .touchUpInside)
+                    
+                } else{
+                    let color = UIColor(red: 146/255, green: 144/255, blue: 144/255, alpha: 1)//greay color
+                    cell.CommentButton.setTitleColor(color, for: .normal)
+                    //msgCell.CreateCommentButton.addTarget(self, action: #selector(ViewCrumbViewController.noCommentIndicator), for: .touchUpInside)
+                    //msgCell.VoteButton.addTarget(self, action: #selector(ViewCrumbViewController.noVoteIndicator), for: .touchUpInside)
+                    
+                }
+                
+                
+                cell.VoteValue.text = "\(crumbmsg!.votes)"
+                cell.YouTheUserLabel.text = crumbmsg.senderName
+                
+                var textwidth = cell.YouTheUserLabel.intrinsicContentSize.width
+                let contentwidth = UIScreen.main.bounds.width - 70//screen width minus total constraints and item widths + 15 padding
+                if textwidth > contentwidth{
+                    while textwidth > contentwidth {
+                        cell.YouTheUserLabel.font = cell.YouTheUserLabel.font.withSize((cell.YouTheUserLabel.font.pointSize-1))
+                        textwidth = cell.YouTheUserLabel.intrinsicContentSize.width
+                    }
+                }
+                
+                //cell.YouTheUserLabel.font = UIFont.
+                cell.TimeRemainingValueLabel.text = crumbmsg.timeRelative()//time is how long ago it was posted, dont see the point to change var name to something more explanatory right now
+                
+                
+                if crumbmsg.calculateTimeLeftInHours() > 0 {
+                    let ref = Int(crumbmsg.calculateTimeLeftInHours())
+                    
+                    let uicolorNormal = UIColor(red: 146/255, green: 144/255, blue: 144/255, alpha: 1)
+                    cell.timeCountdown.textColor = uicolorNormal
+                    
+                    if ref >= 1 {
+                        cell.timeCountdown.text! = "\(ref)h left"//////////////////////////////////////////////////
+                    }else {
+                        cell.timeCountdown.text! = "Nearly Done!"
+                    }
+                } else{
+                    cell.timeCountdown.text! = "Time's up!"
+                    
+                    //Time's up indication Red Color
+                    let uicolor = UIColor(red: 225/255, green: 50/255, blue: 50/255, alpha: 1)
+                    cell.timeCountdown.textColor = uicolor
+                    //
+                }
+                
+                //setColorVoteButton
+                if crumbmsg?.hasVoted == 1{//user has voted
+                    cell.VoteButton.setTitleColor(blueColor, for: .normal)
+                }else if crumbmsg?.hasVoted == 0{
+                    cell.VoteButton.setTitleColor(orangeColor, for: .normal)
+                }
+                
+                return cell
+            } else {//MESSAGE HAS PHOTO AND MESSAGESDSDFSAGSD
                 
                 //imagecrumbscell BASIC SETUP
                 let cell = tableView.dequeueReusableCell(withIdentifier: "imagecrumbscell", for: indexPath) as! crumbPlusImageTableViewCell

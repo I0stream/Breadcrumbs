@@ -14,6 +14,9 @@ class PhotoOnlyTableViewCell: UITableViewCell {
     @IBOutlet weak var TimeRemainingValueLabel: UILabel!
     @IBOutlet weak var timeCountdown: UILabel!
     
+    @IBOutlet weak var ExitCrumbButton: UIButton!
+    
+    
     @IBOutlet weak var ReportButton: UIButton!
     
     
