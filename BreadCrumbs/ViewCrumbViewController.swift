@@ -104,7 +104,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         //NotifLoad
         //NotificationCenter.default.addObserver(self, selector: #selector(ViewCrumbViewController.BlueDotIndicate(_:)),name:NSNotification.Name(rawValue: "NotifLoad"), object: nil)
 
-        print(helperFunctions.CountComments(uniqueRecordID: (crumbmsg?.uRecordID!)!))
+        //print(helperFunctions.CountComments(uniqueRecordID: (crumbmsg?.uRecordID!)!))
         
         loadComments()
         //animateInfoBar("Pull to refresh")
@@ -248,7 +248,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
                 //sets the values for the labels in the cell, time value and location value
                 
                 cell.VoteValue.text = "\(crumbmsg!.votes)"
-                
+                cell.CommentValueLabel.text = "\(comments.count)"
                 
                 cell.MsgTextView.text = crumbmsg!.text
                 cell.UserLabel.text = crumbmsg!.senderName
@@ -288,7 +288,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
                     cell.VoteButton.setTitleColor(orangeColor, for: .normal)
                 }
                 return cell
-            }else if crumbmsg.text == "   " || crumbmsg.text == ""{//MARK: CopyPasta code from yours and others, FML reWriting
+            }else if crumbmsg.text == "   " || crumbmsg.text == ""{//MARK: CopyPasta code from yours and others, FML reWriting PHOTO ONLY
                 
                 
                 
@@ -421,6 +421,16 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
                     cell.VoteButton.setTitleColor(orangeColor, for: .normal)
                 }
                 
+                ///setup to resize aspect ratio
+                let heightConstraint = cell.PhotoHeightConstraint.constant
+                let widthConstraint = cell.PhotoWidthConstraint.constant
+                let imageHeight = crumbmsg.photo?.size.height
+                let imageWidth = crumbmsg.photo?.size.width
+                //resize photo 'height' in order to match aspect ratio
+                cell.PhotoHeightConstraint.constant = ResizeImage(heightConstraint: heightConstraint, widthConstraint: widthConstraint, ImageHeight: imageHeight!, ImageWidth: imageWidth!)
+                
+                
+                
                 return cell
             } else {//MESSAGE HAS PHOTO AND MESSAGESDSDFSAGSD
                 
@@ -537,6 +547,16 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
                 }else if crumbmsg?.hasVoted == 0{
                     cell.VoteButton.setTitleColor(orangeColor, for: .normal)
                 }
+                
+                
+                ///setup to resize aspect ratio
+                let heightConstraint = cell.PhotoHeightConstraint.constant
+                let widthConstraint = cell.PhotoWidthConstraint.constant
+                let imageHeight = crumbmsg.photo?.size.height
+                let imageWidth = crumbmsg.photo?.size.width
+                //resize photo 'height' in order to match aspect ratio
+                cell.PhotoHeightConstraint.constant = ResizeImage(heightConstraint: heightConstraint, widthConstraint: widthConstraint, ImageHeight: imageHeight!, ImageWidth: imageWidth!)
+                
                 return cell
 
             }
@@ -586,7 +606,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
     func imageSeggy(sender: UIButton){
-        print("segue to image viewer")
+        //print("segue to image viewer")
         self.performSegue(withIdentifier: "viewimageviewseg", sender: sender)
         
     }
@@ -655,7 +675,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     
     //createcommentdelegate function
     func addNewComment(_ newComment: CommentShort){
-        print("new comment")
+        //print("new comment")
         comments += [newComment]
         YourtableView.reloadData()
     }
@@ -854,6 +874,29 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     }
     
 }
+extension ViewCrumbViewController{
+    /**
+     *Helps resize photos by outputing new constraints based on the image's height and width*
+     
+     */
+    func ResizeImage(heightConstraint: CGFloat, widthConstraint: CGFloat, ImageHeight: CGFloat, ImageWidth: CGFloat
+        ) -> CGFloat{
+        //NOTE Aspect Ratio is W:H
+        var newHeightConstraint: CGFloat = 300
+        let aspectRatio: CGFloat = (ImageWidth)/(ImageHeight)
+        
+        if (1.01 < aspectRatio) && (aspectRatio <= 2){// landscape
+            newHeightConstraint = newHeightConstraint / aspectRatio
+            //it will always be 300 wide although may want to grab that width constraint
+            //incase later we need to resize due to phone sizes
+        } else if aspectRatio <= 1.01{//force square on square and verticals
+            newHeightConstraint = 300
+        }
+        
+        return newHeightConstraint
+    }
+}
+
 //reloads table in yours or others in order to persist vote button colors colors
 protocol NewOthersCrumbsViewControllerDelegate: class {
     func reloadTables()

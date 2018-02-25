@@ -25,6 +25,11 @@ class crumbPlusImageTableViewCell: UITableViewCell, UITextViewDelegate {
     
     @IBOutlet weak var ImageViewOnCell: UIImageView!
     
+    @IBOutlet weak var PhotoHeightConstraint: NSLayoutConstraint!
+    
+    @IBOutlet weak var PhotoWidthConstraint: NSLayoutConstraint!
+    
+    
     @IBOutlet weak var CommentButton: UIButton!
     @IBOutlet weak var CommentValueLabel: UILabel!
     

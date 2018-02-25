@@ -27,9 +27,17 @@
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
 	<key>NSLocationAlwaysUsageDescription</key>
+	<string>For receiving location based messages</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>For sending and receiving location based messages</string>
+	<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+	<string></string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Allow photo</string>
+	<string>For posting photos for the user&apos;s posterity</string>
+	<key>NSPhotoLibraryAddUsageDescription</key>
+	<string>For saving cool photos to your phone</string>
+	<key>NSCameraUsageDescription</key>
+	<string>For taking photos and posting them</string>
 	<key>UIApplicationExitsOnSuspend</key>
 	<false/>
 	<key>UIBackgroundModes</key>

@@ -24,6 +24,13 @@ class ImageMessageTableViewCell: UITableViewCell {
     @IBOutlet weak var VoteButton: UIButton!
     @IBOutlet weak var ReportButton: UIButton!
     @IBOutlet weak var UserUploadedPhotoUIView: UIImageView!
+    
+    @IBOutlet weak var PhotoHeightConstraint: NSLayoutConstraint!
+    
+    
+    @IBOutlet weak var PhotoWidthConstraint: NSLayoutConstraint!
+    
+    
     @IBOutlet weak var imageButton: UIButton!
     
     @IBOutlet weak var CommentButton: UIButton!

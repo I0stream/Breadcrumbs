@@ -41,6 +41,16 @@ class ImageViewerViewController: UIViewController, UIScrollViewDelegate {
         longPressRecognizer.minimumPressDuration = 0.5
         ScrollZoomViewContrainer.addGestureRecognizer(longPressRecognizer)
     }
+    
+    
+    
+    override func viewWillTransition(to size: CGSize, with coordinator: UIViewControllerTransitionCoordinator) {
+        if UIDevice.current.orientation.isLandscape {
+            print("Landscape")
+        } else {
+            print("Portrait")
+        }
+    }
 
     
     @IBAction func savefotoButtonAction(_ sender: Any) {

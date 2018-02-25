@@ -64,6 +64,8 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     
     weak var DeAnimateTimer = Timer()
     
+    let messagelength = 200 //characters = number + 1
+    
     //MARK: Properties
     
     @IBOutlet weak var pickeroutlet: UIButton!
@@ -90,7 +92,9 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         
         self.locationManager.startUpdatingLocation()
         locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
-
+        
+        
+        
         datePicker.delegate = self
         // Handle the text field’s user input through delegate callbacks.
         self.crumbMessageTextView.delegate = self
@@ -113,17 +117,6 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         let tap: UITapGestureRecognizer = UITapGestureRecognizer(target: self, action: #selector(dismissKeyboard))
         self.hideKeyboardWhenTappedAround()
         
-        if #available(iOS 10.0, *) {
-            UNUserNotificationCenter.current().requestAuthorization(options: [.alert, .sound, .badge]) {
-                (granted, error) in
-                //Parse errors and track state
-            }
-            UIApplication.shared.registerForRemoteNotifications()
-        }else{
-            UIApplication.shared.registerUserNotificationSettings(UIUserNotificationSettings(types: [.alert, .badge, .sound], categories: nil))
-            UIApplication.shared.registerForRemoteNotifications()
-
-        }
         
         if NSUserData.integer(forKey: "LastPickedTime") == 0{
             currentTime = 48
@@ -150,17 +143,49 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
             if NSUserData.integer(forKey: "limitArea") == 1{
                 animateInfoBar("Too many crumbs in area")
             }
-        }else if checkLocation() == false{//this is the code i am most proud of, animation is so good
-            animateInfoBar("Location is down")
+        }else if checkLocation() == false{
+            switch CLLocationManager.authorizationStatus() {
+            case .restricted, .denied, .notDetermined:
+                animateInfoBar("Please enable location services")
+                DeAnimateTimer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(checkToDeAnimate), userInfo: nil, repeats: true)
+                break
+            case .authorizedAlways, .authorizedWhenInUse:
+                animateInfoBar("Location services are unavailable")
+                
+                DeAnimateTimer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(checkToDeAnimate), userInfo: nil, repeats: true)
+                break
+            }
             
-            DeAnimateTimer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(checkToDeAnimate), userInfo: nil, repeats: true)
         }
-        
         
         view.addGestureRecognizer(tap)
         
     }
 
+    //TAKE SICK PHTOSOOOOSSS XDDDDD
+    @IBAction func CameraButtonAction(_ sender: Any) {
+        print("click XDDDD")
+        if (UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.camera)){
+            if isinfobaropent == true{
+                UNanimateInfoBar()
+            }
+            let picker = UIImagePickerController()
+            picker.delegate = self
+            
+            
+            picker.allowsEditing = false
+            picker.sourceType = .camera
+            
+            
+            picker.modalPresentationStyle = .popover
+            present(picker, animated: true, completion: nil)
+        }
+        else{
+            animateInfoBar("Camera is disabled")
+            
+        }
+    }
+    
     
     
     //not my code=>
@@ -185,7 +210,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
             present(picker, animated: true, completion: nil)
         }
         else{
-            animateInfoBar("No Camera.")
+            animateInfoBar("Camera is disabled")
 
         }
     }
@@ -199,10 +224,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         
         
         if ((test.length) / 1024) < 1500{
-            print("image right size")
             
-            let viewit = test.length / 1024
-            print(viewit)
             imageContainerUIImage.contentMode = .scaleAspectFit
             imageContainerUIImage.image = photoPicked
             uploadedPhoto = photoPicked
@@ -498,7 +520,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     
     //test msglength
     func msgLengthTest() -> Bool {
-        if crumbMessageTextView.text.count >= 257 || crumbMessageTextView.text.count < 1 || crumbMessageTextView.text == "What do you think?" {//fixed 256 off by one error; if want to shorten to 128 make sure to set as 129
+        if crumbMessageTextView.text.count >= messagelength || crumbMessageTextView.text.count < 1 || crumbMessageTextView.text == "What do you think?" || crumbMessageTextView.text.trimmingCharacters(in: .whitespaces).isEmpty{//fixed 256 off by one error; if want to shorten to 128 make sure to set as 129
             //fails to send
             return false
         }
@@ -519,10 +541,15 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         
         // Disable the Save button if the text field is empty.
         //let text = crumbMessageTextView.text ?? ""
-        if (crumbMessageTextView.text != "What do you think?" || uploadedPhoto != nil ) && crumbMessageTextView.text.count <= 256 {
-            if checkLocation() && currentReachabilityStatus != .notReachable {
-                submitView.isHidden = false
-                postButtonOutlet.isEnabled = true
+        
+        //if only photo, if message,
+        if (crumbMessageTextView.text != "What do you think?" || uploadedPhoto != nil)
+            && (crumbMessageTextView.text.count <= messagelength - 1){
+            if !crumbMessageTextView.text.trimmingCharacters(in: .whitespaces).isEmpty{//if empty empty then disallow
+                if checkLocation() && currentReachabilityStatus != .notReachable {
+                    submitView.isHidden = false
+                    postButtonOutlet.isEnabled = true
+                }
             }
         }
     }
@@ -541,16 +568,17 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     func textViewDidChangeSelection(_ textView: UITextView) {
         postButtonEnabledIfTestsTrue()
     }
+    
     //track chars in msgview and highlight dat sheeit
     func textViewDidChange(_ textView: UITextView) {
         if crumbMessageTextView.text != "What do you think?"{            
             
             msgCharCount = crumbMessageTextView.text.count
-            charLabelCount.text = String(256 - msgCharCount)
+            charLabelCount.text = String(messagelength - msgCharCount)
         } else {
-            charLabelCount.text = String(256)
+            charLabelCount.text = String(messagelength)
         }
-        if crumbMessageTextView.text.count >= 256 {
+        if crumbMessageTextView.text.count >= messagelength-1 {
             charLabelCount.textColor = UIColor(red: 1, green: 0, blue: 0, alpha: 1)
         }else{
             charLabelCount.textColor = UIColor(red: 162/255, green: 162/255, blue: 162/255, alpha: 1)
@@ -592,6 +620,8 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         postButtonOutlet.isEnabled = false
         locationManager.desiredAccuracy = kCLLocationAccuracyThreeKilometers
     }
+    
+    
 }
 
 /*extension WriteCrumbViewController{
@@ -600,10 +630,31 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
 extension WriteCrumbViewController{//MARK: Alarm info bar
     //MARK: timer
     func checkToDeAnimate(){
-        if checkLocation() == true{
+        if checkLocation() == true && currentReachabilityStatus != .notReachable{
             locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
             UNanimateInfoBar()
             DeAnimateTimer?.invalidate()
+        }else{
+            if checkLocation() == false{
+                switch CLLocationManager.authorizationStatus() {
+                case .restricted, .denied, .notDetermined://updates from one to other if needed
+                    let textview = view.viewWithTag(4) as? UITextField
+                    if textview?.text! == "Location services are unavailable" {
+                        self.UNanimateInfoBar()
+                        self.animateInfoBar("Please enable location services")
+                    }
+                    break
+                case .authorizedAlways, .authorizedWhenInUse:
+                    let textview = view.viewWithTag(4) as? UITextField
+                    if textview?.text! == "Please enable location services" {
+                        self.UNanimateInfoBar()
+                        self.animateInfoBar("Location services are unavailable")
+                    }
+                    
+                    break
+                }
+                
+            }
         }
     }
     

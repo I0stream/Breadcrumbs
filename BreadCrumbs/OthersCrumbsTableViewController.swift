@@ -11,8 +11,9 @@ import CloudKit
 import UIKit
 import CoreLocation
 import CoreData
+import UserNotifications
 
-class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource, UITableViewDelegate,NewOthersCrumbsViewControllerDelegate {
+class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource, UITableViewDelegate, NewOthersCrumbsViewControllerDelegate, UNUserNotificationCenterDelegate {
     
     //i write my best code when I have no sleep
     //and by "my best code" I mean my worst code
@@ -73,6 +74,8 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
         
         NotificationCenter.default.addObserver(self, selector: #selector(YourCrumbsTableViewController.listenForBackground), name: NSNotification.Name(rawValue: "UIApplicationDidEnterBackgroundNotification"), object: nil)
         
+        //NSUserData.setValue(0, forKey: "NotifAsker")
+
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -115,6 +118,8 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
         
         if indexPath.row == crumbmessages.count && crumbmessages.count != 0 {// if last element of index
             return heightspacer
+        }else if crumbmessages.count == 0 && NSUserData.integer(forKey: "NotifAsker") == 0{
+            return 200
         }else if crumbmessages.count == 0{
             return 100
         }else if cellHeights.indices.contains(indexPath.row){//if we have a height for that indexpath
@@ -133,7 +138,6 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
         //set up upcoming view with crumb/object data
     
             let upcoming = segue.destination as! ViewCrumbViewController
-        
             let indexPath = OthersTableView.indexPathForSelectedRow!
             let crumbmsg = crumbmessages[indexPath.row]
             
@@ -170,16 +174,48 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
             
             upcoming.theImage = crumbmsg.photo
             
+        } else if segue.identifier == "FromNotification"{
+            let upcoming = segue.destination as! ViewCrumbViewController
+            let crumb = sender as! CrumbMessage
+            upcoming.crumbmsg = crumb
         }
         
     }
     
     
+    func dontAllowNotif(){
+        print("dont allow")
+        NSUserData.setValue(1, forKey: "NotifAsker")
+        reloadTables()
+    }
+    func doAllowNotif(){
+        print("do allow")
+        UNUserNotificationCenter.current().delegate = AppDelegate()
+    UNUserNotificationCenter.current().requestAuthorization(options: [.badge, .sound, .alert]) { (granted, error) in
+            if granted {
+                AppDelegate().registerCategory()
+                self.NSUserData.setValue(1, forKey: "NotifAsker")
+                self.reloadTables()
+            } else{
+                self.NSUserData.setValue(1, forKey: "NotifAsker")
+                self.reloadTables()
+            }
+        }
+    }
+    
     //MARK: Load Messages
     
     // populate cell's view with object data
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-
+        
+        
+        if crumbmessages.count == 0 && NSUserData.integer(forKey: "NotifAsker") == 0{
+            let cell = tableView.dequeueReusableCell(withIdentifier: "NotificationMessage", for: indexPath) as! NotificationNotifierTableViewCell
+            
+            cell.AllowButton.addTarget(self, action: #selector(OthersCrumbsTableViewController.doAllowNotif), for: .touchUpInside)
+            cell.DontAllowButton.addTarget(self, action: #selector(OthersCrumbsTableViewController.dontAllowNotif), for: .touchUpInside)
+            return cell
+        }
         if crumbmessages.count == 0{
             let cell = tableView.dequeueReusableCell(withIdentifier: "NoCrumbMessage", for: indexPath)
             return cell
@@ -192,7 +228,7 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
             let crumbmsg = crumbmessages[indexPath.row]
             let commentValue = helperFunctions.loadComments(uniqueRecordID: crumbmsg.uRecordID!).count
             
-            if crumbmsg.photo == nil{//nophoto
+            if crumbmsg.photo == nil{//nophoto message only text only
                 let cell = tableView.dequeueReusableCell(withIdentifier: "OthersMsgCell", for: indexPath) as! OthersCrumbsTableViewCell
                 
                 //COMMENT
@@ -219,26 +255,25 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
                     cell.CommentValueLabel.textColor = greyColor
                 }
                 
-                
-                
-                
-                //setColorVoteButton
+                //setColorVoteButton and value color
                 if crumbmsg.hasVoted == 1{//user has voted
                     if crumbmsg.isAlive(){
                         cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartfilled"), for: .normal)
+                        cell.VoteValue.textColor = orangeColor
                     } else{
                         cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartFilled-Grey"), for: .normal)
-                        
+                        cell.VoteValue.textColor = greyColor
                     }
                     
                 }else if crumbmsg.hasVoted == 0{
                     if crumbmsg.isAlive(){
                         cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHeartEmpty"), for: .normal)
+                        cell.VoteValue.textColor = orangeColor
                     } else{ //dead
                         cell.VoteButton.setImage(#imageLiteral(resourceName: "likeHearEmpty-Grey"), for: .normal)
+                        cell.VoteValue.textColor = greyColor
                     }
-                }
-                // Fetches the appropriate msg for the data source layout.
+                }                // Fetches the appropriate msg for the data source layout.
                 
                 //sets the values for the labels in the cell, time value and location value
                 cell.CommentValueLabel.text = "\(commentValue)"
@@ -267,8 +302,7 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
                 cell.ReportButton.addTarget(self, action: #selector(OthersCrumbsTableViewController.report), for: .touchUpInside)
                 if crumbmsg.calculateTimeLeftInHours() > 0 {
                     let ref = Int(crumbmsg.calculateTimeLeftInHours())
-                    
-                    cell.timeCountdown.textColor = greyColor
+ 
                     
                     if ref >= 1 {
                         cell.timeCountdown.text! = "\(ref)h left"//////////////////////////////////////////////////
@@ -290,7 +324,9 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
             }else if crumbmsg.text == "   " || crumbmsg.text == ""{
                 let cell = tableView.dequeueReusableCell(withIdentifier: "OnlyPhotoCell", for: indexPath) as! PhotoOnlyTableViewCell
                 
-                cell.ReportButton.isHidden = true
+                cell.ReportButton.isHidden = false
+                cell.ReportButton.tag = indexPath.row
+                cell.ReportButton.addTarget(self, action: #selector(OthersCrumbsTableViewController.report), for: .touchUpInside)
                 
                 //.scaleAspectFit
                 cell.UserUploadedPhotoUIView.contentMode = .scaleAspectFill
@@ -379,6 +415,18 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
                     cell.timeCountdown.textColor = uicolor
                     //
                 }
+                
+                
+                ///setup to resize aspect ratio
+                let heightConstraint = cell.PhotoHeightConstraint.constant
+                let widthConstraint = cell.PhotoWidthConstraint.constant
+                let imageHeight = crumbmsg.photo?.size.height
+                let imageWidth = crumbmsg.photo?.size.width
+                //resize photo 'height' in order to match aspect ratio
+                cell.PhotoHeightConstraint.constant = ResizeImage(heightConstraint: heightConstraint, widthConstraint: widthConstraint, ImageHeight: imageHeight!, ImageWidth: imageWidth!)
+                
+                
+                
                 return cell
             } else {//has photo and message
                 
@@ -462,9 +510,6 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
                 cell.VoteButton.addTarget(self, action: #selector(YourCrumbsTableViewController.buttonActions), for: .touchUpInside)
                 
                 
-                
-                
-                
                 if crumbmsg.calculateTimeLeftInHours() > 0 {
                     let ref = Int(crumbmsg.calculateTimeLeftInHours())
                     
@@ -485,6 +530,16 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
                     //
                 }
                 
+                ///setup to resize aspect ratio
+                let heightConstraint = cell.PhotoHeightConstraint.constant
+                let widthConstraint = cell.PhotoWidthConstraint.constant
+                let imageHeight = crumbmsg.photo?.size.height
+                let imageWidth = crumbmsg.photo?.size.width
+                //resize photo 'height' in order to match aspect ratio
+                cell.PhotoHeightConstraint.constant = ResizeImage(heightConstraint: heightConstraint, widthConstraint: widthConstraint, ImageHeight: imageHeight!, ImageWidth: imageWidth!)
+                
+                
+                
                 return cell
 
             }
@@ -493,7 +548,7 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
     }
     //SEGUE to imageViewer
     func imageSeggy(sender: UIButton){
-        print("segue to image viewer")
+        //print("segue to image viewer")
         self.performSegue(withIdentifier: "OtherViewImageSeg", sender: sender)
         
     }
@@ -532,10 +587,13 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
         return 1
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        if crumbmessages.count == 0{
+        if crumbmessages.count == 0 && NSUserData.integer(forKey: "NotifAsker") == 0{
             //print("no messages; do something")
             return 1
-        } else{
+        }else if crumbmessages.count == 0{
+            //print("no messages; do something")
+            return 1
+        }else {
             return crumbmessages.count + 1
         }
     }
@@ -678,4 +736,27 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
     @IBAction func UnwindReciever(segue: UIStoryboardSegue) {
     }
 
+}
+extension OthersCrumbsTableViewController{
+    /**
+     *Helps resize photos by outputing new constraints based on the image's height and width*
+     
+     */
+    func ResizeImage(heightConstraint: CGFloat, widthConstraint: CGFloat, ImageHeight: CGFloat, ImageWidth: CGFloat
+        ) -> CGFloat{
+        //NOTE Aspect Ratio is W:H
+        var newHeightConstraint: CGFloat = 300
+        let aspectRatio: CGFloat = (ImageWidth)/(ImageHeight)
+        
+        
+        if (1.01 < aspectRatio) && (aspectRatio <= 2){// if landscape type try to fit it
+            newHeightConstraint = newHeightConstraint / aspectRatio
+            //it will always be 300 wide although may want to grab that width constraint
+            //incase later we need to resize due to phone sizes
+        } else if aspectRatio <= 1.01{//square
+            newHeightConstraint = 300
+        }
+        
+        return newHeightConstraint
+    }
 }

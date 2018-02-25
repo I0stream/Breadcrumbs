@@ -11,7 +11,6 @@ import UIKit
 class WelcomeViewController: UIViewController {
 
     let NSUserData = UserDefaults.standard//for storing states and numbers
-
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -35,6 +34,7 @@ class WelcomeViewController: UIViewController {
             performSegue(withIdentifier: "TrickyDick", sender: self)
         }
         else if AppDelegate().TestIfUserSignedIn(){
+            
             performSegue(withIdentifier: "AccountAlready", sender: self)
         } else{
             performSegue(withIdentifier: "ShowPg", sender: self)

@@ -31,8 +31,10 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row == 0{
-            changeUsername()
+            UIApplication.shared.open(URL(string:UIApplicationOpenSettingsURLString)!)
         }else if indexPath.row == 1{
+            changeUsername()
+        }else if indexPath.row == 4{
             //print("does not work in sim")
             let url = NSURL(string : "itms-apps://itunes.apple.com/app/id1191632460")! as URL//change later
             if #available(iOS 10.0, *) {
@@ -42,7 +44,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             }else{
                 UIApplication.shared.openURL(url)
             }
-        }else if indexPath.row == 2{
+        }else if indexPath.row == 3{
             //print("does not work in sim")
             let email = "breadcrumbs.help@gmail.com"
             let url = NSURL(string: "mailto:\(email)")
@@ -53,7 +55,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             }else {
                 UIApplication.shared.openURL(url! as URL)
             }
-        }else if indexPath.row == 3{
+        }else if indexPath.row == 2{
             let url = NSURL(string : "https://breadcrumbs.social/user-guidelines/")! as URL
             if #available(iOS 10.0, *) {
                 UIApplication.shared.open(url , options: ["yes" : "yes" as Any], completionHandler: { (true) in
@@ -65,7 +67,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }
     }
     func tableView(_ tableView: UITableView, numberOfRowsInSection section: Int) -> Int {
-        return 5
+        return 6
     }
     func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
         let cell = tableView.dequeueReusableCell(withIdentifier: "cell") as! settingsTableViewCell
@@ -73,24 +75,21 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         cell.selectionStyle = .none
         
         if indexPath.row == 0{
-            cell.settingLAbel.text = "Change Username"
-
+            cell.settingLAbel.text = "Preferences for Location or Notifications"
         }else if indexPath.row == 1{
-            cell.settingLAbel.text = " Rate The App"
-
+            cell.settingLAbel.text = "Change Username"
         }else if indexPath.row == 2{
-            cell.settingLAbel.text = "Customer Support"
-
-        }else if indexPath.row == 3{
             cell.settingLAbel.text = "User Guidelines"
+        }else if indexPath.row == 3{//change notif state
+            cell.settingLAbel.text = "Customer Support"
+        }else if indexPath.row == 4{//change location state
+            cell.settingLAbel.text = " Rate The App"
         }else{
             cell.settingLAbel.text = "Unblock All Users"
         }
         return cell
     }
-    
-    
-   func changeUsername() {
+    func changeUsername() {
         performSegue(withIdentifier: "changeUsername", sender: self)
     }
 /*    @IBAction func RateAppButton(_ sender: Any) {

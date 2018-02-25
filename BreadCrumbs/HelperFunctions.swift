@@ -587,7 +587,7 @@ class Helper{
             
             do {
                 try commentMO.managedObjectContext?.save()
-                print("new comment saved to coredata")
+                print("NEW comment saved to coredata")
                 
                 ReloadVCForComment(recorduuid: recordID)//sends notif to vc to reload
             } catch {
@@ -775,8 +775,9 @@ class Helper{
         
         let subscription = CKQuerySubscription(recordType: "Comment", predicate: predicate, options: [.firesOnRecordCreation])
         let notificationInfo = CKNotificationInfo()
-        notificationInfo.desiredKeys = ["ownerReference"]
+        notificationInfo.desiredKeys = ["ownerReference", "userName", "text", "senderuuid"]
 
+        
         notificationInfo.alertBody = "Someone commented on your Crumb check it out!"
         notificationInfo.shouldBadge = false
         
@@ -830,7 +831,7 @@ class Helper{
     }
     
     
-    //used above
+    //used above uses the record id of crumbmessage to find comments
     func getcommentcktocd(ckidToTest: CKRecordID){
         let ref = CKReference(recordID: ckidToTest, action: CKReferenceAction.deleteSelf)
         

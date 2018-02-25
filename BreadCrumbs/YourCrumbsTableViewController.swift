@@ -78,6 +78,10 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         //NotificationCenter.default.addObserver(self, selector: #selector(YourCrumbsTableViewController.reloadBasedOnRemoteNotif(_:recordID:)), name: Notification.Name(rawValue: "NotifLoad"), object: nil)
         
        
+       // helperFunctions.cloudkitSub()//subscribe to upvotes
+       // helperFunctions.commentsub()//subscribe to comments
+        
+        
         //AppDelegate().notify(title: "test", body: "test", crumbID: crumbmessages[0].uRecordID!, userId: crumbmessages[0].senderuuid)
     }
     override func viewDidAppear(_ animated: Bool) {
@@ -130,6 +134,10 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
             
             upcoming.theImage = crumbmsg.photo
 
+        }else if segue.identifier == "YoursFromNotification"{
+            let upcoming = segue.destination as! ViewCrumbViewController
+            let crumb = sender as! CrumbMessage
+            upcoming.crumbmsg = crumb
         }
         
     }
@@ -289,19 +297,6 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
                 
                 cell.ReportButton.isHidden = true
                 
-                //.scaleAspectFit
-                cell.UserUploadedPhotoUIView.contentMode = .scaleAspectFill
-                cell.UserUploadedPhotoUIView.image = crumbmsg.photo
-                
-                /*if original aspect ratio is non landscape position the photo as wide and focused on the top*/
-                
-                cell.imageButton.tag = indexPath.row
-                cell.imageButton.addTarget(self, action: #selector(YourCrumbsTableViewController.imageSeggy), for: .touchUpInside)
-                
-                cell.UserUploadedPhotoUIView.layer.cornerRadius = 5.0
-                cell.UserUploadedPhotoUIView.clipsToBounds = true
-                
-                
                 //sets the values for the labels in the cell, time value and location value
                 
                 //setColorVoteButton
@@ -376,6 +371,29 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
                     cell.timeCountdown.textColor = uicolor
                     //
                 }
+                
+                //.scaleAspectFit
+                cell.UserUploadedPhotoUIView.contentMode = .scaleAspectFill
+                cell.UserUploadedPhotoUIView.image = crumbmsg.photo
+                
+                /*if original aspect ratio is non landscape position the photo as wide and focused on the top*/
+                
+                cell.imageButton.tag = indexPath.row
+                cell.imageButton.addTarget(self, action: #selector(YourCrumbsTableViewController.imageSeggy), for: .touchUpInside)
+                
+                cell.UserUploadedPhotoUIView.layer.cornerRadius = 5.0
+                cell.UserUploadedPhotoUIView.clipsToBounds = true
+                
+                
+                
+                ///setup to resize aspect ratio
+                let heightConstraint = cell.PhotoHeightConstraint.constant
+                let widthConstraint = cell.PhotoWidthConstraint.constant
+                let imageHeight = crumbmsg.photo?.size.height
+                let imageWidth = crumbmsg.photo?.size.width
+                //resize photo 'height' in order to match aspect ratio
+                cell.PhotoHeightConstraint.constant = ResizeImage(heightConstraint: heightConstraint, widthConstraint: widthConstraint, ImageHeight: imageHeight!, ImageWidth: imageWidth!)
+                
                 return cell
             } else {//photo and message
                 
@@ -473,6 +491,15 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
                     //
                 }
                 
+                ///setup to resize aspect ratio
+                let heightConstraint = cell.PhotoHeightConstraint.constant
+                let widthConstraint = cell.PhotoWidthConstraint.constant
+                let imageHeight = crumbmsg.photo?.size.height
+                let imageWidth = crumbmsg.photo?.size.width
+                //resize photo 'height' in order to match aspect ratio
+                cell.PhotoHeightConstraint.constant = ResizeImage(heightConstraint: heightConstraint, widthConstraint: widthConstraint, ImageHeight: imageHeight!, ImageWidth: imageWidth!)
+                
+                
                 return cell
 
             }
@@ -505,7 +532,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
     
     //SEGUE to imageViewer
     func imageSeggy(sender: UIButton){
-        print("segue to image viewer")
+        //print("segue to image viewer")
         self.performSegue(withIdentifier: "ViewImageYourSegue", sender: sender)
         
     }
@@ -695,12 +722,25 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
 
 }
 extension YourCrumbsTableViewController{
-    func ResizeImage(){
-        /*Plan:
-         1. import constraints?
-         2. find imagesize
-         3. resize to 1:2 aspect ratio
-         4. output new constraints
-         */
+    /**
+     *Helps resize photos by outputing new constraints based on the image's height and width*
+     
+ */
+    func ResizeImage(heightConstraint: CGFloat, widthConstraint: CGFloat, ImageHeight: CGFloat, ImageWidth: CGFloat
+        ) -> CGFloat{
+        //NOTE Aspect Ratio is W:H
+        var newHeightConstraint: CGFloat = 300
+        let aspectRatio: CGFloat = (ImageWidth)/(ImageHeight)
+
+        
+        if (1.01 < aspectRatio) && (aspectRatio <= 2){// if landscape type try to fit it
+            newHeightConstraint = newHeightConstraint / aspectRatio
+            //it will always be 300 wide although may want to grab that width constraint
+            //incase later we need to resize due to phone sizes
+        } else if aspectRatio <= 1.01{//square
+            newHeightConstraint = 300
+        }
+        
+        return newHeightConstraint
     }
 }

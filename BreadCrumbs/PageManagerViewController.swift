@@ -13,7 +13,7 @@ class PageManagerViewController: UIPageViewController, UIPageViewControllerDataS
     
     //MARK: Variables
     var indexcounter = 0
-    var identifiers: NSArray = ["IntroShill", "Intro-2", "Intro-3", "Agreement"]
+    var identifiers: NSArray = ["IntroShill", "Intro-2", "Intro-3"]
     
     
     //MARK: view loading
@@ -63,10 +63,6 @@ class PageManagerViewController: UIPageViewController, UIPageViewControllerDataS
             return self.storyboard!.instantiateViewController(withIdentifier: "Intro-3")
 
         }
-        if index == 3{
-            return self.storyboard!.instantiateViewController(withIdentifier: "Agreement")
-        }
-        
         return nil
     }
     
@@ -82,7 +78,7 @@ class PageManagerViewController: UIPageViewController, UIPageViewControllerDataS
 
         //print(restorationID)
         //limits pages
-        if index == 3 {
+        if index == 2 {
             return nil
         }
         
@@ -107,6 +103,9 @@ class PageManagerViewController: UIPageViewController, UIPageViewControllerDataS
         //decrement the index to get the viewController before the current one
         self.indexcounter = index - 1
         return self.viewControllerAtIndex(self.indexcounter)
+    }
+    @IBAction func SEGToLocationVC(_ sender: Any) {
+        performSegue(withIdentifier: "ShowAgree", sender: sender)
     }
     
 }

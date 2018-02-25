@@ -26,6 +26,12 @@ class PhotoOnlyTableViewCell: UITableViewCell {
     
     @IBOutlet weak var UserUploadedPhotoUIView: UIImageView!
     
+    
+    @IBOutlet weak var PhotoHeightConstraint: NSLayoutConstraint!
+    
+    @IBOutlet weak var PhotoWidthConstraint: NSLayoutConstraint!
+    
+    
     @IBOutlet weak var CommentButton: UIButton!
     @IBOutlet weak var CommentValueLabel: UILabel!
     

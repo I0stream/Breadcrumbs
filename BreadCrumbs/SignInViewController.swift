@@ -83,15 +83,15 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         createUserInfo(setUserNameTextField.text!)
         AppDelegate().initLocationManager()
         
-        //helperFunctions.cloudkitSub()//subscribe to upvotes
-        //helperFunctions.commentsub()//subscribe to comments
+        helperFunctions.cloudkitSub()//subscribe to upvotes
+        helperFunctions.commentsub()//subscribe to comments
         
         self.resignFirstResponder()
         
-        NSUserData.setValue(2, forKey: "otherExplainer")
-        
+        NSUserData.setValue(0, forKey: "otherExplainer")
+        NSUserData.setValue(0, forKey: "NotifAsker")
         //if if if if if if if okie doke
-        if NSUserData.integer(forKey: "otherExplainer") == 2{
+        if NSUserData.integer(forKey: "otherExplainer") == 0{
             let userId = "_abacd--_dfasdfsiaoucvxzmnwfehk"
 
             let user = "Sabre"
