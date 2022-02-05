@@ -16,9 +16,8 @@ class TabsViewController: UITabBarController {
         super.viewDidLoad()
 
         // Do any additional setup after loading the view.
-        if NSUserData.integer(forKey: "otherExplainer") == 2{
-            self.tabBar.items![1].badgeValue = ""
-            NSUserData.setValue(0, forKey: "otherExplainer")
+        if NSUserData.integer(forKey: "yourExplainer") == 2{
+            NSUserData.setValue(0, forKey: "yourExplainer")
         }
     }
 

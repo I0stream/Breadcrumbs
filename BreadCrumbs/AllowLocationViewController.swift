@@ -25,7 +25,7 @@ class AllowLocationViewController: UIViewController, UNUserNotificationCenterDel
         // Dispose of any resources that can be recreated.
     }
     
-    func timerHandler(){
+    @objc func timerHandler(){
         if CLLocationManager.locationServicesEnabled() {
             switch CLLocationManager.authorizationStatus() {
             case .restricted, .denied:
@@ -33,9 +33,9 @@ class AllowLocationViewController: UIViewController, UNUserNotificationCenterDel
                 timerLocationHandler.invalidate()
 
                 let alertController = UIAlertController(title: "BreadCrumbs", message:
-                    "Please set location permissions to \"Always\" in the settings menu on your Phone.", preferredStyle: UIAlertControllerStyle.alert)
+                    "Please set location permissions to \"Always\" in the settings menu on your Phone.", preferredStyle: UIAlertController.Style.alert)
                 
-                alertController.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: {_ in
+                alertController.addAction(UIAlertAction(title: "Okay", style: UIAlertAction.Style.default, handler: {_ in
                     CATransaction.setCompletionBlock({
                         self.doSeg()
                     })
@@ -68,9 +68,9 @@ class AllowLocationViewController: UIViewController, UNUserNotificationCenterDel
                 print("restrect")
                 
                 let alertController = UIAlertController(title: "BreadCrumbs", message:
-                    "Please set location permissions to \"Always\" in the settings menu on your Phone.", preferredStyle: UIAlertControllerStyle.alert)
+                    "Please set location permissions to \"Always\" in the settings menu on your Phone.", preferredStyle: UIAlertController.Style.alert)
                 
-                alertController.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: {_ in
+                alertController.addAction(UIAlertAction(title: "Okay", style: UIAlertAction.Style.default, handler: {_ in
                     CATransaction.setCompletionBlock({
                         self.doSeg()
                     })
@@ -84,9 +84,9 @@ class AllowLocationViewController: UIViewController, UNUserNotificationCenterDel
             }
         } else {
             let alertController = UIAlertController(title: "BreadCrumbs", message:
-                "Please set location permissions to \"Always\" in the settings menu on your Phone.", preferredStyle: UIAlertControllerStyle.alert)
+                "Please set location permissions to \"Always\" in the settings menu on your Phone.", preferredStyle: UIAlertController.Style.alert)
             
-            alertController.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: {_ in
+            alertController.addAction(UIAlertAction(title: "Okay", style: UIAlertAction.Style.default, handler: {_ in
                 CATransaction.setCompletionBlock({
                     self.doSeg()
                 })
@@ -98,9 +98,9 @@ class AllowLocationViewController: UIViewController, UNUserNotificationCenterDel
     @IBAction func DontAllowLocation(_ sender: Any) {
         timerLocationHandler.invalidate()
         let alertController = UIAlertController(title: "BreadCrumbs", message:
-            "Location services and the receiving of messages are both disabled. If you change your mind, these options can be enabled in settings.", preferredStyle: UIAlertControllerStyle.alert)
+            "Location services and the receiving of messages are both disabled. If you change your mind, these options can be enabled in settings.", preferredStyle: UIAlertController.Style.alert)
         
-        alertController.addAction(UIAlertAction(title: "Okay", style: UIAlertActionStyle.default, handler: {_ in
+        alertController.addAction(UIAlertAction(title: "Okay", style: UIAlertAction.Style.default, handler: {_ in
             CATransaction.setCompletionBlock({
                 self.doSeg()
             })

@@ -84,7 +84,7 @@ extension Message {
         
         let timeDropped = self.timeDropped!
         
-        let timeDeadline:Date = timeDropped.addingTimeInterval(Double(timeLimit!) * 3600) as Date
+        let timeDeadline:Date = timeDropped.addingTimeInterval(Double(truncating: timeLimit!) * 3600) as Date
         
         let timeCurrent: Date = Date()
         

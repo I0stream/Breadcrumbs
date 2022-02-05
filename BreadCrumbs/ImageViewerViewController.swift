@@ -66,7 +66,7 @@ class ImageViewerViewController: UIViewController, UIScrollViewDelegate {
     }
     
     //press to save functions
-    func longPressToSave(sender: UILongPressGestureRecognizer) {
+    @objc func longPressToSave(sender: UILongPressGestureRecognizer) {
         //use popover revopop\\\poppy im poppy popover///\\\(((Rootless cosmopolitans)))
         SaveCancelMenuView.isHidden = false
     }
@@ -75,7 +75,7 @@ class ImageViewerViewController: UIViewController, UIScrollViewDelegate {
         UIImageWriteToSavedPhotosAlbum(ImageImageView.image!, self, #selector(image(image:didFinishSavingWithError:contextInfo:)), nil)
     }
     
-    func image(image: UIImage!, didFinishSavingWithError error: NSError!, contextInfo: AnyObject!) {
+    @objc func image(image: UIImage!, didFinishSavingWithError error: NSError!, contextInfo: AnyObject!) {
         if (error != nil) {
             print(error)
             //failed to save
@@ -119,7 +119,7 @@ class ImageViewerViewController: UIViewController, UIScrollViewDelegate {
         if (self.ScrollZoomViewContrainer.contentSize.height < self.ScrollZoomViewContrainer.bounds.size.height) {
             top = (self.ScrollZoomViewContrainer.bounds.size.height - self.ScrollZoomViewContrainer.contentSize.height) * 0.5
         }
-        self.ScrollZoomViewContrainer.contentInset = UIEdgeInsetsMake(top, left, top, left);
+        self.ScrollZoomViewContrainer.contentInset = UIEdgeInsets.init(top: top, left: left, bottom: top, right: left);
         
         
         /*let xOffset = max(0, ((size.width - ImageImageView.frame.width) / 2))

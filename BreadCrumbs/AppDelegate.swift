@@ -26,7 +26,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     var bestEffortAtLocation: CLLocation!//see didupdatelocation or whatever
     var bestCurrent: CLLocation?
     
-    weak var timerRepeatLoadAndStore = Timer()//for keeping track of load and store
+     var timerRepeatLoadAndStore = Timer()//for keeping track of load and store
     
     let helperfunctions = Helper()//contains various cd and ck functions
     lazy var CDStack = CoreDataStack()//cd req functions
@@ -35,7 +35,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     var gotouser: String = ""
 
     
-    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
+    func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?) -> Bool {
         //helperfunctions.cloudkitSub()
 
         //accountStatus()// is icloud drive available?
@@ -66,7 +66,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             UIApplication.shared.applicationIconBadgeNumber = 0
             
             //INIT
-            print("DELEGATED ┌∩┐(◣_◢)┌∩┐")
+            //print("DELEGATED ┌∩-(◣_◢)┌∩┐")
             UNUserNotificationCenter.current().delegate = self
             
             /*UNUserNotificationCenter.current().requestAuthorization(options: [.badge, .sound, .alert]) { (granted, error) in
@@ -231,7 +231,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         content.categoryIdentifier = "CALLINNOTIFICATION"
         content.title = title
         content.body = body
-        content.sound = UNNotificationSound.default()
+        content.sound = UNNotificationSound.default
         content.userInfo = ["RecordUuid": crumbID, "UserId": userId]
         let newbadge = 1 + badgeNumber
         content.badge = newbadge as NSNumber?
@@ -296,9 +296,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     func getUserInfo(){
         let container = CKContainer.default()
         let publicData = container.publicCloudDatabase
-        let CKuserID: CKRecordID = CKRecordID(recordName: NSUserData.string(forKey: "recordID")!)//keychain
+        let CKuserID: CKRecord.ID = CKRecord.ID(recordName: NSUserData.string(forKey: "recordID")!)//keychain
         
-        let query = CKQuery(recordType: "UserInfo", predicate: NSPredicate(format: "%K == %@", "creatorUserRecordID" ,CKReference(recordID: CKuserID, action: CKReferenceAction.none)))
+        let query = CKQuery(recordType: "UserInfo", predicate: NSPredicate(format: "%K == %@", "creatorUserRecordID" ,CKRecord.Reference(recordID: CKuserID, action: CKRecord.Reference.Action.none)))
         
         publicData.perform(query, inZoneWith: nil) {
             results, error in
@@ -350,7 +350,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
     //this is the heart of the app
     
     //does not run in background, gets queued then runs after returning to foreground, try p
-    func loadAndStoreiCloudMsgsBasedOnLoc(){// load icloud msgs; need to check if msg is already loaded & store loaded msgs to persist between views and app instances
+    @objc func loadAndStoreiCloudMsgsBasedOnLoc(){// load icloud msgs; need to check if msg is already loaded & store loaded msgs to persist between views and app instances
         //I need to wait before running this stuff get better accuracy data ->
         //print("load and store has run")
 
@@ -492,7 +492,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         case CLAuthorizationStatus.notDetermined:
             locationStatus = "Status not determined"
         default:
-            print("heloo from appdel")
+            //print("heloo from appdel")
             locationStatus = "Allowed to location Access"
             shouldIAllow = true
         }
@@ -517,7 +517,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
         }
     }
     
-    func iCloudUserIDAsync(_ complete: @escaping (_ instance: CKRecordID?, _ error: NSError?) -> ()) {
+    func iCloudUserIDAsync(_ complete: @escaping (_ instance: CKRecord.ID?, _ error: NSError?) -> ()) {
         let container = CKContainer.default()
         container.fetchUserRecordID() {
             recordID, error in
@@ -726,7 +726,7 @@ class AppDelegate: UIResponder, UIApplicationDelegate, CLLocationManagerDelegate
             print("Agreement")
             
             
-        }else if (forKey: "didAgreeToPolAndEULA") as? String != "Agree" && NSUserData.string(forKey: "welcomeValue") == "welcome"{
+        }else if ("didAgreeToPolAndEULA") as? String != "Agree" && NSUserData.string(forKey: "welcomeValue") == "welcome"{
             if NSUserData.string(forKey: "recordID") == nil/*|| user != signedIn*/{//keychain
                 iCloudUserIDAsync() {
                     recordID, error in
@@ -851,7 +851,7 @@ extension AppDelegate {
     func application(_ application: UIApplication, didReceiveRemoteNotification userInfo: [AnyHashable : Any], fetchCompletionHandler completionHandler: @escaping (UIBackgroundFetchResult) -> Void) {
         
         
-        let cloudKitNotification = CKNotification.init(fromRemoteNotificationDictionary: userInfo as! [String : NSObject])
+        let cloudKitNotification = CKNotification.init(fromRemoteNotificationDictionary: userInfo as! [String : NSObject])!
 
         //let alertBody = cloudKitNotification.alertBody//123
         //print(alertBody!)
@@ -867,7 +867,7 @@ extension AppDelegate {
                 
                 
             }else if cloudKitNotification.alertBody == "Someone commented on your Crumb check it out!"{
-                let recordID = (cloudKitNotification as! CKQueryNotification).recordFields?.first?.value as? CKReference
+                let recordID = (cloudKitNotification as! CKQueryNotification).recordFields?.first?.value as? CKRecord.Reference
                 //print((cloudKitNotification as! CKQueryNotification).recordFields)
                 if let id = recordID?.recordID{
                     print("have id is getting in did recieve remote notification")

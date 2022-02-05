@@ -116,7 +116,7 @@ class CreateCommentViewController: UIViewController, UITextViewDelegate {
         }
         return true
     }
-    func dismissKeyboard() {
+    @objc func dismissKeyboard() {
         //Causes the view (or one of its embedded text fields) to resign the first responder status.
         view.endEditing(true)
     }
@@ -150,8 +150,8 @@ class CreateCommentViewController: UIViewController, UITextViewDelegate {
         //var ref = CKReference(record: listRecord, action: .DeleteSelf)
         //itemRecord.setObject(ref, forKey: "owningList")
         
-        let recordid = CKRecordID(recordName: (viewbreadcrumb?.uRecordID)!)
-        let reference = CKReference(recordID: recordid, action: CKReferenceAction.deleteSelf)
+        let recordid = CKRecord.ID(recordName: (viewbreadcrumb?.uRecordID)!)
+        let reference = CKRecord.Reference(recordID: recordid, action: CKRecord.Reference.Action.deleteSelf)
         
         commentRecord.setValue(reference, forKey: "ownerReference")//should be right but might not be
         

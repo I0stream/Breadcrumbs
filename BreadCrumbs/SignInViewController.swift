@@ -83,21 +83,21 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         createUserInfo(setUserNameTextField.text!)
         AppDelegate().initLocationManager()
         
-        helperFunctions.cloudkitSub()//subscribe to upvotes
+        //helperFunctions.cloudkitSub()//subscribe to upvotes
         helperFunctions.commentsub()//subscribe to comments
         
         self.resignFirstResponder()
         
-        NSUserData.setValue(0, forKey: "otherExplainer")
+        NSUserData.setValue(0, forKey: "yourExplainer")
         NSUserData.setValue(0, forKey: "NotifAsker")
         //if if if if if if if okie doke
-        if NSUserData.integer(forKey: "otherExplainer") == 0{
-            let userId = "_abacd--_dfasdfsiaoucvxzmnwfehk"
+        if NSUserData.integer(forKey: "yourExplainer") == 0{
+            let userId = NSUserData.string(forKey: "recordID")
 
-            let user = "Sabre"
+            let user = "BreadCrumbs Official"
             let tex = "Hi! This is a BreadCrumb. It's a message that you can find wherever people have dropped them. Leave your own crumb wherever you are by tapping the plus button. Or you can start a conversation by first tapping the magnifying glass, then the comment button. And if a message breaks our guidelines. Report it! Use the 'V' next to a user's name to report the message."
-            self.Crumb(text: tex, User: user, senderid: userId, currentime: 1)
-            //NSUserData.setValue(1, forKey: "otherExplainer")
+            self.Crumb(text: tex, User: user, senderid: userId!, currentime: 1)
+            //NSUserData.setValue(1, forKey: "yourExplainer")
             
         }
         
@@ -237,7 +237,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     }
     
     
-    func iCloudUserIDAsync(_ complete: @escaping (_ instance: CKRecordID?, _ error: NSError?) -> ()) {
+    func iCloudUserIDAsync(_ complete: @escaping (_ instance: CKRecord.ID?, _ error: NSError?) -> ()) {
         let container = CKContainer.default()
         container.fetchUserRecordID() {
             recordID, error in
@@ -256,7 +256,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
         view.addGestureRecognizer(tap)
     }
     
-    func dismissKeyboard() {
+    @objc func dismissKeyboard() {
         //accountStatus()//does user have icloud drive enabled
         //checkUserStatus()//does user have internet service, does he have icloud enabled, and icloud drive enabled
         view.endEditing(true)
@@ -275,7 +275,7 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     }
     
     //MARK: Notification center
-    func loadList(_ notification: Notification){
+    @objc func loadList(_ notification: Notification){
         DispatchQueue.main.async(execute: { () -> Void in
             self.accountStatus()
             self.errorTest()
@@ -320,9 +320,9 @@ class SignInViewController: UIViewController, UITextFieldDelegate {
     func ckUserinfoTest(username: String){
         let container = CKContainer.default()
         let publicData = container.publicCloudDatabase
-        let CKuserID: CKRecordID = CKRecordID(recordName: NSUserData.string(forKey: "recordID")!)//keychain
+        let CKuserID: CKRecord.ID = CKRecord.ID(recordName: NSUserData.string(forKey: "recordID")!)//keychain
         
-        let query = CKQuery(recordType: "UserInfo", predicate: NSPredicate(format: "%K == %@", "creatorUserRecordID" ,CKReference(recordID: CKuserID, action: CKReferenceAction.none)))
+        let query = CKQuery(recordType: "UserInfo", predicate: NSPredicate(format: "%K == %@", "creatorUserRecordID" ,CKRecord.Reference(recordID: CKuserID, action: CKRecord.Reference.Action.none)))
         
         publicData.perform(query, inZoneWith: nil) {
             results, error in

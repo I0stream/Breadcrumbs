@@ -25,7 +25,7 @@ class PageManagerViewController: UIPageViewController, UIPageViewControllerDataS
         
         let startingView = self.viewControllerAtIndex(self.indexcounter)
         let mainViews = [startingView]//if it breaks this is the problem, changed from nsarray to emplied uivc
-        self.setViewControllers(mainViews as? [UIViewController], direction: UIPageViewControllerNavigationDirection.forward, animated: false, completion: nil)
+        self.setViewControllers(mainViews as? [UIViewController], direction: UIPageViewController.NavigationDirection.forward, animated: false, completion: nil)
         
         /*I dont really understand what to do here
          it is strange

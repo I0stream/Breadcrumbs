@@ -62,7 +62,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     let datePicker = MIDatePicker.getFromNib()
 
     
-    weak var DeAnimateTimer = Timer()
+    var DeAnimateTimer = Timer()
     
     let messagelength = 200 //characters = number + 1
     
@@ -120,10 +120,10 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         
         if NSUserData.integer(forKey: "LastPickedTime") == 0{
             currentTime = 48
-            pickeroutlet.setTitle("\(currentTime!)h", for: UIControlState())
+            pickeroutlet.setTitle("\(currentTime!)h", for: UIControl.State())
         }else{
             currentTime = NSUserData.integer(forKey: "LastPickedTime")
-            pickeroutlet.setTitle("\(currentTime!)h", for: UIControlState())
+            pickeroutlet.setTitle("\(currentTime!)h", for: UIControl.State())
         }
         
         //show crumbcount explainer only once; maybe later have a ? mark button to show explainer
@@ -147,6 +147,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
             switch CLLocationManager.authorizationStatus() {
             case .restricted, .denied, .notDetermined:
                 animateInfoBar("Please enable location services")
+                enableLocViewBottomBar.isHidden = false
                 DeAnimateTimer = Timer.scheduledTimer(timeInterval: 1.0, target: self, selector: #selector(checkToDeAnimate), userInfo: nil, repeats: true)
                 break
             case .authorizedAlways, .authorizedWhenInUse:
@@ -162,10 +163,31 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         
     }
 
+    @IBOutlet weak var enableLocViewBottomBar: UIView!
+    
+    
+    @IBAction func NeedEnableLocationButtonAction(_ sender: Any) {
+        switch CLLocationManager.authorizationStatus() {
+        case  .notDetermined:
+            locationManager.requestAlwaysAuthorization()
+            enableLocViewBottomBar.isHidden = true
+            break
+        case .restricted, .denied://updates from one to other if needed
+            UIApplication.shared.open(URL(string:UIApplication.openSettingsURLString)!)
+            enableLocViewBottomBar.isHidden = true
+            break
+        case .authorizedAlways, .authorizedWhenInUse:
+            enableLocViewBottomBar.isHidden = true
+            break
+        }
+    }
+
+    
+
     //TAKE SICK PHTOSOOOOSSS XDDDDD
     @IBAction func CameraButtonAction(_ sender: Any) {
         print("click XDDDD")
-        if (UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.camera)){
+        if (UIImagePickerController.isSourceTypeAvailable(UIImagePickerController.SourceType.camera)){
             if isinfobaropent == true{
                 UNanimateInfoBar()
             }
@@ -181,8 +203,9 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
             present(picker, animated: true, completion: nil)
         }
         else{
-            animateInfoBar("Camera is disabled")
-            
+            if isinfobaropent != true{
+                animateInfoBar("Camera is disabled")
+            }
         }
     }
     
@@ -194,7 +217,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     
     
     @IBAction func UploadPhotoAction(sender: AnyObject) {
-        if (UIImagePickerController.isSourceTypeAvailable(UIImagePickerControllerSourceType.camera)){
+        if (UIImagePickerController.isSourceTypeAvailable(UIImagePickerController.SourceType.camera)){
             if isinfobaropent == true{
                 UNanimateInfoBar()
             }
@@ -210,16 +233,20 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
             present(picker, animated: true, completion: nil)
         }
         else{
-            animateInfoBar("Camera is disabled")
-
+            if isinfobaropent != true{
+                animateInfoBar("Camera is disabled")
+            }
         }
     }
     
-    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [String : Any]) {
+    func imagePickerController(_ picker: UIImagePickerController, didFinishPickingMediaWithInfo info: [UIImagePickerController.InfoKey : Any]) {
+// Local variable inserted by Swift 4.2 migrator.
+let info = convertFromUIImagePickerControllerInfoKeyDictionary(info)
+
 
         
-        let photoPicked = info[UIImagePickerControllerOriginalImage] as! UIImage //2
-        photoAsData = UIImageJPEGRepresentation(photoPicked, 0.4)
+        let photoPicked = info[convertFromUIImagePickerControllerInfoKey(UIImagePickerController.InfoKey.originalImage)] as! UIImage //2
+        photoAsData = photoPicked.jpegData(compressionQuality: 0.4)
         var test = NSData(data: photoAsData!)
         
         
@@ -242,13 +269,13 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
             let viewit = test.length / 1024
             print(viewit)
             
-            test = NSData(data: UIImageJPEGRepresentation(photoPicked, 0.3)!)
+            test = NSData(data: photoPicked.jpegData(compressionQuality: 0.3)!)
             if ((test.length) / 1024) < 1000{
                 
                 let viewit = test.length / 1024
                 print(viewit)
                 
-                photoAsData = UIImageJPEGRepresentation(photoPicked, 0.2)
+                photoAsData = photoPicked.jpegData(compressionQuality: 0.2)
 
                 imageContainerUIImage.contentMode = .scaleAspectFit
                 imageContainerUIImage.image = photoPicked
@@ -297,17 +324,17 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     func miDatePicker(_ amDatePicker: MIDatePicker, didSelect time: Int) {
         // Do something when the user has confirmed a selected date
         currentTime = pickerTimeLimit[time]
-        pickeroutlet.setTitle("\(currentTime!)h", for: UIControlState())
+        pickeroutlet.setTitle("\(currentTime!)h", for: UIControl.State())
     }
     func miDatePicker(_ amDatePicker: MIDatePicker, moveSelect: Void) {}
     
     @IBAction func ShowPicker(_ sender: AnyObject) {
-        datePicker.show(inVC: self, row: pickerTimeLimit.index(of: currentTime!)!)
+        datePicker.show(inVC: self, row: pickerTimeLimit.firstIndex(of: currentTime!)!)
     }
     
     
     
-    func dismissKeyboard() {
+    @objc func dismissKeyboard() {
         //Causes the view (or one of its embedded text fields) to resign the first responder status.
         view.endEditing(true)
     }
@@ -366,7 +393,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
     func writeImage(image: UIImage) -> NSURL {
         let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let fileURL = documentsURL.appendingPathComponent(NSUUID().uuidString + ".jpeg")
-        if let imageData = UIImageJPEGRepresentation(image, 0.9) {
+        if let imageData = image.jpegData(compressionQuality: 0.9) {
             
             do {try imageData.write(to: fileURL, options: .noFileProtection)}//writeToURL(fileURL, atomically: false)
             catch { print("fucked") }
@@ -416,7 +443,7 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
         })
     }
     override func viewWillDisappear(_ animated: Bool) {
-        DeAnimateTimer?.invalidate()
+        DeAnimateTimer.invalidate()
     }
     
     //add crumb to coredata
@@ -629,11 +656,11 @@ class WriteCrumbViewController: UIViewController, UITextViewDelegate, CLLocation
 }*/
 extension WriteCrumbViewController{//MARK: Alarm info bar
     //MARK: timer
-    func checkToDeAnimate(){
+    @objc func checkToDeAnimate(){
         if checkLocation() == true && currentReachabilityStatus != .notReachable{
             locationManager.desiredAccuracy = kCLLocationAccuracyBestForNavigation
             UNanimateInfoBar()
-            DeAnimateTimer?.invalidate()
+            DeAnimateTimer.invalidate()
         }else{
             if checkLocation() == false{
                 switch CLLocationManager.authorizationStatus() {
@@ -663,7 +690,7 @@ extension WriteCrumbViewController{//MARK: Alarm info bar
     func animateInfoBar(_ alert: String){
         let duration = 0.5
         let delay = 0.5
-        let options = UIViewAnimationOptions.transitionCurlDown
+        let options = UIView.AnimationOptions.transitionCurlDown
         let damping:CGFloat = 1 // set damping ration
         let velocity:CGFloat = 1.0
         
@@ -681,7 +708,7 @@ extension WriteCrumbViewController{//MARK: Alarm info bar
         
         let duration = 1.0
         let delay = 0.0
-        let options = UIViewAnimationOptions.transitionCurlUp
+        let options = UIView.AnimationOptions.transitionCurlUp
         let damping:CGFloat = 1 // set damping ration
         let velocity:CGFloat = 1.0
         
@@ -729,4 +756,14 @@ extension WriteCrumbViewController{//MARK: Alarm info bar
         
         self.view.viewWithTag(4)!.removeFromSuperview()
     }
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIImagePickerControllerInfoKeyDictionary(_ input: [UIImagePickerController.InfoKey: Any]) -> [String: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map {key, value in (key.rawValue, value)})
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertFromUIImagePickerControllerInfoKey(_ input: UIImagePickerController.InfoKey) -> String {
+	return input.rawValue
 }

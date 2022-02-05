@@ -21,7 +21,7 @@ class BannedViewController: UIViewController{
         UserIDField.text = "ID: \(NSUserData.string(forKey: "recordID")!)"
         //UserIDField.
         UserIDField.borderStyle = .none
-        AppDelegate().timerRepeatLoadAndStore?.invalidate()
+        AppDelegate().timerRepeatLoadAndStore.invalidate()
     }
 
     override func didReceiveMemoryWarning() {
@@ -53,7 +53,7 @@ class BannedViewController: UIViewController{
         let email = "breadcrumbs.help@gmail.com"
         let url = NSURL(string: "mailto:\(email)")
         if #available(iOS 10.0, *) {
-            UIApplication.shared.open(url! as URL, options: ["yes" : "yes" as Any], completionHandler: { (true) in
+            UIApplication.shared.open(url! as URL, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary(["yes" : "yes" as Any]), completionHandler: { (true) in
                 //print("sent to gmail")
             })
         }else {
@@ -61,4 +61,9 @@ class BannedViewController: UIViewController{
         }
     }
 
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
 }

@@ -38,7 +38,7 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
 
     lazy var refreshControl: UIRefreshControl = {
         let refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: #selector(OthersCrumbsTableViewController.handleRefresh(_:)), for: UIControlEvents.valueChanged)
+        refreshControl.addTarget(self, action: #selector(OthersCrumbsTableViewController.handleRefresh(_:)), for: UIControl.Event.valueChanged)
         
         return refreshControl
     }()
@@ -56,6 +56,7 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
         OthersTableView.delegate = self
         OthersTableView.dataSource = self
         
+        
         NotificationCenter.default.addObserver(self, selector: #selector(OthersCrumbsTableViewController.reloadViewOnReopen(_:)),name:NSNotification.Name(rawValue: "load"), object: nil)
         
         // Use the edit button item provided by the table view controller.
@@ -67,7 +68,7 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
         
         self.OthersTableView.addSubview(self.refreshControl)
 
-        OthersTableView.rowHeight = UITableViewAutomaticDimension
+        OthersTableView.rowHeight = UITableView.automaticDimension
         OthersTableView.estimatedRowHeight = 200
         tabBarController?.tabBar.items![1].badgeValue = nil
 
@@ -183,12 +184,12 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
     }
     
     
-    func dontAllowNotif(){
+    @objc func dontAllowNotif(){
         print("dont allow")
         NSUserData.setValue(1, forKey: "NotifAsker")
         reloadTables()
     }
-    func doAllowNotif(){
+    @objc func doAllowNotif(){
         print("do allow")
         UNUserNotificationCenter.current().delegate = AppDelegate()
     UNUserNotificationCenter.current().requestAuthorization(options: [.badge, .sound, .alert]) { (granted, error) in
@@ -221,7 +222,7 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
             return cell
         }else if indexPath.row == (crumbmessages.count){
             let cell = tableView.dequeueReusableCell(withIdentifier: "SpacerOther", for: indexPath)
-            cell.selectionStyle = UITableViewCellSelectionStyle.none
+            cell.selectionStyle = UITableViewCell.SelectionStyle.none
             return cell
         }else {
             
@@ -547,7 +548,7 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
         }
     }
     //SEGUE to imageViewer
-    func imageSeggy(sender: UIButton){
+    @objc func imageSeggy(sender: UIButton){
         //print("segue to image viewer")
         self.performSegue(withIdentifier: "OtherViewImageSeg", sender: sender)
         
@@ -556,7 +557,7 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
     
         
     //refresh table view
-    func handleRefresh(_ refreshControl: UIRefreshControl) {
+    @objc func handleRefresh(_ refreshControl: UIRefreshControl) {
         DispatchQueue.main.async(execute: { () -> Void in
             AppDelegate().lookForMessagesRefresh()
             self.crumbmessages = self.helperFunctions.loadCoreDataMessage(false)!
@@ -566,7 +567,7 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
         refreshControl.endRefreshing()
     }
     
-    func reloadViewOnReopen(_ notification: Notification){
+    @objc func reloadViewOnReopen(_ notification: Notification){
         print("Loading in reload others")
         DispatchQueue.main.async(execute: { () -> Void in
 
@@ -607,8 +608,8 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
         }
     }
     
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if (editingStyle == UITableViewCellEditingStyle.delete) {
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if (editingStyle == UITableViewCell.EditingStyle.delete) {
             
             let crumbmsg = crumbmessages[indexPath.row]
             
@@ -618,14 +619,14 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
             //helperFunctions.coreDataDeleteCrumb(id!/*, manx: AppDelegate().CDStack.mainContext*/)//must use something other than urecordid
             helperFunctions.markForDelete(id: id!)
             crumbmessages.remove(at: indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
+            tableView.deleteRows(at: [indexPath], with: UITableView.RowAnimation.automatic)
             reloadTables()
         }
     }
     
     
     
-    func buttonActions(sender: UIButton){
+    @objc func buttonActions(sender: UIButton){
         let row = sender.tag
         let indexPath = IndexPath(row: row, section: 1)
         let crumb = crumbmessages[indexPath.row]
@@ -676,7 +677,7 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
             
             
             
-            if let i = whohasvoted.index(where: { $0?.uRecordID == viewbreadcrumb.uRecordID }) {
+            if let i = whohasvoted.firstIndex(where: { $0?.uRecordID == viewbreadcrumb.uRecordID }) {
                 whohasvoted.remove(at: i)
                 //whohasvoted[i] = viewbreadcrumb
                 print("repeat delete")
@@ -700,8 +701,8 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
     
     func noVoteIndicator(){
         let alertController = UIAlertController(title: "BreadCrumbs", message:
-            "You cannot vote on a dead crumb", preferredStyle: UIAlertControllerStyle.alert)
-        alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default,handler: nil))
+            "You cannot vote on a dead crumb", preferredStyle: UIAlertController.Style.alert)
+        alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertAction.Style.default,handler: nil))
         
         self.present(alertController, animated: true, completion: nil)
     }
@@ -718,15 +719,15 @@ class OthersCrumbsTableViewController:  UIViewController, UITableViewDataSource,
 
     }
     
-    func report(sender: UIButton) {
+    @objc func report(sender: UIButton) {
         let i = sender.tag
         if crumbmessages[i].calculateTimeLeftInHours() > 0 {
             performSegue(withIdentifier: "OthersToReportMenu", sender: sender)
             
         }else{
             let alertController = UIAlertController(title: "BreadCrumbs", message:
-                "You cannot report a dead crumb as it has been deleted", preferredStyle: UIAlertControllerStyle.alert)
-            alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default,handler: nil))
+                "You cannot report a dead crumb as it has been deleted", preferredStyle: UIAlertController.Style.alert)
+            alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertAction.Style.default,handler: nil))
             
             self.present(alertController, animated: true, completion: nil)
         }

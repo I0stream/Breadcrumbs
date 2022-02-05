@@ -89,7 +89,7 @@ class ReportMenuViewController: UIViewController {
     @IBAction func UserGuidelinesButton(_ sender: Any) {
         let url = NSURL(string : "https://breadcrumbs.social/user-guidelines/")! as URL
         if #available(iOS 10.0, *) {
-            UIApplication.shared.open(url , options: ["yes" : "yes" as Any], completionHandler: { (true) in
+            UIApplication.shared.open(url , options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary(["yes" : "yes" as Any]), completionHandler: { (true) in
                 //print("sent to gmail")
             })
         }
@@ -123,4 +123,9 @@ class ReportMenuViewController: UIViewController {
 }
 protocol reportreloaddelegate: class {
     func reload()
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
 }

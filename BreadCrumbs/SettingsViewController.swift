@@ -31,14 +31,14 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
     
     func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
         if indexPath.row == 0{
-            UIApplication.shared.open(URL(string:UIApplicationOpenSettingsURLString)!)
+            UIApplication.shared.open(URL(string:UIApplication.openSettingsURLString)!)
         }else if indexPath.row == 1{
             changeUsername()
         }else if indexPath.row == 4{
             //print("does not work in sim")
             let url = NSURL(string : "itms-apps://itunes.apple.com/app/id1191632460")! as URL//change later
             if #available(iOS 10.0, *) {
-                UIApplication.shared.open(url , options: ["yes" : "yes" as Any], completionHandler: { (true) in
+                UIApplication.shared.open(url , options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary(["yes" : "yes" as Any]), completionHandler: { (true) in
                     //print("sent to gmail")
                 })
             }else{
@@ -49,7 +49,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
             let email = "breadcrumbs.help@gmail.com"
             let url = NSURL(string: "mailto:\(email)")
             if #available(iOS 10.0, *) {
-                UIApplication.shared.open(url! as URL, options: ["yes" : "yes" as Any], completionHandler: { (true) in
+                UIApplication.shared.open(url! as URL, options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary(["yes" : "yes" as Any]), completionHandler: { (true) in
                     //print("sent to gmail")
                 })
             }else {
@@ -58,7 +58,7 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         }else if indexPath.row == 2{
             let url = NSURL(string : "https://breadcrumbs.social/user-guidelines/")! as URL
             if #available(iOS 10.0, *) {
-                UIApplication.shared.open(url , options: ["yes" : "yes" as Any], completionHandler: { (true) in
+                UIApplication.shared.open(url , options: convertToUIApplicationOpenExternalURLOptionsKeyDictionary(["yes" : "yes" as Any]), completionHandler: { (true) in
                     //print("sent to gmail")
                 })
             }
@@ -129,4 +129,9 @@ class SettingsViewController: UIViewController, UITableViewDelegate, UITableView
         
         NSUserData.set(nil, forKey: "BlockedUsers")
     }*/
+}
+
+// Helper function inserted by Swift 4.2 migrator.
+fileprivate func convertToUIApplicationOpenExternalURLOptionsKeyDictionary(_ input: [String: Any]) -> [UIApplication.OpenExternalURLOptionsKey: Any] {
+	return Dictionary(uniqueKeysWithValues: input.map { key, value in (UIApplication.OpenExternalURLOptionsKey(rawValue: key), value)})
 }

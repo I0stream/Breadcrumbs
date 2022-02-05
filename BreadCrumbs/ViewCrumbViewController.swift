@@ -34,7 +34,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     
     lazy var refreshControl: UIRefreshControl = {
         let refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: #selector(ViewCrumbViewController.handleRefresh(_:)), for: UIControlEvents.valueChanged)
+        refreshControl.addTarget(self, action: #selector(ViewCrumbViewController.handleRefresh(_:)), for: UIControl.Event.valueChanged)
         
         return refreshControl
     }()
@@ -95,7 +95,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         mapView.add(cir)*/
 
         
-        YourtableView.rowHeight = UITableViewAutomaticDimension
+        YourtableView.rowHeight = UITableView.automaticDimension
         YourtableView.estimatedRowHeight = 200
         
         self.YourtableView.addSubview(self.refreshControl)
@@ -605,21 +605,21 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         
     }
     
-    func imageSeggy(sender: UIButton){
+    @objc func imageSeggy(sender: UIButton){
         //print("segue to image viewer")
         self.performSegue(withIdentifier: "viewimageviewseg", sender: sender)
         
     }
     //MARK: REport
     
-    func report(sender: UIButton) {
+    @objc func report(sender: UIButton) {
         if crumbmsg!.calculateTimeLeftInHours() > 0 {
             performSegue(withIdentifier: "ReportMenuSegue", sender: sender)
             
         }else{
             let alertController = UIAlertController(title: "BreadCrumbs", message:
-                "You cannot report a dead crumb as it has been deleted", preferredStyle: UIAlertControllerStyle.alert)
-            alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default,handler: nil))
+                "You cannot report a dead crumb as it has been deleted", preferredStyle: UIAlertController.Style.alert)
+            alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertAction.Style.default,handler: nil))
             
             self.present(alertController, animated: true, completion: nil)
         }
@@ -691,15 +691,17 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         comments.append(contentsOf: sortedCom)
     }
     
-    func commentSegue(){
+    @objc func commentSegue(){
         performSegue(withIdentifier: "writeComment", sender: self)
     }//        performSegueWithIdentifier("writeComment", sender: sender)
 
-    func exitCrumb(){
+    @objc func exitCrumb(){
         if inscreen == true{
             //saves voting stuff
             helperFunctions.crumbVote((crumbmsg?.hasVoted!)!, crumb: crumbmsg!, voteValue: votevalue )
             delegate?.reloadTables()
+            //print(delegate)
+            //print("run")
         }
         //
         dismiss(animated: true, completion: nil)
@@ -723,7 +725,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     }*/
     
     
-    func handleRefresh(_ refreshControl: UIRefreshControl) {
+    @objc func handleRefresh(_ refreshControl: UIRefreshControl) {
         reloadForRefresh()
         refreshControl.endRefreshing()
     }
@@ -747,7 +749,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
                 self.refreshNeed = false
                 //also update crumb
                 //ck
-                self.helperFunctions.getcommentcktocd(ckidToTest: CKRecordID(recordName: (self.crumbmsg?.uRecordID)!))
+                self.helperFunctions.getcommentcktocd(ckidToTest: CKRecord.ID(recordName: (self.crumbmsg?.uRecordID)!))
                 self.crumbmsg = self.helperFunctions.getSpecific(recorduuid: (self.crumbmsg?.uRecordID)!)
             }
             self.comments.removeAll()
@@ -764,7 +766,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     //and they all use selectors, I can locate all the saving ck, cd, updating etc in helperfunctions
     //i just need to do it in a way that disallows double voting and ensures proper saving/updating
     
-    func Vote(){
+    @objc func Vote(){
         let indexPath = IndexPath(row: 1, section: 1)
         let msgCell = YourtableView.dequeueReusableCell(withIdentifier: "YourMsgCell", for: indexPath) as! CrumbTableViewCell
         
@@ -811,16 +813,16 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
     //MARK: Alert disabled
     func noCommentIndicator(){
         let alertController = UIAlertController(title: "BreadCrumbs", message:
-            "You cannot comment on a dead crumb", preferredStyle: UIAlertControllerStyle.alert)
-        alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default,handler: nil))
+            "You cannot comment on a dead crumb", preferredStyle: UIAlertController.Style.alert)
+        alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertAction.Style.default,handler: nil))
         
         self.present(alertController, animated: true, completion: nil)
     }
     
     func noVoteIndicator(){
         let alertController = UIAlertController(title: "BreadCrumbs", message:
-            "You cannot vote on a dead crumb", preferredStyle: UIAlertControllerStyle.alert)
-        alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default,handler: nil))
+            "You cannot vote on a dead crumb", preferredStyle: UIAlertController.Style.alert)
+        alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertAction.Style.default,handler: nil))
         
         self.present(alertController, animated: true, completion: nil)
     }
@@ -855,7 +857,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
 
     
     //press to save functions
-    func longPressToSave(sender: UILongPressGestureRecognizer) {
+    @objc func longPressToSave(sender: UILongPressGestureRecognizer) {
         //use popover revopop\\\poppy im poppy popover///\\\(((Rootless cosmopolitans)))
         SaveCancelMenuView.isHidden = false
     }
@@ -864,7 +866,7 @@ class ViewCrumbViewController: UIViewController, UITableViewDelegate, UITableVie
         UIImageWriteToSavedPhotosAlbum((crumbmsg?.photo)!, self, #selector(image(image:didFinishSavingWithError:contextInfo:)), nil)
     }
     
-    func image(image: UIImage!, didFinishSavingWithError error: NSError!, contextInfo: AnyObject!) {
+    @objc func image(image: UIImage!, didFinishSavingWithError error: NSError!, contextInfo: AnyObject!) {
         if (error != nil) {
             print(error)
             

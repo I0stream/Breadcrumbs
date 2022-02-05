@@ -141,7 +141,7 @@ class MIDatePicker: UIView, UIPickerViewDelegate, UIPickerViewDataSource {
 
         picker?.showsSelectionIndicator = true
 
-        confirmButton.setTitle(config.confirmButtonTitle, for: UIControlState())
+        confirmButton.setTitle(config.confirmButtonTitle, for: UIControl.State())
         
         headerViewHeightConstraint.constant = config.headerHeight
         

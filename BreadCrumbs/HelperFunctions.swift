@@ -90,9 +90,9 @@ class Helper{
                                         loadedMessage!.uRecordID = uniqueRecordID
                                         
                                         let dbphoto = cmsg["photoUploaded"] as? CKAsset
-                                        if dbphoto?.fileURL != nil{
+                                        if dbphoto?.fileURL! != nil{
                                             
-                                            guard let photoasdata = NSData(contentsOf: (dbphoto?.fileURL)!) else { return }
+                                            guard let photoasdata = NSData(contentsOf: (dbphoto?.fileURL!)!) else { return }
                                             
                                             loadedMessage?.photo = UIImage(data: photoasdata as Data)!
                                         }
@@ -110,7 +110,7 @@ class Helper{
                         //delete, I think
                         print("delete crumb")
                         
-                        let yum = CKRecordID(recordName: uniqueRecordID)
+                        let yum = CKRecord.ID(recordName: uniqueRecordID)
                         self.cloudKitDeleteCrumb(yum)
                         
                         print("Finished request delete \(cmsg)")
@@ -299,7 +299,7 @@ class Helper{
         //messageMO.setValue(crumbmessage.addressStr, forKey: "addressStr")
         
         if crumbmessage.photo != nil{
-            let photoData = UIImageJPEGRepresentation(crumbmessage.photo!, 0.9)//convert uiimage into jpeg format
+            let photoData = crumbmessage.photo!.jpegData(compressionQuality: 0.9)//convert uiimage into jpeg format
             messageMO.setValue(photoData, forKey: "photo")
             
         }
@@ -310,7 +310,7 @@ class Helper{
             //notify user a new msg is here with notification
             
             DispatchQueue.main.async(execute: { () -> Void in
-                AppDelegate().notify(title: "New BreadCrumb found!", body: "New Breadcrumb! come check'em out!", crumbID: crumbmessage.uRecordID!, userId: crumbmessage.senderuuid)
+                AppDelegate().notify(title: "New BreadCrumb found!", body: "Come check it out!", crumbID: crumbmessage.uRecordID!, userId: crumbmessage.senderuuid)
             })
 
             
@@ -322,7 +322,7 @@ class Helper{
     
     
     //MARK: DELETE
-    func cloudKitDeleteCrumb(_ currentRecordID: CKRecordID){//should only be used by timelimit checkers/load and store
+    func cloudKitDeleteCrumb(_ currentRecordID: CKRecord.ID){//should only be used by timelimit checkers/load and store
         //also could use in delete yours
         
         let container = CKContainer.default()
@@ -482,7 +482,7 @@ class Helper{
         let container = CKContainer.default()
         let publicData = container.publicCloudDatabase
         for id in RecordIDsToTest{
-            let ckidToTest = CKRecordID(recordName: id)//the message record id to fetch from cloudkit
+            let ckidToTest = CKRecord.ID(recordName: id)//the message record id to fetch from cloudkit
             
             publicData.fetch(withRecordID: ckidToTest, completionHandler: {record, error in
                 if error == nil{
@@ -507,7 +507,7 @@ class Helper{
         
         let container = CKContainer.default()
         let publicData = container.publicCloudDatabase
-        let ckidToTest = CKRecordID(recordName: recorduuid)//the message record id to fetch from cloudkit
+        let ckidToTest = CKRecord.ID(recordName: recorduuid)//the message record id to fetch from cloudkit
         
         publicData.fetch(withRecordID: ckidToTest, completionHandler: {record, error in
             if error == nil{
@@ -557,7 +557,7 @@ class Helper{
         //take alive crumbs and make an updater call to ck
         
         for id in RecordIDsToTest{//takes ids and loads comments from ck
-            let ckidToTest = CKRecordID(recordName: id)//the message record id to fetch from cloudkit
+            let ckidToTest = CKRecord.ID(recordName: id)//the message record id to fetch from cloudkit
             
             getcommentcktocd(ckidToTest: ckidToTest)
         }
@@ -610,7 +610,7 @@ class Helper{
     //updates ck with new value
     func voteCKVote(_ crumb: CrumbMessage, voteValue: Int){
         
-        let recorduuid = CKRecordID(recordName: (crumb.uRecordID)!)
+        let recorduuid = CKRecord.ID(recordName: (crumb.uRecordID)!)
         let container = CKContainer.default()
         let publicData = container.publicCloudDatabase
         
@@ -750,7 +750,7 @@ class Helper{
         let predicate = NSPredicate(format: "senderuuid == %@", NSUserData.string(forKey: "recordID")!)//subscribes to a the current users new record updates(i think)
 
         let subscription = CKQuerySubscription(recordType: "CrumbMessage", predicate: predicate, options: [.firesOnRecordUpdate])
-        let notificationInfo = CKNotificationInfo()
+        let notificationInfo = CKSubscription.NotificationInfo()
         //I can grab which keys i need here, ckreference for comment & vote
         notificationInfo.desiredKeys = ["votes"]
         notificationInfo.alertBody = "Somebody upvoted on one of your Crumbs, Congrats!"
@@ -774,7 +774,7 @@ class Helper{
         let predicate = NSPredicate(format: "ownerID == %@", NSUserData.string(forKey: "recordID")!)//subscribes to comments htat have your id
         
         let subscription = CKQuerySubscription(recordType: "Comment", predicate: predicate, options: [.firesOnRecordCreation])
-        let notificationInfo = CKNotificationInfo()
+        let notificationInfo = CKSubscription.NotificationInfo()
         notificationInfo.desiredKeys = ["ownerReference", "userName", "text", "senderuuid"]
 
         
@@ -796,7 +796,7 @@ class Helper{
     
     //update crumb obj, from remote notif receiver in appdel
     //only updates comments for your messages
-    func updateCrumbFromSub(recorduuid: CKRecordID, NewVote: Int?){//will have updated vote here
+    func updateCrumbFromSub(recorduuid: CKRecord.ID, NewVote: Int?){//will have updated vote here
         //print("updateCrumbFromSub")
         self.updateCdVote(recorduuid.recordName, voteValue: NewVote!)
     }
@@ -832,8 +832,8 @@ class Helper{
     
     
     //used above uses the record id of crumbmessage to find comments
-    func getcommentcktocd(ckidToTest: CKRecordID){
-        let ref = CKReference(recordID: ckidToTest, action: CKReferenceAction.deleteSelf)
+    func getcommentcktocd(ckidToTest: CKRecord.ID){
+        let ref = CKRecord.Reference(recordID: ckidToTest, action: CKRecord.Reference.Action.deleteSelf)
         
         let predicate = NSPredicate(format: "ownerReference == %@", ref)//fetches all comments associated with this msg
         let query = CKQuery(recordType: "Comment", predicate: predicate)

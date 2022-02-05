@@ -19,7 +19,7 @@ class WebTableViewCell: UITableViewCell {
     @IBOutlet weak var timeCountdown: UILabel!
     @IBOutlet weak var VoteButton: UIButton!
     
-    @IBOutlet weak var webPreviewImageWebView: UIWebView!
+    //@IBOutlet weak var webPreviewImageWebView: WKWebView!
     
     @IBOutlet weak var webPreviewTextLabel: UILabel!
     @IBOutlet weak var webSegueButton: UIButton!

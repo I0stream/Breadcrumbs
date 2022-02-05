@@ -38,7 +38,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
 
     lazy var refreshControl: UIRefreshControl = {
         let refreshControl = UIRefreshControl()
-        refreshControl.addTarget(self, action: #selector(YourCrumbsTableViewController.handleRefresh(_:)), for: UIControlEvents.valueChanged)
+        refreshControl.addTarget(self, action: #selector(YourCrumbsTableViewController.handleRefresh(_:)), for: UIControl.Event.valueChanged)
         
         return refreshControl
     }()
@@ -70,7 +70,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         self.YourTableView.addSubview(self.refreshControl)
         
         YourTableView.estimatedRowHeight = 200
-        YourTableView.rowHeight = UITableViewAutomaticDimension
+        YourTableView.rowHeight = UITableView.automaticDimension
 
         
         NotificationCenter.default.addObserver(self, selector: #selector(YourCrumbsTableViewController.listenForBackground), name: NSNotification.Name(rawValue: "UIApplicationDidEnterBackgroundNotification"), object: nil)
@@ -99,7 +99,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         
     }
     
-    func listenForBackground(){
+    @objc func listenForBackground(){
         for crumb in whohasvoted{
             print("update")
             
@@ -200,7 +200,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
             return cell
         }else if indexPath.row == (crumbmessages.count){
             let cell = tableView.dequeueReusableCell(withIdentifier: "SpacerYour", for: indexPath)
-            cell.selectionStyle = UITableViewCellSelectionStyle.none
+            cell.selectionStyle = UITableViewCell.SelectionStyle.none
             return cell
         }else {// message only
             
@@ -509,8 +509,8 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
     
 
     
-    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
-        if (editingStyle == UITableViewCellEditingStyle.delete) {
+    func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCell.EditingStyle, forRowAt indexPath: IndexPath) {
+        if (editingStyle == UITableViewCell.EditingStyle.delete) {
             
             let crumbmsg = crumbmessages[indexPath.row]
             
@@ -518,10 +518,10 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
             
             self.helperFunctions.coreDataDeleteCrumb(id!/*, manx: AppDelegate().CDStack.mainContext*/)   //must use something other than urecordid
             
-            self.helperFunctions.cloudKitDeleteCrumb(CKRecordID(recordName: id!))//this is bad for battery, but it is better for my server so :| hmmmmmmmm
+            self.helperFunctions.cloudKitDeleteCrumb(CKRecord.ID(recordName: id!))//this is bad for battery, but it is better for my server so :| hmmmmmmmm
             
             crumbmessages.remove(at: indexPath.row)
-            tableView.deleteRows(at: [indexPath], with: UITableViewRowAnimation.automatic)
+            tableView.deleteRows(at: [indexPath], with: UITableView.RowAnimation.automatic)
             reloadTables()
         }
         
@@ -531,13 +531,13 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
     
     
     //SEGUE to imageViewer
-    func imageSeggy(sender: UIButton){
+    @objc func imageSeggy(sender: UIButton){
         //print("segue to image viewer")
         self.performSegue(withIdentifier: "ViewImageYourSegue", sender: sender)
         
     }
     
-    func buttonActions(sender: UIButton){
+    @objc func buttonActions(sender: UIButton){
         let row = sender.tag
         let indexPath = IndexPath(row: row, section: 1)
         let crumb = crumbmessages[indexPath.row]
@@ -594,7 +594,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
             
             //if
             
-            if let i = whohasvoted.index(where: { $0?.uRecordID == viewbreadcrumb.uRecordID }) {//test if value is in it yet
+            if let i = whohasvoted.firstIndex(where: { $0?.uRecordID == viewbreadcrumb.uRecordID }) {//test if value is in it yet
                 whohasvoted.remove(at: i)
                 //whohasvoted[i] = viewbreadcrumb
                 print("repeat delete")
@@ -619,7 +619,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
     
     //******************************************** Will want to reload votes *****************************************************
 
-    func loadList(_ notification: Notification){//yayay//This solves the others crumbs problem i think
+    @objc func loadList(_ notification: Notification){//yayay//This solves the others crumbs problem i think
         crumbmessages.removeAll()
         self.crumbmessages = helperFunctions.loadCoreDataMessage(true)!//true to load yours//is only loading one and not looping thorugh crumbs
         //self.crumbmessages)
@@ -636,8 +636,8 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
     
     func noVoteIndicator(){
         let alertController = UIAlertController(title: "BreadCrumbs", message:
-            "You cannot vote on a dead crumb", preferredStyle: UIAlertControllerStyle.alert)
-        alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertActionStyle.default,handler: nil))
+            "You cannot vote on a dead crumb", preferredStyle: UIAlertController.Style.alert)
+        alertController.addAction(UIAlertAction(title: "Dismiss", style: UIAlertAction.Style.default,handler: nil))
         
         self.present(alertController, animated: true, completion: nil)
     }
@@ -653,7 +653,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
         reloadTables()
     }
     
-    func handleRefresh(_ refreshControl: UIRefreshControl) {
+    @objc func handleRefresh(_ refreshControl: UIRefreshControl) {
         
         /*if let x = view.viewWithTag(5) {//if there is a view un animate it
             UNanimateInfoBar()
@@ -665,7 +665,7 @@ class YourCrumbsTableViewController: UIViewController, UITableViewDataSource, UI
     
     func reloadCrumbs(){
         DispatchQueue.main.async(execute: { () -> Void in
-            
+            //print("run")
             self.crumbmessages = self.helperFunctions.loadCoreDataMessage(true)!
             
             self.YourTableView.reloadData()

@@ -73,7 +73,7 @@ class ChangeUserNameViewController: SettingsViewController, UITextFieldDelegate 
 
     }
     
-    func dismissKeyboard() {
+    @objc func dismissKeyboard() {
         view.endEditing(true)
     }
     
@@ -138,9 +138,9 @@ class ChangeUserNameViewController: SettingsViewController, UITextFieldDelegate 
         
         let container = CKContainer.default()
         let publicData = container.publicCloudDatabase
-        let CKuserID: CKRecordID = CKRecordID(recordName: NSUserData.string(forKey: "recordID")!)//keychain
+        let CKuserID: CKRecord.ID = CKRecord.ID(recordName: NSUserData.string(forKey: "recordID")!)//keychain
         
-        let query = CKQuery(recordType: "UserInfo", predicate: NSPredicate(format: "%K == %@", "creatorUserRecordID" ,CKReference(recordID: CKuserID, action: CKReferenceAction.none)))
+        let query = CKQuery(recordType: "UserInfo", predicate: NSPredicate(format: "%K == %@", "creatorUserRecordID" ,CKRecord.Reference(recordID: CKuserID, action: CKRecord.Reference.Action.none)))
         
         publicData.perform(query, inZoneWith: nil) {
             results, error in

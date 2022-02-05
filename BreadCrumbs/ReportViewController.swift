@@ -125,7 +125,7 @@ class ReportViewController: UIViewController, UITextViewDelegate {
         }
         return true
     }
-    func dismissKeyboard() {
+    @objc func dismissKeyboard() {
         //Causes the view (or one of its embedded text fields) to resign the first responder status.
         view.endEditing(true)
     }
@@ -198,7 +198,7 @@ class ReportViewController: UIViewController, UITextViewDelegate {
     func writeImage(image: UIImage) -> NSURL {
         let documentsURL = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first!
         let fileURL = documentsURL.appendingPathComponent(NSUUID().uuidString + ".jpeg")
-        if let imageData = UIImageJPEGRepresentation(image, 0.9) {
+        if let imageData = image.jpegData(compressionQuality: 0.9) {
             do {try imageData.write(to: fileURL, options: .noFileProtection)}//writeToURL(fileURL, atomically: false)
             catch { print("fucked") }
         }
